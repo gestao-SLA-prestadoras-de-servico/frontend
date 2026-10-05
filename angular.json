@@ -4,7 +4,7 @@
   "cli": {
     "packageManager": "npm",
     "analytics": "2c1758a8-5d9d-4f84-b599-88cb2c19ff1e",
-    "schematicCollections": ["@schematics/angular", "playwright-ng-schematics"]
+    "schematicCollections": ["angular-eslint", "@schematics/angular", "playwright-ng-schematics"]
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -84,6 +84,12 @@
             "production": {
               "devServerTarget": "frontend:serve:production"
             }
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       }
