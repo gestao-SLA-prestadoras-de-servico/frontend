@@ -1,59 +1,123 @@
-# Frontend
+# FlowSLA - Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.3.
+Bem-vindo ao repositório de frontend do **FlowSLA** - um sistema para automatizar o controle de prazos, evidências e histórico de atendimento relacionados a SLAs (Service Level Agreements), voltado especialmente para empresas prestadoras de serviços técnicos de pequeno e médio porte.
 
-## Development server
+## Qual é o propósito desse repositório?
 
-To start a local development server, run:
+Este repositório é responsável pelo frontend do **FlowSLA**, incluindo a implementação da interface da aplicação, páginas, componentes, fluxos de navegação e demais recursos relacionados à experiência do usuário, além das documentações específicas do frontend.
 
-```bash
-ng serve
-```
+## Stack
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+| Ferramenta                                    | Versão |
+| --------------------------------------------- | ------ |
+| [Angular](https://angular.dev/)               | 21.2.0 |
+| [TypeScript](https://www.typescriptlang.org/) | 5.9.2  |
+| [TailwindCSS](https://tailwindcss.com/)       | 4.1.12 |
+| [RxJS](https://rxjs.dev/)                     | 7.8.0  |
+| [Vitest](https://vitest.dev/)                 | 4.0.8  |
+| [Playwright](https://playwright.dev/)         | 1.63.0 |
+| [ESLint](https://eslint.org/)                 | 10.3.0 |
 
-## Code scaffolding
+## Como executar o projeto
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+> [!IMPORTANT]
+>
+> Requisitos:
+>
+> - Node.js - v20+
+> - npm - v11+
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+Antes de tudo, instale as dependências com:
 
 ```bash
-ng test
+npm install
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+### Execução do modo de desenvolvimento:
 
 ```bash
-ng e2e
+npm run start
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+### Execução do modo de produção (build):
 
-## Additional Resources
+Primeiro construa a aplicação:
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```bash
+npm run build
+```
+
+Agora rode com:
+
+```bash
+npm run serve:ssr:frontend
+```
+
+### Como executar os testes
+
+#### Para executar testes unitários, rode
+
+```bash
+npm run test
+```
+
+#### Para executar testes E2E
+
+Se está executando os testes E2E pela primeira vez, instale os navegadores e suas dependências:
+
+```bash
+npx playwright install --with-deps
+```
+
+Em seguida, execute os testes:
+
+```bash
+npm run e2e
+```
+
+## Estrutura de pastas
+
+```bash
+.
+├── angular.json
+├── e2e # Testes End-to-End (E2E)
+│   ├── example.spec.ts
+│   └── tsconfig.json
+├── eslint.config.js # Configuração das regras do ESLint
+├── package.json
+├── package-lock.json
+├── playwright.config.ts # Configuração do Playwright
+├── public
+│   └── favicon.ico
+├── README.md
+├── src # Código-fonte da aplicação
+│   ├── app # Componentes, páginas e lógica da aplicação
+│   ├── index.html
+│   ├── main.server.ts # Ponto de entrada da aplicação no servidor
+│   ├── main.ts # Ponto de entrada da aplicação no navegador
+│   ├── server.ts # Configuração do servidor para SSR
+│   └── styles.css # Estilos globais da aplicação
+├── tsconfig.app.json
+├── tsconfig.json
+└── tsconfig.spec.json
+
+
+```
+
+<!-- ADICIONAR TABELA EXPLICATIVA DA DOCUMENTAÇÃO DO FRONTEND -->
+
+## Repositórios relacionados
+
+| Repositório                                                             | Função             |
+| ----------------------------------------------------------------------- | ------------------ |
+| [docs](https://github.com/gestao-SLA-prestadoras-de-servico/docs)       | Documentação geral |
+| [backend](https://github.com/gestao-SLA-prestadoras-de-servico/backend) | Backend do projeto |
+
+## Autores
+
+|                                                                                                                         |                                                                                                                                |                                                                                                                                     |
+| :---------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: |
+|                <img src="https://github.com/genzo-dev.png" alt="Gabriel Enzo (genzo-dev)" width="160"/>                 |                        <img src="https://github.com/LuisF3L1P3dev.png" alt="Luis Felipe" width="160"/>                         |                                <img src="https://github.com/rangelro.png" alt="Rangel" width="160"/>                                |
+|                                              **Gabriel Enzo (genzo-dev)**                                               |                                                        **Luis Felipe**                                                         |                                                             **Rangel**                                                              |
+|                                           <sub>Fullstack web developer</sub>                                            |                                               <sub>Fullstack web developer</sub>                                               |                                                 <sub>Fullstack web developer</sub>                                                  |
+| <a href="https://www.linkedin.com/in/genzo-dev/">💼 LinkedIn</a> · <a href="https://github.com/genzo-dev">🐙 GitHub</a> | <a href="https://www.linkedin.com/in/luisfelipe15/">💼 LinkedIn</a> · <a href="https://github.com/LuisF3L1P3dev">🐙 GitHub</a> | <a href="https://www.linkedin.com/in/rangel-rocha-779139228/">💼 LinkedIn</a> · <a href="https://github.com/rangelro">🐙 GitHub</a> |
