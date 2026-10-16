@@ -3,7 +3,7 @@
 Referência de design patterns da **Plataforma de Gestão de SLA para Prestadoras de Serviço** (Projeto Integrador 2026.2). Documenta o que está desenhado no canvas "FlowSLA — Design da plataforma" (16 telas) para guiar a implementação do frontend.
 
 > **Fonte da verdade visual:** o canvas. Este documento descreve as decisões e os nomes; se os dois divergirem, o canvas manda e este arquivo deve ser atualizado.
-> **Nomes de classe:** os nomes abaixo (`.chip`, `.rc`, `.ck`…) são os usados no protótipo. Podem ser mantidos, ou traduzidos para componentes (React, Angular, Vue) com os mesmos nomes de variantes.
+> **Nomes de classe:** os nomes abaixo (`.chip`, `.rc`, `.ck`…) são os usados no protótipo. Podem ser mantidos, ou traduzidos para componentes (Angular) com os mesmos nomes de variantes.
 
 ---
 

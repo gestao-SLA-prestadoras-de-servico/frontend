@@ -1,0 +1,11 @@
+{
+  "tool": "image_gen",
+  "prompt": "Use case: ui-mockup. Create a crisp high fidelity visual design board showing the FlowSLA landing page at desktop and mobile widths, side by side, no device frames or perspective. Label them A — Clareza operacional, Desktop and Celular. This Portuguese platform under development helps managers of technical service providers manage service tickets, contractual deadlines, and service evidence. The committed identity is IBM Plex Sans for text, IBM Plex Mono for times, #1976D2 blue, #0B2545 navy, light gray and white surfaces. Restrained rounded corners, generous spacing, readable typography. Desktop hero uses left copy and right HTML-like ticket interface; mobile stacks them. Desktop header: clock mark FlowSLA, Benefícios, Como funciona, Plataforma, FAQ, Acessar o sistema. Mobile header has logo and menu. Exact hero: “Prazos sob controle. Atendimento comprovado.” Supporting copy: “Centralize chamados, acompanhe os prazos de cada contrato e reúna as evidências do serviço em um só lugar.” Buttons: “Acessar o sistema”, “Conhecer a plataforma”. Visible note: “Em desenvolvimento”. Product example: “#1042 · Manutenção de climatização”, “Em atendimento”, three SLA rows “Resposta — Cumprido”, “Atendimento em campo — Cumprido”, “Resolução — Restam 6h20”. Small history: “08:10 Chamado aberto”, “08:25 Resposta enviada”, “09:40 Atendimento iniciado”; attached evidence “2 fotos vinculadas”. Label “Demonstração ilustrativa”. Below hero begins benefits section “Menos conferência manual. Mais clareza para agir.” No invented commercial claims, prices, metrics, customer logos, testimonials, decorative photography or gradients. Composition A emphasizes a spacious white ground and a complete legible ticket sheet.",
+  "approved": true,
+  "role": "composition-preview",
+  "viewports": [
+    "desktop",
+    "mobile"
+  ],
+  "approvalSource": "Usuário: Continua pela A — Clareza operacional"
+}

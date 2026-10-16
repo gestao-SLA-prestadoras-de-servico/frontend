@@ -1,0 +1,271 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.preview {
+  padding: 12px;
+  background: var(--bg);
+  border-radius: 16px;
+  box-shadow: var(--shadow-preview);
+}
+.sheet {
+  background: var(--sf);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+.ticket-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.ticket-heading h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.5;
+  flex: 1 1 240px;
+  text-wrap: auto;
+}
+.ticket-heading .mono {
+  font-size: 0.875rem;
+}
+.status {
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  background: var(--ora-bg);
+  color: var(--ora-t);
+}
+.sheet-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px 12px;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+  margin-top: 20px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink3);
+}
+.sheet-label span {
+  padding-bottom: 12px;
+}
+.sheet-label span:first-child {
+  color: var(--pri-d);
+  border-bottom: 2px solid var(--pri);
+  font-weight: 500;
+}
+h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.5;
+  text-wrap: auto;
+}
+.sla-explanation {
+  margin-top: 8px;
+  color: var(--ink2);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+.deadline-copy {
+  min-width: 0;
+}
+.deadline-copy small {
+  font-weight: 400;
+}
+.deadlines {
+  padding-top: 20px;
+}
+dl {
+  margin: 10px 0 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+}
+.deadline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+}
+.deadline + .deadline {
+  border-top: 1px solid var(--line);
+}
+dt {
+  display: flex;
+  align-items: start;
+  gap: 10px;
+  min-width: 0;
+  font-size: 0.875rem;
+  color: var(--navy);
+}
+dd {
+  margin: 0;
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+.fulfilled {
+  background: var(--grn-bg);
+  color: var(--grn-t);
+}
+.remaining {
+  background: var(--pri-bg);
+  color: var(--pri-d);
+}
+.check {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--grn);
+  color: var(--sf);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+.check app-icon {
+  width: 14px;
+  height: 14px;
+}
+.running {
+  width: 20px;
+  height: 20px;
+  color: var(--pri);
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+.record {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+ol {
+  list-style: none;
+  padding: 0;
+  margin: 14px 0 0;
+}
+li {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  padding: 0 0 14px 18px;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--ink2);
+}
+li::before {
+  position: absolute;
+  left: 0;
+  top: 4px;
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--pri);
+}
+li:not(:last-child)::after {
+  position: absolute;
+  left: 3px;
+  top: 12px;
+  bottom: -1px;
+  content: '';
+  width: 1px;
+  background: var(--line2);
+}
+li:last-child {
+  padding-bottom: 0;
+}
+time {
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+small {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--ink3);
+  margin-top: 2px;
+}
+.evidence img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2.6;
+  object-fit: cover;
+  margin-top: 14px;
+  border-radius: 6px;
+}
+.attachment {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 8px;
+  font-size: 0.875rem;
+  color: var(--ink2);
+  background: var(--bg);
+  border-radius: 6px;
+}
+.attachment app-icon {
+  width: 16px;
+  height: 16px;
+}
+.evidence-note {
+  font-size: 0.75rem;
+  margin-top: 6px;
+  color: var(--ink3);
+}
+figcaption {
+  padding: 10px 8px 0;
+  color: var(--ink3);
+  font-size: 0.75rem;
+  text-align: right;
+}
+@media (max-width: 600px) {
+  .preview {
+    padding: 8px;
+  }
+  .sheet {
+    padding: 16px;
+  }
+  .ticket-heading h2 {
+    font-size: 0.875rem;
+  }
+  .ticket-heading {
+    gap: 8px;
+  }
+  .record {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .evidence img {
+    max-height: 100px;
+  }
+  .deadline {
+    padding: 10px 8px;
+  }
+  dt {
+    gap: 7px;
+  }
+  .sheet-label span:last-child {
+    font-size: 0.75rem;
+  }
+  li {
+    padding-bottom: 16px;
+  }
+}
+@media (max-width: 400px) {
+  .deadline {
+    flex-direction: column;
+    align-items: start;
+    gap: 8px;
+  }
+  dd {
+    margin-left: 27px;
+  }
+}

@@ -1,0 +1,36 @@
+<section id="plataforma" class="section" tabindex="-1" aria-labelledby="platform-title">
+  <div class="wrap">
+    <div class="platform-heading">
+      <div>
+        <h2 id="platform-title">Um atendimento.<br />Todo o contexto.</h2>
+        <p class="lead">
+          Do acordo com o cliente ao registro do serviço, veja o que o FlowSLA prevê reunir.
+        </p>
+      </div>
+      <span class="development">Funcionalidades previstas</span>
+    </div>
+    <div class="feature-grid">
+      @for (feature of features; track feature.title) {
+        <article>
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.description }}</p>
+        </article>
+      }
+    </div>
+    <div class="roles-heading">
+      <h2>Um fluxo em comum.<br />Um papel para cada pessoa.</h2>
+      <p class="lead">
+        Cada perfil terá acesso às informações e ações necessárias para participar do atendimento.
+      </p>
+    </div>
+    <div class="roles">
+      @for (role of roles; track role.name) {
+        <article>
+          <h3>{{ role.name }}</h3>
+          <p class="role-action">{{ role.action }}</p>
+          <p>{{ role.description }}</p>
+        </article>
+      }
+    </div>
+  </div>
+</section>

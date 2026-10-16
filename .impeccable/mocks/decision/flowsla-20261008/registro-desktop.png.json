@@ -1,0 +1,13 @@
+{
+  "prompt": "Edit this FlowSLA landing page image with one precise factual text correction. Preserve the entire composition, all typography, palette, alignment, imagery, content and controls exactly. In the third SLA row, Resolução, change only the deadline caption from 'Limite: 08/10 · 17:00' to 'Limite: 09/10 · 17:00'. Keep the second row's deadline '08/10 · 17:00' unchanged and the first row's deadline '08/10 · 10:00' unchanged. Maintain 1536×1024 resolution and sharp text.",
+  "tool": "OpenAI ImageGen built-in",
+  "approved": false,
+  "scope": "surface-decision",
+  "seed": "d638c715",
+  "optionId": "registro",
+  "viewport": {
+    "width": 1536,
+    "height": 1024
+  },
+  "source": "C:\\Users\\fdant\\.codex\\generated_images\\01a11db4-79b3-7c01-951d-1ef34deba717\\exec-a3654e9a-92fb-4d5e-b20b-26a231c401c0.png"
+}

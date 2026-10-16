@@ -1,0 +1,467 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-09T22:23:41.465Z",
+  "title": "Design System: FlowSLA",
+  "extensions": {
+    "colorMeta": {
+      "pri": {
+        "role": "primary",
+        "displayName": "Azul de ação",
+        "tonalRamp": [
+          "oklch(15% 0.1633 253.27)",
+          "oklch(26.43% 0.1633 253.27)",
+          "oklch(37.86% 0.1633 253.27)",
+          "oklch(49.29% 0.1633 253.27)",
+          "oklch(60.71% 0.1633 253.27)",
+          "oklch(72.14% 0.1633 253.27)",
+          "oklch(83.57% 0.1633 253.27)",
+          "oklch(95% 0.1633 253.27)"
+        ]
+      },
+      "pri-d": {
+        "role": "primary",
+        "displayName": "Azul de ação escuro",
+        "tonalRamp": [
+          "oklch(15% 0.1235 253.11)",
+          "oklch(26.43% 0.1235 253.11)",
+          "oklch(37.86% 0.1235 253.11)",
+          "oklch(49.29% 0.1235 253.11)",
+          "oklch(60.71% 0.1235 253.11)",
+          "oklch(72.14% 0.1235 253.11)",
+          "oklch(83.57% 0.1235 253.11)",
+          "oklch(95% 0.1235 253.11)"
+        ]
+      },
+      "pri-bg": {
+        "role": "primary",
+        "displayName": "Azul claro informativo",
+        "tonalRamp": [
+          "oklch(15% 0.0166 250.84)",
+          "oklch(26.43% 0.0166 250.84)",
+          "oklch(37.86% 0.0166 250.84)",
+          "oklch(49.29% 0.0166 250.84)",
+          "oklch(60.71% 0.0166 250.84)",
+          "oklch(72.14% 0.0166 250.84)",
+          "oklch(83.57% 0.0166 250.84)",
+          "oklch(95% 0.0166 250.84)"
+        ]
+      },
+      "navy": {
+        "role": "secondary",
+        "displayName": "Azul-marinho",
+        "tonalRamp": [
+          "oklch(15% 0.0678 255.34)",
+          "oklch(26.43% 0.0678 255.34)",
+          "oklch(37.86% 0.0678 255.34)",
+          "oklch(49.29% 0.0678 255.34)",
+          "oklch(60.71% 0.0678 255.34)",
+          "oklch(72.14% 0.0678 255.34)",
+          "oklch(83.57% 0.0678 255.34)",
+          "oklch(95% 0.0678 255.34)"
+        ]
+      },
+      "bg": {
+        "role": "neutral",
+        "displayName": "Cinza claro de superfície",
+        "tonalRamp": [
+          "oklch(15% 0.0017 247.84)",
+          "oklch(26.43% 0.0017 247.84)",
+          "oklch(37.86% 0.0017 247.84)",
+          "oklch(49.29% 0.0017 247.84)",
+          "oklch(60.71% 0.0017 247.84)",
+          "oklch(72.14% 0.0017 247.84)",
+          "oklch(83.57% 0.0017 247.84)",
+          "oklch(95% 0.0017 247.84)"
+        ]
+      },
+      "sf": {
+        "role": "neutral",
+        "displayName": "Branco de conteúdo",
+        "tonalRamp": [
+          "oklch(15% 0.0000 0.00)",
+          "oklch(26.43% 0.0000 0.00)",
+          "oklch(37.86% 0.0000 0.00)",
+          "oklch(49.29% 0.0000 0.00)",
+          "oklch(60.71% 0.0000 0.00)",
+          "oklch(72.14% 0.0000 0.00)",
+          "oklch(83.57% 0.0000 0.00)",
+          "oklch(95% 0.0000 0.00)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Chumbo de leitura",
+        "tonalRamp": [
+          "oklch(15% 0.0113 254.05)",
+          "oklch(26.43% 0.0113 254.05)",
+          "oklch(37.86% 0.0113 254.05)",
+          "oklch(49.29% 0.0113 254.05)",
+          "oklch(60.71% 0.0113 254.05)",
+          "oklch(72.14% 0.0113 254.05)",
+          "oklch(83.57% 0.0113 254.05)",
+          "oklch(95% 0.0113 254.05)"
+        ]
+      },
+      "ink2": {
+        "role": "neutral",
+        "displayName": "Cinza de apoio",
+        "tonalRamp": [
+          "oklch(15% 0.0253 261.66)",
+          "oklch(26.43% 0.0253 261.66)",
+          "oklch(37.86% 0.0253 261.66)",
+          "oklch(49.29% 0.0253 261.66)",
+          "oklch(60.71% 0.0253 261.66)",
+          "oklch(72.14% 0.0253 261.66)",
+          "oklch(83.57% 0.0253 261.66)",
+          "oklch(95% 0.0253 261.66)"
+        ]
+      },
+      "ink3": {
+        "role": "neutral",
+        "displayName": "Cinza de metadados",
+        "tonalRamp": [
+          "oklch(15% 0.0278 259.80)",
+          "oklch(26.43% 0.0278 259.80)",
+          "oklch(37.86% 0.0278 259.80)",
+          "oklch(49.29% 0.0278 259.80)",
+          "oklch(60.71% 0.0278 259.80)",
+          "oklch(72.14% 0.0278 259.80)",
+          "oklch(83.57% 0.0278 259.80)",
+          "oklch(95% 0.0278 259.80)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Divisória suave",
+        "tonalRamp": [
+          "oklch(15% 0.0063 255.48)",
+          "oklch(26.43% 0.0063 255.48)",
+          "oklch(37.86% 0.0063 255.48)",
+          "oklch(49.29% 0.0063 255.48)",
+          "oklch(60.71% 0.0063 255.48)",
+          "oklch(72.14% 0.0063 255.48)",
+          "oklch(83.57% 0.0063 255.48)",
+          "oklch(95% 0.0063 255.48)"
+        ]
+      },
+      "line2": {
+        "role": "neutral",
+        "displayName": "Contorno de controle",
+        "tonalRamp": [
+          "oklch(15% 0.0117 252.10)",
+          "oklch(26.43% 0.0117 252.10)",
+          "oklch(37.86% 0.0117 252.10)",
+          "oklch(49.29% 0.0117 252.10)",
+          "oklch(60.71% 0.0117 252.10)",
+          "oklch(72.14% 0.0117 252.10)",
+          "oklch(83.57% 0.0117 252.10)",
+          "oklch(95% 0.0117 252.10)"
+        ]
+      },
+      "on-navy": {
+        "role": "neutral",
+        "displayName": "Apoio sobre azul-marinho",
+        "tonalRamp": [
+          "oklch(15% 0.0314 254.34)",
+          "oklch(26.43% 0.0314 254.34)",
+          "oklch(37.86% 0.0314 254.34)",
+          "oklch(49.29% 0.0314 254.34)",
+          "oklch(60.71% 0.0314 254.34)",
+          "oklch(72.14% 0.0314 254.34)",
+          "oklch(83.57% 0.0314 254.34)",
+          "oklch(95% 0.0314 254.34)"
+        ]
+      },
+      "grn": {
+        "role": "semantic",
+        "displayName": "Verde de prazo cumprido",
+        "tonalRamp": [
+          "oklch(15% 0.1347 144.17)",
+          "oklch(26.43% 0.1347 144.17)",
+          "oklch(37.86% 0.1347 144.17)",
+          "oklch(49.29% 0.1347 144.17)",
+          "oklch(60.71% 0.1347 144.17)",
+          "oklch(72.14% 0.1347 144.17)",
+          "oklch(83.57% 0.1347 144.17)",
+          "oklch(95% 0.1347 144.17)"
+        ]
+      },
+      "grn-bg": {
+        "role": "semantic",
+        "displayName": "Verde suave de estado",
+        "tonalRamp": [
+          "oklch(15% 0.0210 147.64)",
+          "oklch(26.43% 0.0210 147.64)",
+          "oklch(37.86% 0.0210 147.64)",
+          "oklch(49.29% 0.0210 147.64)",
+          "oklch(60.71% 0.0210 147.64)",
+          "oklch(72.14% 0.0210 147.64)",
+          "oklch(83.57% 0.0210 147.64)",
+          "oklch(95% 0.0210 147.64)"
+        ]
+      },
+      "grn-t": {
+        "role": "semantic",
+        "displayName": "Verde de texto",
+        "tonalRamp": [
+          "oklch(15% 0.1143 144.24)",
+          "oklch(26.43% 0.1143 144.24)",
+          "oklch(37.86% 0.1143 144.24)",
+          "oklch(49.29% 0.1143 144.24)",
+          "oklch(60.71% 0.1143 144.24)",
+          "oklch(72.14% 0.1143 144.24)",
+          "oklch(83.57% 0.1143 144.24)",
+          "oklch(95% 0.1143 144.24)"
+        ]
+      },
+      "ora-bg": {
+        "role": "semantic",
+        "displayName": "Laranja suave de atendimento",
+        "tonalRamp": [
+          "oklch(15% 0.0250 69.44)",
+          "oklch(26.43% 0.0250 69.44)",
+          "oklch(37.86% 0.0250 69.44)",
+          "oklch(49.29% 0.0250 69.44)",
+          "oklch(60.71% 0.0250 69.44)",
+          "oklch(72.14% 0.0250 69.44)",
+          "oklch(83.57% 0.0250 69.44)",
+          "oklch(95% 0.0250 69.44)"
+        ]
+      },
+      "ora-t": {
+        "role": "semantic",
+        "displayName": "Laranja de texto",
+        "tonalRamp": [
+          "oklch(15% 0.1339 47.56)",
+          "oklch(26.43% 0.1339 47.56)",
+          "oklch(37.86% 0.1339 47.56)",
+          "oklch(49.29% 0.1339 47.56)",
+          "oklch(60.71% 0.1339 47.56)",
+          "oklch(72.14% 0.1339 47.56)",
+          "oklch(83.57% 0.1339 47.56)",
+          "oklch(95% 0.1339 47.56)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Hero em duas colunas",
+        "purpose": "Título principal acima de 820 px."
+      },
+      "display-stacked": {
+        "displayName": "Hero empilhado",
+        "purpose": "Título principal até 820 px."
+      },
+      "headline": {
+        "displayName": "Título de seção",
+        "purpose": "Hierarquia principal de seções."
+      },
+      "title": {
+        "displayName": "Título de grupo",
+        "purpose": "Benefícios e etapas; componentes possuem variações observadas."
+      },
+      "body": {
+        "displayName": "Texto de leitura",
+        "purpose": "Corpo da página."
+      },
+      "lead": {
+        "displayName": "Abertura de seção",
+        "purpose": "Introduções em 1.125rem; 1.0625rem até 600 px."
+      },
+      "action": {
+        "displayName": "Ação",
+        "purpose": "Botões em 1rem; o cabeçalho usa 0.875rem."
+      },
+      "label": {
+        "displayName": "Informação de desenvolvimento",
+        "purpose": "Pílulas de disponibilidade e funcionalidades previstas."
+      },
+      "mono": {
+        "displayName": "Números e identificadores",
+        "purpose": "Horários, durações e identificadores, com font-variant-numeric: tabular-nums."
+      },
+      "preview-body": {
+        "displayName": "Leitura da demonstração",
+        "purpose": "Eventos, títulos internos, nomes dos prazos e estados; tamanho mantido no celular."
+      },
+      "preview-meta": {
+        "displayName": "Metadados da demonstração",
+        "purpose": "Horários, responsáveis, definições e avisos ilustrativos, sem redução no celular."
+      },
+      "support": {
+        "displayName": "Texto de apoio",
+        "purpose": "Avisos de disponibilidade, navegação, rodapé e contexto dos benefícios; 0.875rem."
+      },
+      "lead-compact": {
+        "displayName": "Abertura em telas estreitas",
+        "purpose": "1.0625rem até 600 px, acompanhando a preferência de fonte."
+      },
+      "role-action": {
+        "displayName": "Ação de cada perfil",
+        "purpose": "1.375rem/600 em cartões de gestor, técnico e cliente."
+      },
+      "brand": {
+        "displayName": "Marca",
+        "purpose": "Nome FlowSLA, 1.5rem/700."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-preview",
+        "value": "0 24px 56px rgb(28 32 37 / 10%)",
+        "purpose": "Elevação da demonstração de produto."
+      },
+      {
+        "name": "shadow-dialog",
+        "value": "0 24px 60px rgb(28 32 37 / 30%)",
+        "purpose": "Diálogo de disponibilidade sobre backdrop rgb(11 37 69 / 55%)."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Chegadas suaves e feedback sem rebote."
+      },
+      {
+        "name": "motion-feedback",
+        "value": "120ms",
+        "purpose": "Cor e borda dos botões e sinal de pressão de 1 px."
+      },
+      {
+        "name": "motion-state",
+        "value": "180ms",
+        "purpose": "Rotação de 45deg do símbolo do FAQ."
+      },
+      {
+        "name": "motion-overlay-in",
+        "value": "320ms",
+        "purpose": "Diálogo e backdrop; opacidade e escala de 0,98 a 1."
+      },
+      {
+        "name": "motion-overlay-out",
+        "value": "160ms",
+        "purpose": "Saída do diálogo e backdrop, preservando display e overlay até o fim."
+      },
+      {
+        "name": "menu-reveal",
+        "value": "220ms",
+        "purpose": "Recorte vertical a partir do cabeçalho; fechamento imediato."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "prefers-reduced-motion: reduce",
+        "purpose": "Opacidade e cores em 100ms; sem escala, deslocamento, rotação animada ou rolagem suave."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact-navigation-spacing",
+        "value": "1000px"
+      },
+      {
+        "name": "stacked-hero-and-mobile-menu",
+        "value": "820px"
+      },
+      {
+        "name": "single-column-and-compact-gutters",
+        "value": "600px"
+      },
+      {
+        "name": "compact-dialog-padding",
+        "value": "400px"
+      },
+      {
+        "name": "stacked-preview-deadlines",
+        "value": "400px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botão primário",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Âncora principal da landing para conhecer a plataforma; o encerramento aponta às dúvidas.",
+      "html": "<a class=\"ds-button-primary\" href=\"#plataforma\">Conhecer a plataforma</a>",
+      "css": ".ds-button-primary { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 11px 22px; border: 1px solid transparent; border-radius: var(--radius-control, 8px); font: 600 1rem/1.4 var(--font-sans, 'IBM Plex Sans', sans-serif); text-align: center; text-decoration: none; cursor: pointer; transition: background-color var(--motion-feedback, 120ms) var(--ease-out, cubic-bezier(.16, 1, .3, 1)), border-color var(--motion-feedback, 120ms) var(--ease-out, cubic-bezier(.16, 1, .3, 1)), transform var(--motion-feedback, 120ms) var(--ease-out, cubic-bezier(.16, 1, .3, 1)); } .ds-button-primary:focus-visible { outline: 3px solid var(--pri, #1976d2); outline-offset: 4px; } .ds-button-primary:active { transform: translateY(1px); } @media (prefers-reduced-motion: reduce) { .ds-button-primary { transition-property: background-color, border-color; transition-duration: 100ms; } .ds-button-primary:active { transform: none; } } .ds-button-primary { color: var(--sf, #fff); background: var(--pri, #1976d2); } .ds-button-primary:hover { background: var(--pri-d, #115293); }"
+    },
+    {
+      "name": "Botão secundário",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Ação secundária para abrir o aviso de indisponibilidade na landing; o snippet exibe o controle.",
+      "html": "<button class=\"ds-button-secondary\" type=\"button\">Sobre a disponibilidade</button>",
+      "css": ".ds-button-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 11px 22px; border: 1px solid transparent; border-radius: var(--radius-control, 8px); font: 600 1rem/1.4 var(--font-sans, 'IBM Plex Sans', sans-serif); text-align: center; text-decoration: none; cursor: pointer; transition: background-color var(--motion-feedback, 120ms) var(--ease-out, cubic-bezier(.16, 1, .3, 1)), border-color var(--motion-feedback, 120ms) var(--ease-out, cubic-bezier(.16, 1, .3, 1)), transform var(--motion-feedback, 120ms) var(--ease-out, cubic-bezier(.16, 1, .3, 1)); } .ds-button-secondary:focus-visible { outline: 3px solid var(--pri, #1976d2); outline-offset: 4px; } .ds-button-secondary:active { transform: translateY(1px); } @media (prefers-reduced-motion: reduce) { .ds-button-secondary { transition-property: background-color, border-color; transition-duration: 100ms; } .ds-button-secondary:active { transform: none; } } .ds-button-secondary { color: var(--pri-d, #115293); background: var(--sf, #fff); border-color: var(--line2, #cdd3da); } .ds-button-secondary:hover { background: var(--pri-bg, #e8f1fb); border-color: var(--pri, #1976d2); }"
+    },
+    {
+      "name": "Navegação",
+      "kind": "nav",
+      "description": "Links de âncora com foco e hover. O snippet representa a lista; o menu móvel da aplicação é controlado pelo botão de expansão.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Navegação principal\"><a href=\"#beneficios\">Benefícios</a><a href=\"#como-funciona\">Como funciona</a><a href=\"#plataforma\">Plataforma</a><a href=\"#faq\">FAQ</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 28px; font: 400 0.875rem/1.6 var(--font-sans, 'IBM Plex Sans', sans-serif); } .ds-nav > a { display: flex; align-items: center; min-height: 44px; color: var(--navy, #0b2545); text-decoration: none; text-underline-offset: .2em; } .ds-nav > a:hover { color: var(--pri-d, #115293); text-decoration: underline; } .ds-nav > a:focus-visible { outline: 3px solid var(--pri, #1976d2); outline-offset: 4px; } @media (max-width: 1000px) { .ds-nav { gap: 18px; } } @media (max-width: 820px) { .ds-nav { flex-direction: column; align-items: stretch; gap: 4px; } .ds-nav > a { padding: 8px; } }"
+    },
+    {
+      "name": "Mensagem de desenvolvimento",
+      "kind": "chip",
+      "refersTo": "chip-development",
+      "description": "Rótulo informativo de disponibilidade; sem comportamento de botão.",
+      "html": "<span class=\"ds-development\">Em desenvolvimento</span>",
+      "css": ".ds-development { display: inline-block; padding: 4px 12px; color: var(--pri-d, #115293); background: var(--pri-bg, #e8f1fb); border-radius: 99px; font: 500 0.75rem/1.6 var(--font-sans, 'IBM Plex Sans', sans-serif); }"
+    },
+    {
+      "name": "Estado do chamado",
+      "kind": "chip",
+      "description": "Estado amigável na demonstração; texto e par semântico de cores.",
+      "html": "<span class=\"ds-ticket-status\">Em atendimento</span>",
+      "css": ".ds-ticket-status { display: inline-block; padding: 3px 8px; border-radius: 5px; white-space: nowrap; background: var(--ora-bg, #fff1e2); color: var(--ora-t, #9a4200); font: 400 0.875rem/1.6 var(--font-sans, 'IBM Plex Sans', sans-serif); }"
+    },
+    {
+      "name": "Cartão de perfil",
+      "kind": "card",
+      "refersTo": "card-role",
+      "description": "Perfil, ação e contexto em uma superfície plana.",
+      "html": "<article class=\"ds-role\"><h3>Gestor</h3><p class=\"ds-role-action\">Organiza e acompanha.</p><p class=\"ds-role-description\">Configura contratos, distribui chamados e consulta prazos, relatórios e histórico.</p></article>",
+      "css": ".ds-role { background: var(--bg, #f8f9fa); padding: 28px; border-radius: var(--radius, 12px); font: 400 1rem/1.6 var(--font-sans, 'IBM Plex Sans', sans-serif); } .ds-role h3 { margin: 0; color: var(--pri-d, #115293); font-size: 1rem; font-weight: 600; line-height: 1.35; text-wrap: balance; } .ds-role-action { text-wrap: pretty; overflow-wrap: anywhere; margin: 14px 0 0; font-size: 1.375rem; line-height: 1.3; font-weight: 600; color: var(--navy, #0b2545); } .ds-role-description { text-wrap: pretty; overflow-wrap: anywhere; margin: 16px 0 0; color: var(--ink2, #4a5260); } @media (max-width: 820px) { .ds-role { padding: 20px; } }"
+    },
+    {
+      "name": "Três prazos do SLA",
+      "kind": "custom",
+      "description": "Recorte semântico da demonstração, com definição do SLA, explicações dos prazos, estados e duração monoespaçada. Dados fictícios.",
+      "html": "<section class=\"ds-sla\" aria-labelledby=\"ds-sla-title\"><h3 id=\"ds-sla-title\">Prazos do SLA</h3><p class=\"ds-sla-explanation\">SLA é o acordo de nível de serviço: os compromissos de prazo definidos no contrato.</p><dl><div class=\"ds-sla-row\"><dt><span class=\"ds-sla-check\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"m5 12 4 4L19 6\"></path></svg></span><span>Resposta<small>Primeiro posicionamento da prestadora.</small></span></dt><dd class=\"ds-sla-fulfilled\">Cumprido</dd></div><div class=\"ds-sla-row\"><dt><span class=\"ds-sla-check\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"m5 12 4 4L19 6\"></path></svg></span><span>Atendimento em campo<small>Início do atendimento técnico no local.</small></span></dt><dd class=\"ds-sla-fulfilled\">Cumprido</dd></div><div class=\"ds-sla-row\"><dt><svg class=\"ds-sla-clock\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0\"></path><path d=\"M12 6v6l4 3\"></path></svg><span>Resolução<small>Apresentação da solução para o problema.</small></span></dt><dd class=\"ds-sla-remaining\">Restam <span class=\"ds-sla-mono\">6h20</span></dd></div></dl><p class=\"ds-sla-caption\">Demonstração ilustrativa · dados fictícios</p></section>",
+      "css": ".ds-sla { color: var(--ink, #1c2025); background: var(--sf, #fff); font: 400 1rem/1.6 var(--font-sans, 'IBM Plex Sans', sans-serif); } .ds-sla h3 { margin: 0; color: var(--navy, #0b2545); font-size: 0.875rem; font-weight: 600; line-height: 1.5; } .ds-sla dl { margin: 10px 0 0; border: 1px solid var(--line, #e3e6ea); border-radius: var(--radius-control, 8px); } .ds-sla-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px; } .ds-sla-row + .ds-sla-row { border-top: 1px solid var(--line, #e3e6ea); } .ds-sla dt { display: flex; align-items: start; min-width: 0; gap: 10px; font-size: 0.875rem; color: var(--navy, #0b2545); } .ds-sla dd { margin: 0; border-radius: 4px; padding: 3px 8px; font-size: 0.875rem; white-space: nowrap; } .ds-sla-fulfilled { background: var(--grn-bg, #e8f5e9); color: var(--grn-t, #1f6023); } .ds-sla-remaining { background: var(--pri-bg, #e8f1fb); color: var(--pri-d, #115293); } .ds-sla-check { margin-top: 2px; width: 20px; height: 20px; border-radius: 50%; background: var(--grn, #2e7d32); color: var(--sf, #fff); display: grid; place-items: center; flex: 0 0 auto; } .ds-sla-check svg { width: 14px; height: 14px; } .ds-sla-clock { margin-top: 2px; flex: 0 0 auto; color: var(--pri, #1976d2); } .ds-sla-mono { font-family: var(--font-mono, 'IBM Plex Mono', monospace); font-weight: 500; font-variant-numeric: tabular-nums; } .ds-sla-caption { margin: 10px 0 0; color: var(--ink3, #667080); font-size: 0.75rem; text-align: right; } @media (max-width: 600px) { .ds-sla-row { padding: 10px 8px; } .ds-sla dt { gap: 7px; } } .ds-sla small { display: block; margin-top: 2px; font-size: 0.75rem; font-weight: 400; color: var(--ink3, #667080); } .ds-sla-explanation { margin: 8px 0 0; font-size: 0.75rem; line-height: 1.6; color: var(--ink2, #4a5260); } @media (max-width: 400px) { .ds-sla-row { flex-direction: column; align-items: start; gap: 8px; } .ds-sla dd { margin-left: 27px; } }"
+    },
+    {
+      "name": "Pergunta frequente",
+      "kind": "custom",
+      "description": "Disclosure nativo, operável sem framework; foco visível e símbolo que acompanha o estado.",
+      "html": "<details class=\"ds-faq\"><summary>O sistema já está disponível?<svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M12 5v14M5 12h14\"></path></svg></summary><p>Ainda não. O FlowSLA está em desenvolvimento como parte do Projeto Integrador 2026.2. Esta página apresenta a proposta e exemplos ilustrativos; o acesso ao sistema ainda não está disponível.</p></details>",
+      "css": ".ds-faq { border-top: 1px solid var(--line, #e3e6ea); border-bottom: 1px solid var(--line, #e3e6ea); font: 400 1rem/1.6 var(--font-sans, 'IBM Plex Sans', sans-serif); } .ds-faq summary { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 72px; padding: 20px 4px; list-style: none; color: var(--navy, #0b2545); font-size: 1rem; font-weight: 600; line-height: 1.5; cursor: pointer; } .ds-faq summary::-webkit-details-marker { display: none; } .ds-faq summary:hover { color: var(--pri-d, #115293); } .ds-faq summary:focus-visible { outline: 3px solid var(--pri, #1976d2); outline-offset: 4px; } .ds-faq summary svg { flex: 0 0 auto; width: 18px; height: 18px; color: var(--pri, #1976d2); transition: transform var(--motion-state, 180ms) var(--ease-out, cubic-bezier(.16, 1, .3, 1)); } .ds-faq[open] summary svg { transform: rotate(45deg); } .ds-faq > p { margin: 0; max-width: 65ch; line-height: 1.65; text-wrap: pretty; overflow-wrap: anywhere; color: var(--ink2, #4a5260); padding: 0 32px 24px 4px; } @media (max-width: 600px) { .ds-faq summary { font-size: 1rem; } } @media (prefers-reduced-motion: reduce) { .ds-faq summary svg { transition: none; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Clareza operacional",
+    "overview": "O FlowSLA usa superfícies claras, azul de ação e títulos em azul-marinho para tornar prazos, atendimento e comprovação fáceis de relacionar. IBM Plex Sans organiza a leitura; IBM Plex Mono distingue números, horários e identificadores. A linguagem é direta, com informação concreta e ornamentação contida.\n\nA apresentação pública combina espaço entre seções com uma demonstração de produto mais densa. As cores de estado acompanham rótulos legíveis, e os exemplos e a disponibilidade atual são identificados no próprio conteúdo.",
+    "keyCharacteristics": [
+      "Superfícies claras e contraste entre títulos, texto e metadados.",
+      "Azul para ações e navegação; cores semânticas acompanhadas de texto.",
+      "Números e identificadores em IBM Plex Mono.",
+      "Cantos discretos, divisórias finas e sombras reservadas.",
+      "Conteúdo responsivo e demonstrações identificadas como ilustrativas."
+    ],
+    "rules": [],
+    "dos": [
+      "**Do** usar os tokens existentes e manter IBM Plex Sans e IBM Plex Mono nos papéis definidos.",
+      "**Do** acompanhar estados de rótulos legíveis e distinguir ação de informação.",
+      "**Do** manter foco visível, navegação por teclado e redução de movimento.",
+      "**Do** identificar demonstrações e dados fictícios junto do conteúdo e comunicar a disponibilidade atual.",
+      "**Do** preservar leitura e ordem do conteúdo quando as colunas empilharem."
+    ],
+    "donts": [
+      "**Don't** comunicar estado apenas por cor.",
+      "**Don't** usar os metadados compactos do mockup como tamanho padrão de leitura.",
+      "**Don't** transformar exemplos ilustrativos em prova de uso real ou disponibilidade do sistema.",
+      "**Don't** aplicar sombra de diálogo a todos os cartões."
+    ]
+  }
+}

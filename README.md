@@ -1,59 +1,56 @@
-# Frontend
+# FlowSLA — frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.3.
+Landing de apresentação do FlowSLA, Projeto Integrador 2026.2, construída com Angular 21. A rota `/` apresenta a plataforma em desenvolvimento; todos os botões de acesso abrem um aviso de indisponibilidade. Os dados e imagens da demonstração são ilustrativos.
 
-## Development server
+## Desenvolvimento
 
-To start a local development server, run:
-
-```bash
-ng serve
+```sh
+npm install
+npm start
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Abra http://localhost:4200/. Se a porta já estiver ocupada, use `npm start -- --port 4300`.
 
-## Code scaffolding
+## Build e testes
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```sh
+npm run build
+npm test -- --watch=false
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+O build de produção gera os arquivos em `dist/frontend` e pré-renderiza a rota inicial. A configuração existente de hidratação com repetição de eventos foi preservada.
 
-```bash
-ng generate --help
+Para testar o servidor de produção no PowerShell:
+
+```powershell
+$env:PORT = '4300'
+$env:NG_ALLOWED_HOSTS = 'localhost,127.0.0.1'
+npm run serve:ssr:frontend
 ```
 
-## Building
+Abra http://localhost:4300/. O Angular exige uma lista explícita de hosts para servir a aplicação pelo motor SSR; a variável acima configura somente esta execução local. Na implantação, informe os domínios efetivamente usados em `NG_ALLOWED_HOSTS`. Consulte a [documentação de hosts permitidos do Angular](https://angular.dev/best-practices/security#configuring-allowed-hosts).
 
-To build the project run:
+## Organização
 
-```bash
-ng build
+- `src/app/landing/`: apresentação, mockup, plataforma, FAQ, ícones e diálogo.
+- `src/styles.css`: tokens, fontes locais, controles compartilhados e redução de movimento.
+- `PRODUCT.md`: contexto confirmado e limites da entrega.
+- `DESIGN.md`: direção visual implementada, baseada na opção A aprovada.
+- `docs/DESIGN_SYSTEM.md`: guia mais amplo do projeto, preservado.
+- `public/fonts/`: IBM Plex Sans e Mono, com licença OFL.
+- `public/images/`: demonstração fotográfica gerada e identificada como ilustrativa.
+
+Não há autenticação, API ou coleta de contatos nesta entrega.
+
+## Validação da landing
+
+Build de produção e dois testes unitários aprovados. A revisão em Chrome verificou larguras de 320 a 1536 px, menu móvel, âncoras, seis perguntas do FAQ por teclado, três acionadores do diálogo, Escape, Entendi, ciclo de Tab e retorno de foco. A análise automática axe não encontrou violações nos tamanhos desktop, celular e 1536 px.
+
+Capturas e resultados estão em `.impeccable/review/`. Para repetir a verificação isolada, com Chrome instalado e o servidor de produção na porta 4300:
+
+```sh
+npm install --prefix tmp/flowsla-review --no-save playwright @axe-core/playwright
+node .impeccable/review/verify.mjs
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+As ferramentas dessa verificação ficam em `tmp/`, sem alterar as dependências da aplicação.

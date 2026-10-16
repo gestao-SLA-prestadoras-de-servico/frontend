@@ -1,0 +1,13 @@
+{
+  "prompt": "Edit this FlowSLA landing comp while preserving its design, typography, header, headline, clock ruler, six chapter controls, selected Em campo chapter and service story. Make only these corrections: 1. Remove the large maintenance photo from the TOP headline banner; that banner becomes solid graphite across its entire width, with existing readable text and yellow accent. Retain the maintenance photo ONLY within the lower active Em campo chapter, exactly once. Remove the image attribution from the top banner; preserve the attribution under the lower photo. 2. In the left chronological record, under 08:18 Posicionamento, replace the incorrect 'Fluxo automático executado.' with 'Gestor registrou a primeira resposta.' 3. In the evidence callout replace 'A imagem comprova a presença do técnico e o início da manutenção.' with 'Evidência vinculada ao chamado e ao atendimento.' Keep all exact clock values, other factual text, controls and geometry unchanged. Preserve 1536×1024, crisp Portuguese text. Do not add anything.",
+  "tool": "OpenAI ImageGen built-in",
+  "approved": false,
+  "scope": "surface-decision",
+  "seed": "d638c715",
+  "optionId": "evidencia",
+  "viewport": {
+    "width": 1536,
+    "height": 1024
+  },
+  "source": "C:\\Users\\fdant\\.codex\\generated_images\\01a11db4-79b3-7c01-951d-1ef34deba717\\exec-8b22e1e4-a7ee-4836-a8da-09686637ec0a.png"
+}

@@ -1,0 +1,13 @@
+{
+  "seed": "d638c715",
+  "scope": "surface",
+  "mode": "persuade",
+  "dealt": [
+    3,
+    4,
+    5
+  ],
+  "approval": "pending",
+  "recoveredFromPreviousRound": true,
+  "codeChangesAuthorized": false
+}
