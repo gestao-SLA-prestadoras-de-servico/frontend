@@ -1,4 +1,4 @@
-# FlowSLA
+# Nivelo
 
 <!-- impeccable:product-schema 1 -->
 
@@ -18,17 +18,21 @@ Organizar chamados, acompanhar os prazos contratuais e reunir evidências dos at
 
 O projeto está em desenvolvimento. O escopo previsto inclui contratos, chamados, três prazos de SLA (resposta, atendimento em campo e resolução), evidências fotográficas, notificações, relatórios e histórico de ações e responsáveis.
 
-A entrega atual é uma landing pública na rota `/` do Angular existente, preservando prerenderização e hidratação. Não inclui autenticação, API, coleta de contatos nem alterações de contratos públicos. Os botões de acesso informam que o sistema ainda não está disponível.
+A entrega atual é uma landing pública na rota `/` do Angular existente, com prerenderização e hidratação com repetição de eventos. Inclui navegação responsiva, menu móvel, seis perguntas frequentes e diálogo de disponibilidade. Não inclui autenticação, API de produto, coleta de contatos ou telas internas operacionais. Os botões de disponibilidade informam que o acesso ao sistema ainda não está disponível.
 
-O uso pelo navegador do celular está previsto; esta entrega não oferece aplicativo nativo ou funcionamento offline.
+O uso da futura plataforma pelo navegador do celular está previsto; esta entrega não oferece aplicativo nativo ou funcionamento offline. Os dados, estados, horários e imagens do exemplo de chamado são ilustrativos.
 
 ## Brand Commitments
 
-Nome FlowSLA. Português brasileiro, linguagem direta e concreta. Seguir o guia `docs/DESIGN_SYSTEM.md`, com azul #1976D2, azul-marinho #0B2545, superfícies claras e IBM Plex Sans e Mono. Identificar o Projeto Integrador 2026.2 no rodapé.
+Nome Nivelo, em substituição a FlowSLA na apresentação atual. Português brasileiro, linguagem direta e concreta. Usar a identidade aprovada na opção C — Faixa de luz: Manrope, azul-noite, azul corporativo, verde operacional, turquesa do símbolo e superfícies claras. `DESIGN.md` é a fonte da verdade visual implementada, com tokens extraídos do código; `docs/NIVELO_BRAND.md` registra a relação entre os ativos e a prancha.
+
+O símbolo obrigatório é o check em camadas da primeira imagem fornecida pelo usuário, preservado em `public/images/nivelo-symbol.svg`. A prancha orienta tipografia e paleta; o símbolo diferente nela não substitui o primeiro. Identificar o Projeto Integrador 2026.2 no rodapé.
 
 ## Evidence on Hand
 
-O plano confirmado e os documentos `docs/DESIGN_SYSTEM.md` e `docs/Prosposta-Integrador(2).md` descrevem o produto previsto. Os exemplos da landing devem ser identificados como ilustrativos. Não há depoimentos, clientes, certificações, resultados quantitativos, preços ou condições comerciais confirmados para publicação.
+O plano confirmado e `docs/Prosposta-Integrador(2).md` descrevem o produto previsto. `docs/DESIGN_SYSTEM.md` preserva a especificação histórica do protótipo de telas internas ainda não implementadas. A escolha C aprovada e o briefing em `.impeccable/surfaces/src-app-app-html.md` orientam a landing atual.
+
+Não há depoimentos, clientes, certificações, resultados quantitativos, preços ou condições comerciais confirmados para publicação. A apresentação não deve tratar números do comp ou exemplos fictícios como prova de operação real.
 
 ## Product Principles
 
@@ -36,7 +40,8 @@ O plano confirmado e os documentos `docs/DESIGN_SYSTEM.md` e `docs/Prosposta-Int
 - Distinguir funcionalidades previstas de disponibilidade atual.
 - Mostrar os três compromissos de prazo de forma compreensível.
 - Associar evidências e histórico ao atendimento.
+- Preservar os avisos de desenvolvimento e a identificação dos exemplos.
 
 ## Accessibility & Inclusion
 
-Navegação por teclado, foco visível, interface responsiva, conteúdo textual acessível, contraste legível e respeito à preferência por redução de movimento. O diálogo de disponibilidade deve fechar por Escape e devolver o foco ao acionador.
+Navegação por teclado, foco visível, interface responsiva, conteúdo textual acessível, contraste legível e respeito à preferência por redução de movimento. O diálogo de disponibilidade e o menu móvel devem conter o foco, fechar por Escape e devolver o foco ao acionador. A imagem estática mantém a composição quando o shader não executa; conteúdo e ações não dependem de WebGPU.
