@@ -1,0 +1,6 @@
+{
+  "tool": "image_gen",
+  "role": "static shader fallback background",
+  "prompt": "Use case: background-extraction. Asset type: full-bleed website hero static fallback background. Use the attached Nivelo website comp as the visual reference for ONLY its blue and turquoise optical background. Produce a clean standalone landscape 1536x1024 background artwork, without any interface. Remove ALL text, navigation, logo, buttons, status dots, lower white section and its content; reconstruct those areas as uninterrupted dark midnight blue space. Preserve the dominant diagonal sweep of luminous corporate blue light flowing from left-middle toward upper-right, turquoise highlights on the upper right, and very fine vertical fluted-glass refraction across the upper two thirds. The lower quarter must be calm dark navy #10243A, suitable for white text that will be added in HTML. Keep the elegant smooth light refraction, avoid literal architecture or floors. Do not include any lettering, watermark, icons, UI, frames or pale panels. Match the reference palette and diagonal motion, crisp refined optical material, subtle film grain. This is an atmospheric graphic, not a complete webpage.",
+  "reference": ".impeccable/mocks/nivelo-20261016/c-faixa-de-luz.png"
+}
