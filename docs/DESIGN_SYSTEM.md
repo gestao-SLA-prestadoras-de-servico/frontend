@@ -1,9 +1,29 @@
-# FlowSLA — Design System
+# Nivelo — referência histórica do app interno (FlowSLA)
 
-Referência de design patterns da **Plataforma de Gestão de SLA para Prestadoras de Serviço** (Projeto Integrador 2026.2). Documenta o que está desenhado no canvas "FlowSLA — Design da plataforma" (16 telas) para guiar a implementação do frontend.
+Referência de design patterns da **Plataforma de Gestão de SLA para Prestadoras de Serviço** (Projeto Integrador 2026.2). Preserva a especificação do canvas histórico "FlowSLA — Design da plataforma" (16 telas). A identidade pública atual passou a se chamar **Nivelo**.
 
-> **Fonte da verdade visual:** o canvas. Este documento descreve as decisões e os nomes; se os dois divergirem, o canvas manda e este arquivo deve ser atualizado.
+> **Escopo e estado:** as telas internas, os componentes de negócio, as integrações e os fluxos abaixo são uma especificação de protótipo ainda não implementada. A entrega atual é a landing pública `/`, sem autenticação ou API de produto. Exemplos e percentuais do canvas são fictícios.
+>
+> **Fonte da verdade visual atual:** [DESIGN.md](../DESIGN.md), extraído da landing Nivelo após a aprovação de C — Faixa de luz. O canvas histórico continua como referência dos fluxos propostos; sua antiga paleta, fontes, marca e composição da landing não substituem a identidade atual.
 > **Nomes de classe:** os nomes abaixo (`.chip`, `.rc`, `.ck`…) são os usados no protótipo. Podem ser mantidos, ou traduzidos para componentes (Angular) com os mesmos nomes de variantes.
+
+## Identidade e tokens da landing atual
+
+A landing usa Manrope local variável (400–800), o check em camadas fornecido pelo usuário e os tokens de `src/styles.css`. Não há chamada externa de fonte em runtime. Números usam Manrope com algarismos tabulares, sem fonte monoespaçada. O símbolo, a prancha e os ativos estão documentados em [NIVELO_BRAND.md](NIVELO_BRAND.md).
+
+| Papel atual | Token CSS | Valor |
+|---|---|---|
+| Ação principal | `--pri` | `#2864DC` |
+| Hover / texto informativo | `--pri-d` | `#2054BB` |
+| Fundo informativo | `--pri-bg` | `#E9F0FE` |
+| Estrutura / texto principal | `--navy` / `--ink` | `#10243A` |
+| Turquesa / luz | `--turquoise` / `--cyan` | `#03CBD3` / `#90E4F9` |
+| Verde da identidade | `--operational` | `#19A68C` |
+| Superfície / fundo | `--sf` / `--bg` | `#FFFFFF` / `#F4F7FB` |
+| Texto de apoio / metadados | `--ink2` / `--ink3` | `#4C5E73` / `#5E7087` |
+| Prazo cumprido: fundo / texto | `--grn-bg` / `--grn-t` | `#E5F6F0` / `#066C5B` |
+
+O frontmatter de `DESIGN.md` contém o conjunto normativo completo, incluindo bordas, tipografia, raios e componentes. A seção 2 abaixo conserva os valores do protótipo anterior para contexto histórico. Na futura implementação do app interno, os fluxos e a semântica precisam ser conciliados com a identidade atual e validados; não copiar os tokens antigos sobre a landing.
 
 ---
 
@@ -18,11 +38,11 @@ Referência de design patterns da **Plataforma de Gestão de SLA para Prestadora
 
 ---
 
-## 2. Fundamentos (tokens)
+## 2. Fundamentos históricos (tokens do protótipo)
 
 ### 2.1 Cores
 
-Definidas como variáveis CSS em `:root`.
+Propostas como variáveis CSS em `:root` no protótipo histórico. Não representam o `:root` da landing atual.
 
 **Primária e base**
 
@@ -290,9 +310,11 @@ Lista vertical com pontos de 20 px conectados por linha de 2 px. Cor do ponto = 
 
 ### 5.14 Marca e avatar
 
-Marca: quadrado azul 32 px com relógio + "FlowSLA" 18/700. Avatar `.av`: círculo 34 px, iniciais, fundo `--pri-bg`. Usuário inativo: avatar e nome em cinza.
+Marca histórica do protótipo: quadrado azul 32 px com relógio + "FlowSLA" 18/700. A marca atual Nivelo usa o check em camadas e Manrope, conforme `DESIGN.md`; esta descrição não autoriza restaurar o relógio. Avatar proposto `.av`: círculo 34 px, iniciais, fundo `--pri-bg`. Usuário inativo: avatar e nome em cinza.
 
 ### 5.15 Componentes da landing
+
+Descrição histórica, substituída na landing atual pelo sistema em `DESIGN.md` e pelo briefing `.impeccable/surfaces/src-app-app-html.md`.
 
 `.wrap` (largura máx. 1180 px) · `.sec` (96 px de padding vertical) · `.eyebrow` · `.h2` · `.lead` (18 px) · `.lnav` · `.step` + `.no` (número em círculo azul) · `.fi` (ícone em quadrado 44 px). Seções alternam fundo `--bg`, branco e `--navy`. A faixa navy usa cartões brancos e texto `#B8C7DA` (apoio) / `#8DBCEF` (eyebrow).
 
@@ -378,7 +400,7 @@ Filtros (período, cliente, técnico) + exportar PDF/CSV no cabeçalho. KPIs de 
 
 ## 10. Como implementar
 
-1. **Tokens primeiro.** Copiar o bloco `:root` da seção 2.1 como variáveis CSS (ou mapear para o tema do framework). Todos os componentes consomem as variáveis, nunca hex solto.
+1. **Tokens primeiro.** Ao implementar as telas internas, mapear os papéis do protótipo à identidade atual de `DESIGN.md`, preservando a semântica de estado. Não copiar a antiga seção 2.1 sobre o `:root` implementado. Os componentes devem consumir variáveis compartilhadas.
 2. **Componentes por significado, não por cor.** Criar `StatusChip` (prop `estado`), `PriorityChip`, `EvidenceChip`, `SlaClock` (prop `estado` ∈ `correndo | apertando | violado | cumprido`) e `Note` (prop `tom`). A tradução estado → cor mora em um único mapa.
 3. **Fonte de tempo restante.** O frontend não calcula SLA: exibe prazos e estados vindos do back-end, que grava os prazos na abertura.
 4. **Autorização.** O menu e as telas por perfil refletem o papel do token, mas quem decide acesso é o back-end. O sino consome a API do ms-notificacoes; as telas, a do app-principal.
