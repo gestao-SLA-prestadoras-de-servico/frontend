@@ -8,7 +8,7 @@ import { Icon } from './icon';
     <div class="wrap faq-layout">
       <div>
         <h2 id="faq-title">Antes de começar,<br />vale saber.</h2>
-        <p class="lead">As principais dúvidas sobre a proposta do FlowSLA.</p>
+        <p class="lead">As principais dúvidas sobre a proposta da Nivelo.</p>
       </div>
       <div class="questions">
         @for (item of questions; track item.question) {
@@ -94,14 +94,14 @@ import { Icon } from './icon';
 export class Faq {
   protected readonly questions = [
     {
-      question: 'Para quem é o FlowSLA?',
+      question: 'Para quem é a Nivelo?',
       answer:
         'Para prestadoras de serviços técnicos que precisam organizar chamados, acompanhar compromissos de prazo e documentar atendimentos. A plataforma prevê a participação de gestores, técnicos e clientes.',
     },
     {
       question: 'O que significa SLA?',
       answer:
-        'SLA é a sigla para Service Level Agreement, ou acordo de nível de serviço. No FlowSLA, ele define os compromissos de prazo estabelecidos no contrato entre a prestadora e o cliente.',
+        'SLA é a sigla para Service Level Agreement, ou acordo de nível de serviço. Na Nivelo, ele define os compromissos de prazo estabelecidos no contrato entre a prestadora e o cliente.',
     },
     {
       question: 'Quais são os três prazos acompanhados?',
@@ -121,7 +121,7 @@ export class Faq {
     {
       question: 'O sistema já está disponível?',
       answer:
-        'Ainda não. O FlowSLA está em desenvolvimento como parte do Projeto Integrador 2026.2. Esta página apresenta a proposta e exemplos ilustrativos; o acesso ao sistema ainda não está disponível.',
+        'Ainda não. A Nivelo está em desenvolvimento como parte do Projeto Integrador 2026.2. Esta página apresenta a proposta e exemplos ilustrativos; o acesso ao sistema ainda não está disponível.',
     },
   ];
 }

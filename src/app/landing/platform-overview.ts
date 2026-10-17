@@ -1,11 +1,15 @@
 import { Component } from '@angular/core';
+import { ProductPreview } from './product-preview';
+import { Icon, IconName } from './icon';
 
 @Component({
   selector: 'app-platform-overview',
+  imports: [ProductPreview, Icon],
   templateUrl: './platform-overview.html',
   styleUrl: './platform-overview.css',
 })
 export class PlatformOverview {
+  protected readonly featureIcons: IconName[] = ['file', 'camera', 'history'];
   protected readonly features = [
     {
       title: 'Contratos e chamados',

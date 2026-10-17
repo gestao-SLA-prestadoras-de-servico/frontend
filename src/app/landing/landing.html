@@ -1,109 +1,92 @@
-<a class="skip-link button button-primary" href="#conteudo" (click)="followAnchor('conteudo')"
-  >Pular para o conteúdo</a
->
+<a class="skip-link button button-primary" href="#conteudo" (click)="followAnchor('conteudo')">Pular para o conteúdo</a>
 <header class="site-header">
-  <div class="wrap header-inner">
-    <a class="brand" href="#inicio" aria-label="FlowSLA, início" (click)="followAnchor('inicio')"
-      ><app-icon name="clock" />FlowSLA</a
-    >
-    <button
-      #menuButton
-      class="menu-toggle"
-      type="button"
-      [attr.aria-expanded]="menuOpen()"
-      aria-controls="main-navigation"
-      [attr.aria-label]="menuOpen() ? 'Fechar menu' : 'Abrir menu'"
-      (click)="menuOpen.set(!menuOpen())"
-    >
-      <app-icon [name]="menuOpen() ? 'close' : 'menu'" />
-    </button>
-    <nav id="main-navigation" aria-label="Navegação principal" [class.is-open]="menuOpen()">
+  <div class="header-inner">
+    <a class="brand" href="#inicio" aria-label="Nivelo, início" (click)="followAnchor('inicio')">
+      <img src="images/nivelo-symbol.svg" alt="" width="35" height="28" />
+      <span class="brand-name">NIVELO<small>GESTÃO DE SLA</small></span>
+    </a>
+    <nav class="desktop-navigation" aria-label="Navegação principal">
       <a class="nav-link" href="#beneficios" (click)="followAnchor('beneficios')">Benefícios</a>
-      <a class="nav-link" href="#como-funciona" (click)="followAnchor('como-funciona')"
-        >Como funciona</a
-      >
+      <a class="nav-link" href="#como-funciona" (click)="followAnchor('como-funciona')">Como funciona</a>
+      <a class="nav-link" href="#plataforma" (click)="followAnchor('plataforma')">Plataforma</a>
       <a class="nav-link" href="#faq" (click)="followAnchor('faq')">FAQ</a>
-      <a
-        class="button button-primary header-access"
-        href="#plataforma"
-        (click)="followAnchor('plataforma')"
-      >
-        Conhecer a plataforma
-      </a>
+      <button #headerAccess class="button button-primary" type="button" (click)="access.open(headerAccess)">
+        <app-action-label label="Disponibilidade" /><app-icon name="arrow" />
+      </button>
     </nav>
+    <button #menuButton class="menu-toggle" type="button" [attr.aria-expanded]="menuOpen()" aria-controls="mobile-menu" aria-haspopup="dialog" aria-label="Abrir menu" (click)="openMenu()">
+      <app-icon name="menu" />
+    </button>
   </div>
 </header>
+<dialog #mobileMenu id="mobile-menu" class="mobile-menu" aria-labelledby="menu-title" (close)="onMenuClosed()" (click)="onMenuBackdrop($event)" (keydown)="keepMenuFocus($event)">
+  <div class="mobile-menu-heading"><h2 id="menu-title">Explore a Nivelo</h2><button class="menu-close" type="button" aria-label="Fechar menu" (click)="closeMenu()"><app-icon name="close" /></button></div>
+  <nav aria-label="Navegação no celular">
+    <a href="#beneficios" autofocus (click)="followAnchor('beneficios')">Benefícios<app-icon name="arrow" /></a>
+    <a href="#como-funciona" (click)="followAnchor('como-funciona')">Como funciona<app-icon name="arrow" /></a>
+    <a href="#plataforma" (click)="followAnchor('plataforma')">Plataforma<app-icon name="arrow" /></a>
+    <a href="#faq" (click)="followAnchor('faq')">Perguntas frequentes<app-icon name="arrow" /></a>
+    <button class="button button-primary" type="button" (click)="openMobileAvailability()"><app-action-label label="Sobre a disponibilidade" /><app-icon name="arrow" /></button>
+  </nav>
+  <p>Em desenvolvimento. Acesso ainda indisponível.</p>
+</dialog>
 <main id="conteudo" tabindex="-1">
-  <section class="hero wrap" id="inicio" tabindex="-1" aria-labelledby="hero-title">
-    <div class="hero-copy">
-      <span class="development">Em desenvolvimento</span>
-      <h1 id="hero-title">Prazos sob controle.<br /><span>Atendimento comprovado.</span></h1>
-      <p class="lead">
-        Centralize chamados, acompanhe os prazos de cada contrato e reúna as evidências do serviço
-        em um só lugar.
-      </p>
-      <div class="hero-actions">
-        <a class="button button-primary" href="#plataforma" (click)="followAnchor('plataforma')"
-          >Conhecer a plataforma</a
-        >
-        <button
-          #heroAccess
-          class="button button-secondary"
-          type="button"
-          (click)="access.open(heroAccess)"
-        >
-          Sobre a disponibilidade
-        </button>
+  <section class="hero" id="inicio" tabindex="-1" aria-labelledby="hero-title">
+    <app-hero-background />
+    <div class="wrap hero-content">
+      <div class="hero-heading">
+        <h1 id="hero-title">Prazos sob controle.<br /><span>Atendimento comprovado.</span></h1>
+        <p class="availability-note"><span aria-hidden="true"></span>Em desenvolvimento · Acesso ainda indisponível.</p>
       </div>
-      <p class="availability-note">Acesso ainda indisponível.</p>
+      <div class="hero-support">
+        <p>Centralize chamados, acompanhe os prazos de cada contrato e reúna as evidências do serviço em um só lugar.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#plataforma" (click)="followAnchor('plataforma')"><app-action-label label="Conhecer a plataforma" /><app-icon name="arrow" /></a>
+          <button #heroAccess class="button button-secondary" type="button" (click)="access.open(heroAccess)"><app-action-label label="Sobre a disponibilidade" /></button>
+        </div>
+      </div>
     </div>
-    <app-product-preview />
   </section>
   <section id="beneficios" class="benefits section" tabindex="-1" aria-labelledby="benefits-title">
     <div class="wrap">
-      <div class="section-intro">
-        <h2 id="benefits-title">
-          Menos conferência manual.<br /><span>Mais clareza para agir.</span>
-        </h2>
-        <p class="lead">
-          Uma plataforma pensada para tirar a informação das conversas dispersas e colocá-la no
-          contexto do atendimento.
-        </p>
+      <div class="benefits-opening">
+        <h2 id="benefits-title">Menos conferência manual.<br /><span>Mais clareza para agir.</span></h2>
+        <div class="deadline-intro">
+          <p>Três compromissos. Um atendimento.</p>
+          <ol>
+            <li><span class="deadline-symbol"><app-icon name="file" /></span><strong>Resposta</strong><span>Primeiro retorno</span></li>
+            <li><span class="deadline-symbol"><app-icon name="truck" /></span><strong>Atendimento em campo</strong><span>Início do serviço</span></li>
+            <li><span class="deadline-symbol"><app-icon name="check" /></span><strong>Resolução</strong><span>Solução apresentada</span></li>
+          </ol>
+          <p class="deadline-contract">Prazos definidos pela política de cada contrato.</p>
+        </div>
       </div>
-      <div class="benefit-grid">
-        @for (benefit of benefits; track benefit.title) {
-          <article class="benefit">
-            <app-icon [name]="benefit.icon" />
-            <div>
-              <p class="problem">{{ benefit.problem }}</p>
+      <div class="benefits-body">
+        <p class="lead">Uma plataforma pensada para tirar a informação das conversas dispersas e colocá-la no contexto do atendimento.</p>
+        <div class="benefit-grid">
+          @for (benefit of benefits; track benefit.title) {
+            <article class="benefit">
+              <app-icon [name]="benefit.icon" />
               <h3>{{ benefit.title }}</h3>
+              <p class="problem">{{ benefit.problem }}</p>
               <p>{{ benefit.description }}</p>
-            </div>
-          </article>
-        }
+            </article>
+          }
+        </div>
       </div>
     </div>
   </section>
-  <section
-    id="como-funciona"
-    class="workflow section"
-    tabindex="-1"
-    aria-labelledby="workflow-title"
-  >
+  <section id="como-funciona" class="workflow section" tabindex="-1" aria-labelledby="workflow-title">
     <div class="wrap">
       <div class="workflow-heading">
-        <h2 id="workflow-title">Do contrato à solução,<br />cada etapa conectada.</h2>
-        <p>
-          Um fluxo previsto para organizar o trabalho de quem gerencia, executa e acompanha o
-          serviço.
-        </p>
+        <h2 id="workflow-title">Do contrato à solução,<br /><span>cada etapa conectada.</span></h2>
+        <p>Um fluxo previsto para organizar o trabalho de quem gerencia, executa e acompanha o serviço.</p>
       </div>
       <ol class="steps">
         @for (step of steps; track step.title; let index = $index) {
           <li>
-            <span class="step-number mono" aria-hidden="true">{{ index + 1 }}</span>
-            <h3>{{ step.title }}</h3>
-            <p>{{ step.description }}</p>
+            <span class="step-number mono" aria-hidden="true">0{{ index + 1 }}</span>
+            <h3>{{ step.title }}</h3><p>{{ step.description }}</p>
           </li>
         }
       </ol>
@@ -113,15 +96,11 @@
   <section class="closing section" aria-labelledby="closing-title">
     <div class="wrap closing-inner">
       <div>
-        <h2 id="closing-title">
-          Mais controle sobre os prazos.<br />Mais contexto em cada atendimento.
-        </h2>
-        <p class="lead">Entenda a proposta do FlowSLA e consulte as principais dúvidas.</p>
+        <h2 id="closing-title">Mais controle sobre os prazos.<br /><span>Mais contexto em cada atendimento.</span></h2>
+        <p class="lead">Entenda a proposta da Nivelo e consulte as principais dúvidas.</p>
       </div>
       <div class="closing-action">
-        <a class="button button-primary" href="#faq" (click)="followAnchor('faq')">
-          Consultar dúvidas<app-icon name="arrow" />
-        </a>
+        <a class="button button-primary" href="#faq" (click)="followAnchor('faq')"><app-action-label label="Consultar dúvidas" /><app-icon name="arrow" /></a>
         <p>Projeto em desenvolvimento.<br />Acesso ainda indisponível.</p>
       </div>
     </div>
@@ -129,18 +108,13 @@
   <app-faq />
 </main>
 <footer class="site-footer">
-  <div class="wrap footer-inner">
-    <div>
-      <a
-        class="brand"
-        href="#inicio"
-        aria-label="FlowSLA, voltar ao início"
-        (click)="followAnchor('inicio')"
-        ><app-icon name="clock" />FlowSLA</a
-      >
+  <div class="wrap">
+    <div class="footer-top">
+      <a class="brand" href="#inicio" aria-label="Nivelo, voltar ao início" (click)="followAnchor('inicio')"><img src="images/nivelo-symbol.svg" alt="" width="50" height="40" /><span class="brand-name">NIVELO<small>GESTÃO DE SLA</small></span></a>
       <p>Chamados, prazos e evidências.<br />Todo o atendimento no mesmo lugar.</p>
+      <a class="footer-back" href="#inicio" (click)="followAnchor('inicio')">Voltar ao início<app-icon name="arrow" /></a>
     </div>
-    <p>Projeto Integrador 2026.2<br /><span>Plataforma em desenvolvimento</span></p>
+    <div class="footer-bottom"><p>Projeto Integrador 2026.2</p><p>Plataforma em desenvolvimento</p></div>
   </div>
 </footer>
 <app-availability-dialog #access />

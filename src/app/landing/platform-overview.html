@@ -1,35 +1,27 @@
 <section id="plataforma" class="section" tabindex="-1" aria-labelledby="platform-title">
   <div class="wrap">
     <div class="platform-heading">
-      <div>
-        <h2 id="platform-title">Um atendimento.<br />Todo o contexto.</h2>
-        <p class="lead">
-          Do acordo com o cliente ao registro do serviço, veja o que o FlowSLA prevê reunir.
-        </p>
-      </div>
+      <div><h2 id="platform-title">Um atendimento.<br /><span>Todo o contexto.</span></h2><p class="lead">Do acordo com o cliente ao registro do serviço, veja o que a Nivelo prevê reunir.</p></div>
       <span class="development">Funcionalidades previstas</span>
     </div>
-    <div class="feature-grid">
-      @for (feature of features; track feature.title) {
-        <article>
-          <h3>{{ feature.title }}</h3>
-          <p>{{ feature.description }}</p>
-        </article>
-      }
+    <div class="platform-showcase">
+      <div class="product-stage">
+        <div class="product-bar"><span class="product-brand"><img src="images/nivelo-symbol.svg" alt="" width="24" height="20" />NIVELO</span><span>Chamados / Visão geral</span></div>
+        <app-product-preview />
+      </div>
+      <div class="feature-list">
+        @for (feature of features; track feature.title; let index = $index) {
+          <article><app-icon [name]="featureIcons[index]" /><h3>{{ feature.title }}</h3><p>{{ feature.description }}</p></article>
+        }
+      </div>
     </div>
     <div class="roles-heading">
-      <h2>Um fluxo em comum.<br />Um papel para cada pessoa.</h2>
-      <p class="lead">
-        Cada perfil terá acesso às informações e ações necessárias para participar do atendimento.
-      </p>
+      <h2>Um fluxo em comum.<br /><span>Um papel para cada pessoa.</span></h2>
+      <p class="lead">Cada perfil terá acesso às informações e ações necessárias para participar do atendimento.</p>
     </div>
     <div class="roles">
       @for (role of roles; track role.name) {
-        <article>
-          <h3>{{ role.name }}</h3>
-          <p class="role-action">{{ role.action }}</p>
-          <p>{{ role.description }}</p>
-        </article>
+        <article><h3>{{ role.name }}</h3><p class="role-action">{{ role.action }}</p><p>{{ role.description }}</p></article>
       }
     </div>
   </div>

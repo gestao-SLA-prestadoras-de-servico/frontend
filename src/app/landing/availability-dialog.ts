@@ -1,9 +1,10 @@
 import { Component, ElementRef, viewChild } from '@angular/core';
 import { Icon } from './icon';
+import { ActionLabel } from './action-label';
 
 @Component({
   selector: 'app-availability-dialog',
-  imports: [Icon],
+  imports: [Icon, ActionLabel],
   template: `
     <dialog
       #dialog
@@ -16,12 +17,12 @@ import { Icon } from './icon';
         <app-icon name="close" />
       </button>
       <app-icon class="dialog-symbol" name="clock" />
-      <h2 id="availability-title">Estamos construindo o FlowSLA</h2>
+      <h2 id="availability-title">Estamos construindo a Nivelo</h2>
       <p id="availability-description">
-        O FlowSLA está em desenvolvimento. O acesso ao sistema ainda não está disponível.
+        A Nivelo está em desenvolvimento. O acesso ao sistema ainda não está disponível.
       </p>
       <button class="button button-primary" type="button" autofocus (click)="close()">
-        Entendi
+        <app-action-label label="Entendi" />
       </button>
     </dialog>
   `,

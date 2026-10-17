@@ -1,22 +1,25 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { afterNextRender, Component, DestroyRef, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { AvailabilityDialog } from './availability-dialog';
 import { Icon, IconName } from './icon';
-import { ProductPreview } from './product-preview';
+import { HeroBackground } from './hero-background';
+import { ActionLabel } from './action-label';
 import { PlatformOverview } from './platform-overview';
 import { Faq } from './faq';
 
 @Component({
   selector: 'app-landing',
-  imports: [AvailabilityDialog, Icon, ProductPreview, PlatformOverview, Faq],
+  imports: [AvailabilityDialog, Icon, HeroBackground, ActionLabel, PlatformOverview, Faq],
   templateUrl: './landing.html',
-  styleUrl: './landing.css',
-  host: { '(document:keydown.escape)': 'closeMenuWithEscape()' },
+  styleUrls: ['./landing.css', './landing-sections.css', './landing-responsive.css'],
 })
 export class Landing {
   private readonly document = inject(DOCUMENT);
   private readonly menuButton = viewChild.required<ElementRef<HTMLButtonElement>>('menuButton');
   private readonly access = viewChild.required(AvailabilityDialog);
+  private readonly mobileMenu = viewChild.required<ElementRef<HTMLDialogElement>>('mobileMenu');
+  private restoreMenuFocus = true;
+  private readonly destroyRef = inject(DestroyRef);
   protected readonly menuOpen = signal(false);
   protected readonly benefits: {
     icon: IconName;
@@ -72,13 +75,49 @@ export class Landing {
     },
   ];
   protected followAnchor(id: string): void {
-    this.menuOpen.set(false);
+    this.closeMenu(false);
     this.document.getElementById(id)?.focus({ preventScroll: true });
   }
-  protected closeMenuWithEscape(): void {
-    if (this.menuOpen() && !this.access().isOpen) {
-      this.menuOpen.set(false);
-      this.menuButton().nativeElement.focus();
-    }
+  constructor() {
+    afterNextRender(() => {
+      if (typeof matchMedia === 'undefined') return;
+      const desktop = matchMedia('(min-width: 901px)');
+      const onResize = () => { if (desktop.matches) this.closeMenu(); };
+      desktop.addEventListener('change', onResize);
+      this.destroyRef.onDestroy(() => desktop.removeEventListener('change', onResize));
+    });
+  }
+  protected openMenu(): void {
+    this.restoreMenuFocus = true;
+    this.mobileMenu().nativeElement.showModal();
+    this.menuOpen.set(true);
+  }
+  protected closeMenu(restoreFocus = true): void {
+    const dialog = this.mobileMenu().nativeElement;
+    if (!dialog.open) return;
+    this.restoreMenuFocus = restoreFocus;
+    dialog.close();
+    this.menuOpen.set(false);
+  }
+  protected onMenuClosed(): void {
+    this.menuOpen.set(false);
+    if (this.restoreMenuFocus) this.menuButton().nativeElement.focus({ preventScroll: true });
+  }
+  protected onMenuBackdrop(event: MouseEvent): void {
+    if (event.target !== this.mobileMenu().nativeElement) return;
+    const rect = this.mobileMenu().nativeElement.getBoundingClientRect();
+    if (event.clientY < rect.top || event.clientX < rect.left || event.clientX > rect.right) this.closeMenu();
+  }
+  protected openMobileAvailability(): void {
+    this.closeMenu(false);
+    this.access().open(this.menuButton().nativeElement);
+  }
+  protected keepMenuFocus(event: KeyboardEvent): void {
+    if (event.key !== 'Tab') return;
+    const items = this.mobileMenu().nativeElement.querySelectorAll<HTMLElement>('a[href], button');
+    const first = items[0];
+    const last = items[items.length - 1];
+    if (event.shiftKey && this.document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && this.document.activeElement === last) { event.preventDefault(); first.focus(); }
   }
 }
