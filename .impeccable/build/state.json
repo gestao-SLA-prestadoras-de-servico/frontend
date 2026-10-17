@@ -1,44 +1,62 @@
 {
   "tool": "build-phase",
   "version": 2,
-  "startedAt": "2026-10-09T21:28:21.983Z",
-  "comp": ".impeccable/mocks/a-clareza.png",
-  "direction": "brief-pinned-flowsla-blue",
+  "startedAt": "2026-10-16T23:39:09.444Z",
+  "comp": ".impeccable/mocks/nivelo-20261016/c-faixa-de-luz.png",
+  "direction": "brief-pinned-nivelo-axion-c3023e52",
   "breakpoint": "1536x1024",
   "artifact": "src/app/app.html",
-  "phase": "spec",
+  "phase": "plates",
   "phases": {
     "comps": {
+      "status": "skipped",
+      "openedAt": null,
+      "closedAt": null,
+      "attempts": 0,
+      "notes": [
+        {
+          "at": "2026-10-16T23:39:09.443Z",
+          "text": "started with an approved comp; the comp round happened before this state (surface round or manual)"
+        }
+      ],
+      "gate": null,
+      "forced": null
+    },
+    "spec": {
       "status": "closed",
-      "openedAt": "2026-10-09T21:28:21.983Z",
-      "closedAt": "2026-10-09T21:57:25.070Z",
+      "openedAt": "2026-10-16T23:39:09.442Z",
+      "closedAt": "2026-10-16T23:48:02.637Z",
       "attempts": 2,
       "notes": [],
       "gate": {
         "ok": true,
         "reasons": [],
-        "summary": "3 comps, 1 approved",
-        "approved": ".impeccable/mocks/a-clareza.png",
-        "at": "2026-10-09T21:57:25.070Z"
+        "summary": "10 regions, 0 plates, 4 text regions measured",
+        "at": "2026-10-16T23:48:02.637Z"
       },
       "forced": null
     },
-    "spec": {
-      "status": "open",
-      "openedAt": "2026-10-09T21:57:25.087Z",
-      "closedAt": null,
-      "attempts": 0,
-      "notes": [],
-      "gate": null,
-      "forced": null
-    },
     "plates": {
-      "status": "pending",
-      "openedAt": null,
+      "status": "open",
+      "openedAt": "2026-10-16T23:48:02.637Z",
       "closedAt": null,
-      "attempts": 0,
-      "notes": [],
-      "gate": null,
+      "attempts": 1,
+      "notes": [
+        {
+          "at": "2026-10-17T00:15:12.719Z",
+          "text": "User approved composition C and the implementation plan. Production build prerenders /, Angular tests 2/2, browser verification six widths without overflow or axe findings, native dialogs/menu/FAQ/keyboard/focus pass, shader and static fallbacks pass. Independent reviewer requested one benefit-label ordering fix, applied. Generic component-review receipt is absent; automatic workflow remains open and is not certified. No receipt is fabricated."
+        },
+        {
+          "at": "2026-10-17T00:17:32.105Z",
+          "text": "Independent reviewer benefit-label fix applied below h3. Production build passed without warnings and prerendered one route. Post-fix browser recaptures passed six widths, axe0, no overflow or JS errors; normal GPU1280x651, DPR2 GPU1280x650, no-adapter initialization failure and no-GPU/reduced static fallbacks pass. Documentation files and sidecar now present. Automatic component-review receipt remains absent, explicitly unc ertified."
+        }
+      ],
+      "gate": {
+        "ok": true,
+        "reasons": [],
+        "summary": "no plates owed",
+        "at": "2026-10-16T23:48:02.722Z"
+      },
       "forced": null
     },
     "hero": {
@@ -87,5 +105,7 @@
       "forced": null
     }
   },
-  "finish": null
+  "finish": null,
+  "sessionId": "nivelo-20261016",
+  "plates": {}
 }
