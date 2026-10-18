@@ -44,4 +44,4 @@ Não há depoimentos, clientes, certificações, resultados quantitativos, preç
 
 ## Accessibility & Inclusion
 
-Navegação por teclado, foco visível, interface responsiva, conteúdo textual acessível, contraste legível e respeito à preferência por redução de movimento. O diálogo de disponibilidade e o menu móvel devem conter o foco, fechar por Escape e devolver o foco ao acionador. A imagem estática mantém a composição quando o shader não executa; conteúdo e ações não dependem de WebGPU.
+Navegação por teclado, foco visível, interface responsiva, conteúdo textual acessível, contraste legível e respeito à preferência por redução de movimento. O diálogo de disponibilidade e o menu móvel devem conter o foco, fechar por Escape e devolver o foco ao acionador. O poster estático mantém a composição quando o vídeo de fundo não pode tocar ou há preferência por movimento reduzido; conteúdo e ações permanecem disponíveis.

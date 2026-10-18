@@ -33,7 +33,8 @@ Abra http://localhost:4301/. `NG_ALLOWED_HOSTS` configura os hosts aceitos nesta
 ## Organização
 
 - `src/app/landing/`: apresentação, chamado ilustrativo, capacidades, FAQ, ícones, menu móvel e diálogo de disponibilidade.
-- `src/app/landing/hero-background.ts`: fundo estático e camada decorativa `shaders/js`, carregada após a hidratação.
+- `src/app/landing/hero-background.ts`: reprodução, acessibilidade e fallback do vídeo da hero após a hidratação.
+- `public/videos/nivelo-hero-loop.mp4`: vídeo de fundo otimizado, sem áudio e com emenda suave para repetição contínua.
 - `src/styles.css`: tokens, Manrope local, controles compartilhados e redução de movimento.
 - `PRODUCT.md`: contexto confirmado e limites da entrega.
 - `DESIGN.md`: fonte da verdade visual atual, extraída do código após a aprovação de C — Faixa de luz.
@@ -48,21 +49,12 @@ Não há autenticação, API de produto ou coleta de contatos nesta entrega. Con
 
 ## Fundo e movimento
 
-A imagem de refração mantém a composição sem depender de WebGPU. O shader usa `shaders/js` 4.0.4 com Swirl, ChromaFlow, FlutedGlass e FilmGrain; é carregado após a hidratação, com telemetria e rastreamento de desempenho desativados. Pausa quando sai da tela ou a aba fica oculta, limita a resolução e é destruído ao desmontar. Movimento reduzido ou falta de WebGPU preservam o fundo estático. Os parâmetros foram adaptados à opção C porque os valores originais do plano não foram fornecidos; consulte `docs/NIVELO_BRAND.md`.
+A hero usa o vídeo fornecido pelo usuário em um player HTML nativo, sem áudio, em repetição contínua e com reprodução inline no celular. O arquivo foi otimizado para H.264, 1280 × 720, 24 fps e 8,5 s (cerca de 1,9 MB). Uma mistura suave de 1,5 s entre o final e o início foi incorporada ao arquivo para evitar corte na volta do loop. O primeiro quadro é o poster `images/nivelo-hero-poster.webp`, usado durante o carregamento, com movimento reduzido, bloqueio de autoplay ou falha de reprodução. O vídeo só recebe a fonte após a hidratação, quando a hero está visível e o movimento é permitido; pausa fora da tela e em aba oculta. Não captura cliques ou toques. Consulte `docs/NIVELO_BRAND.md`.
 
 ## Validação da landing
 
-A validação final da landing, após os ajustes de revisão, passou o build de produção sem avisos, com uma rota pré-renderizada. Os dois testes Angular existentes também passaram. A verificação automatizada final e suas capturas cobrem seis larguras (320, 390, 768, 1024, 1440 e 1536 px), sem violações axe, transbordamento horizontal ou erros JavaScript nos cenários executados.
+A validação anterior da landing passou o build de produção sem avisos, com uma rota pré-renderizada. Os dois testes Angular então existentes também passaram. Sua verificação automatizada e capturas cobrem seis larguras (320, 390, 768, 1024, 1440 e 1536 px), sem violações axe, transbordamento horizontal ou erros JavaScript nos cenários executados.
 
-Menu móvel, diálogo, FAQ por teclado e retorno de foco passaram. Foram confirmados o shader ativo, o fundo estático com movimento reduzido, sem WebGPU e com falha de inicialização do adaptador, além do conteúdo pré-renderizado sem JavaScript. Em DPR 2, o shader ficou pronto com resolução limitada a 1280 × 650. O relatório descreve o escopo coberto; não substitui a revisão visual e manual.
+Na rodada atual, o build de produção passou com uma rota pré-renderizada e os 8 testes Angular passaram. O vídeo foi confirmado em Chrome sem configurações especiais de autoplay, em desktop de 1440 px e celular de 390 px, sem erros JavaScript ou transbordamento horizontal. Duas voltas completas mantiveram os quadros decodificados sem tela preta. Também foram verificados os controles da hero, menu móvel, teclado, pausa fora da tela, retomada, poster com movimento reduzido, bloqueio de autoplay e conteúdo SSR sem JavaScript. O cenário inicial de movimento reduzido não baixou o MP4. Os testes do componente cobrem reprodução, visibilidade, preferências, falha de mídia e liberação de recursos.
 
-O registro dessa rodada está em `.impeccable/review/nivelo-verification.json`. Regenerar o relatório após mudanças que afetem esses cenários. O README registra os testes executados e não declara conclusão automática das etapas ou aprovações do fluxo Impeccable.
-
-Para repetir a verificação com Chrome instalado e o servidor de produção na porta 4301:
-
-```sh
-npm install --prefix tmp/flowsla-review --no-save playwright @axe-core/playwright
-node tmp/nivelo-verify.mjs
-```
-
-As ferramentas ficam em `tmp/`, sem alterar as dependências da aplicação. O nome do diretório auxiliar é histórico; o script atual verifica Nivelo. Capturas e relatórios ficam em `.impeccable/review/`.
+O relatório da landing original permanece em `.impeccable/review/nivelo-verification.json` como registro histórico. Os registros do efeito WebGL anterior ficam em `tmp/hero-reference/`. A preparação e a verificação do vídeo atual ficam em `tmp/hero-video/`, incluindo `encoding-report.json`, `verification.json`, `seam-sheet.jpg`, `desktop.png` e `mobile.png`. As ferramentas de inspeção do vídeo e do navegador ficam em `tmp/`, sem alterar as dependências da aplicação.

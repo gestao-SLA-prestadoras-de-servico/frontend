@@ -216,7 +216,7 @@ Até 900 px, a navegação desktop dá lugar ao menu móvel, as principais compo
 
 A página usa principalmente contraste tonal e bordas finas. A cápsula de navegação recebe sombra suave; diálogo e menu móvel usam a sombra de overlay. O exemplo de chamado permanece plano, com borda. O token CSS `shadow-preview` existe, mas não é aplicado à superfície atual.
 
-O hero combina uma imagem estática sem texto com uma camada decorativa `shaders/js`, carregada após a hidratação. A mistura em screen, a máscara e o gradiente escuro preservam o campo de leitura. Preferência por redução de movimento, falta de WebGPU ou falha na inicialização preservam a imagem estática. A instância pausa fora da tela e em aba oculta, limita a resolução e é destruída ao desmontar. Os valores exatos de sombra e movimento estão no sidecar.
+A hero usa o vídeo fornecido pelo usuário como fundo decorativo em um player HTML nativo. O MP4 de 1280 × 720, 24 fps e 8,5 s tem uma mistura suave de 1,5 s entre o final e o início para repetir sem corte. O vídeo fica sem áudio, preenche a área com `object-fit: cover` e mantém o gradiente escuro para leitura. O poster WebP corresponde ao primeiro quadro e permanece visível até a reprodução começar, com movimento reduzido ou quando o vídeo não puder tocar. A reprodução inicia após a hidratação, pausa fora da tela e em aba oculta e libera os recursos ao desmontar. A entrada do vídeo usa uma transição de opacidade de 0,6 s.
 
 ## Shapes
 
