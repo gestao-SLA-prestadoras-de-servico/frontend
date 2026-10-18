@@ -39,7 +39,7 @@
         <p class="availability-note"><span aria-hidden="true"></span>Em desenvolvimento · Acesso ainda indisponível.</p>
       </div>
       <div class="hero-support">
-        <p>Centralize chamados, acompanhe os prazos de cada contrato e reúna as evidências do serviço em um só lugar.</p>
+        <p>Chamados, prazos e evidências em um só lugar para prestadoras de serviços técnicos.</p>
         <div class="hero-actions">
           <a class="button button-primary" href="#plataforma" (click)="followAnchor('plataforma')"><app-action-label label="Conhecer a plataforma" /><app-icon name="arrow" /></a>
           <button #heroAccess class="button button-secondary" type="button" (click)="access.open(heroAccess)"><app-action-label label="Sobre a disponibilidade" /></button>
@@ -62,13 +62,12 @@
         </div>
       </div>
       <div class="benefits-body">
-        <p class="lead">Uma plataforma pensada para tirar a informação das conversas dispersas e colocá-la no contexto do atendimento.</p>
+        <p class="lead">Do contrato à evidência, a informação acompanha o chamado.</p>
         <div class="benefit-grid">
           @for (benefit of benefits; track benefit.title) {
             <article class="benefit">
               <app-icon [name]="benefit.icon" />
               <h3>{{ benefit.title }}</h3>
-              <p class="problem">{{ benefit.problem }}</p>
               <p>{{ benefit.description }}</p>
             </article>
           }
@@ -80,7 +79,7 @@
     <div class="wrap">
       <div class="workflow-heading">
         <h2 id="workflow-title">Do contrato à solução,<br /><span>cada etapa conectada.</span></h2>
-        <p>Um fluxo previsto para organizar o trabalho de quem gerencia, executa e acompanha o serviço.</p>
+        <p>Um fluxo previsto para gestores, técnicos e clientes.</p>
       </div>
       <ol class="steps">
         @for (step of steps; track step.title; let index = $index) {
@@ -97,7 +96,7 @@
     <div class="wrap closing-inner">
       <div>
         <h2 id="closing-title">Mais controle sobre os prazos.<br /><span>Mais contexto em cada atendimento.</span></h2>
-        <p class="lead">Entenda a proposta da Nivelo e consulte as principais dúvidas.</p>
+        <p class="lead">Consulte as dúvidas sobre uso e disponibilidade.</p>
       </div>
       <div class="closing-action">
         <a class="button button-primary" href="#faq" (click)="followAnchor('faq')"><app-action-label label="Consultar dúvidas" /><app-icon name="arrow" /></a>
