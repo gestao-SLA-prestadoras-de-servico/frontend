@@ -33,5 +33,5 @@
 .mobile-menu nav { display: flex; flex-direction: column; }
 .mobile-menu nav > a { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; min-height: 56px; border-top: 1px solid var(--line); font-size: 1.125rem; text-decoration: none; }
 .mobile-menu .button { margin-top: 18px; }
-.mobile-menu > p { color: var(--ink2); font-size: .6875rem; margin-top: 20px; }
+.mobile-menu > p { color: var(--ink2); font-size: .75rem; margin-top: 20px; }
 @keyframes menu-enter { from { transform: translateY(32px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
