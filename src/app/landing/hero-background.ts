@@ -9,7 +9,9 @@ import { afterNextRender, Component, DestroyRef, ElementRef, inject, NgZone, sig
     img, video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
     video { opacity: 0; transition: opacity .6s cubic-bezier(.16, 1, .3, 1); }
     video.is-ready { opacity: 1; }
-    :host::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(4 16 38 / 3%) 22%, rgb(4 16 38 / 18%) 48%, #06162de8 100%); }
+    :host::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(4 16 38 / 3%) 22%, rgb(4 16 38 / 46%) 48%, #06162de8 100%); }
+    @media (max-width: 900px) { :host::after { background: linear-gradient(180deg, rgb(4 16 38 / 3%) 12%, rgb(4 16 38 / 65%) 48%, #06162de8 100%); } }
+    @media (max-width: 900px) and (max-height: 700px) { :host::after { background: linear-gradient(180deg, rgb(4 16 38 / 12%), rgb(4 16 38 / 65%) 22%, rgb(4 16 38 / 78%) 65%, #06162de8 100%); } }
     @media (prefers-reduced-motion: reduce) { video { display: none; transition: none; } }
   `,
 })
