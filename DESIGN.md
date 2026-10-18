@@ -199,7 +199,7 @@ O arquivo variável local oferece pesos de 400 a 800, com `font-display: swap`. 
 - **Headline**: títulos de seção com variações próprias em benefícios, perfis e encerramento. Até 600 px, o título genérico usa `clamp(1.85rem, 7.5vw, 2.5rem)`.
 - **Title**: títulos de grupo; benefícios e capacidades usam a variação de `1.1875rem`.
 - **Body / lead**: leitura principal e aberturas; o lead genérico limita a linha a 65 caracteres e passa a `1rem` até 600 px.
-- **Action / label**: controles e informação de desenvolvimento. Cabeçalho e ações do hero usam variações compactas; o mínimo de toque permanece separado do tamanho da letra.
+- **Action / label**: controles e informação de desenvolvimento. As ações da hero usam 14 px; avisos de desenvolvimento, legendas dos três prazos e metadados da barra do exemplo usam pelo menos 12 px, inclusive no celular. O mínimo de toque permanece separado do tamanho da letra.
 - **Preview body / meta**: conteúdo e metadados do exemplo de chamado, mantidos legíveis quando as colunas empilham.
 
 **The Uma Família Rule.** Usar Manrope para manter a identidade. Não restaurar IBM Plex a partir do protótipo histórico.
@@ -212,11 +212,13 @@ Grupos abertos e divisórias organizam benefícios, capacidades e perfis. A demo
 
 Até 900 px, a navegação desktop dá lugar ao menu móvel, as principais composições empilham e o fluxo passa a duas colunas. Até 600 px, benefícios, fluxo, capacidades, perfis e FAQ passam a uma coluna. Abaixo de 400 px, as linhas de prazo do exemplo empilham o estado sob a descrição. Abaixo de 360 px, as ações do hero se empilham. A composição específica do primeiro viewport e a referência aprovada estão em `.impeccable/surfaces/src-app-app-html.md`.
 
+A altura mínima da hero considera também `100svh`, sem limitar o crescimento necessário ao conteúdo. Em telas de até 700 px de altura, os recuos verticais e os intervalos diminuem para manter título, descrição e ações visíveis. No celular horizontal entre 601 e 900 px de largura e até 500 px de altura, título e apoio ficam lado a lado. A ordem das seções permanece a mesma; benefícios, fluxo e capacidades usam descrições concisas, sem repetir os problemas em uma segunda legenda.
+
 ## Elevation & Depth
 
 A página usa principalmente contraste tonal e bordas finas. A cápsula de navegação recebe sombra suave; diálogo e menu móvel usam a sombra de overlay. O exemplo de chamado permanece plano, com borda. O token CSS `shadow-preview` existe, mas não é aplicado à superfície atual.
 
-A hero usa o vídeo fornecido pelo usuário como fundo decorativo em um player HTML nativo. O MP4 de 1280 × 720, 24 fps e 8,5 s tem uma mistura suave de 1,5 s entre o final e o início para repetir sem corte. O vídeo fica sem áudio, preenche a área com `object-fit: cover` e mantém o gradiente escuro para leitura. O poster WebP corresponde ao primeiro quadro e permanece visível até a reprodução começar, com movimento reduzido ou quando o vídeo não puder tocar. A reprodução inicia após a hidratação, pausa fora da tela e em aba oculta e libera os recursos ao desmontar. A entrada do vídeo usa uma transição de opacidade de 0,6 s.
+A hero usa o vídeo fornecido pelo usuário como fundo decorativo em um player HTML nativo. O MP4 de 1280 × 720, 24 fps e 8,5 s tem uma mistura suave de 1,5 s entre o final e o início para repetir sem corte. O vídeo fica sem áudio, preenche a área com `object-fit: cover` e mantém o gradiente escuro para leitura, reforçado na região do texto no celular e em telas baixas. O poster WebP corresponde ao primeiro quadro e permanece visível até a reprodução começar, com movimento reduzido ou quando o vídeo não puder tocar. A reprodução inicia após a hidratação, pausa fora da tela e em aba oculta e libera os recursos ao desmontar. A entrada do vídeo usa uma transição de opacidade de 0,6 s.
 
 ## Shapes
 
