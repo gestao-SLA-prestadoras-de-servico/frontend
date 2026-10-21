@@ -3,11 +3,11 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "dev": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:frontend": "node dist/frontend/server/server.js",
+    "serve:ssr:frontend": "node dist/frontend/server/server.mjs",
     "e2e": "ng e2e",
     "lint": "ng lint"
   },
@@ -25,7 +25,6 @@
     "@lucide/angular": "^1.58.0",
     "express": "^5.1.0",
     "rxjs": "~7.8.0",
-    "shaders": "^4.0.4",
     "tslib": "^2.3.0",
     "zod": "^4.6.5"
   },
