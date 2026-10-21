@@ -1,60 +1,123 @@
-# Nivelo — frontend
+# FlowSLA - Frontend
 
-Landing pública da Nivelo, Projeto Integrador 2026.2, construída com Angular 21 e Tailwind CSS 4. A rota `/` apresenta a plataforma em desenvolvimento e identifica os dados e imagens do chamado como ilustrativos. Os controles de disponibilidade abrem um aviso; o sistema ainda não oferece acesso operacional.
+Bem-vindo ao repositório de frontend do **FlowSLA** - um sistema para automatizar o controle de prazos, evidências e histórico de atendimento relacionados a SLAs (Service Level Agreements), voltado especialmente para empresas prestadoras de serviços técnicos de pequeno e médio porte.
 
-## Desenvolvimento
+## Qual é o propósito desse repositório?
 
-```sh
+Este repositório é responsável pelo frontend do **FlowSLA**, incluindo a implementação da interface da aplicação, páginas, componentes, fluxos de navegação e demais recursos relacionados à experiência do usuário, além das documentações específicas do frontend.
+
+## Stack
+
+| Ferramenta                                    | Versão |
+| --------------------------------------------- | ------ |
+| [Angular](https://angular.dev/)               | 21.2.0 |
+| [TypeScript](https://www.typescriptlang.org/) | 5.9.2  |
+| [TailwindCSS](https://tailwindcss.com/)       | 4.1.12 |
+| [RxJS](https://rxjs.dev/)                     | 7.8.0  |
+| [Vitest](https://vitest.dev/)                 | 4.0.8  |
+| [Playwright](https://playwright.dev/)         | 1.63.0 |
+| [ESLint](https://eslint.org/)                 | 10.3.0 |
+
+## Como executar o projeto
+
+> [!IMPORTANT]
+>
+> Requisitos:
+>
+> - Node.js - v20+
+> - npm - v11+
+
+Antes de tudo, instale as dependências com:
+
+```bash
 npm install
-npm start -- --port 4301
 ```
 
-Abra http://localhost:4301/. A porta 4301 evita a instância anterior que pode estar servindo uma versão antiga na porta 4300. Execute apenas um servidor na porta escolhida.
+### Execução do modo de desenvolvimento:
 
-## Build e testes
+```bash
+npm run start
+```
 
-```sh
+### Execução do modo de produção (build):
+
+Primeiro construa a aplicação:
+
+```bash
 npm run build
-npm test -- --watch=false
 ```
 
-O build de produção gera os arquivos em `dist/frontend` e pré-renderiza a rota inicial. A hidratação com repetição de eventos foi preservada.
+Agora rode com:
 
-Para servir o build de produção no PowerShell, após encerrar o servidor de desenvolvimento na mesma porta:
-
-```powershell
-$env:PORT = '4301'
-$env:NG_ALLOWED_HOSTS = 'localhost,127.0.0.1'
+```bash
 npm run serve:ssr:frontend
 ```
 
-Abra http://localhost:4301/. `NG_ALLOWED_HOSTS` configura os hosts aceitos nesta execução local; na implantação, informe os domínios efetivamente usados. Consulte a [documentação de hosts permitidos do Angular](https://angular.dev/best-practices/security#configuring-allowed-hosts).
+### Como executar os testes
 
-## Organização
+#### Para executar testes unitários, rode
 
-- `src/app/landing/`: apresentação, chamado ilustrativo, capacidades, FAQ, ícones, menu móvel e diálogo de disponibilidade.
-- `src/app/landing/hero-background.ts`: reprodução, acessibilidade e fallback do vídeo da hero após a hidratação.
-- `public/videos/nivelo-hero-loop.mp4`: vídeo de fundo otimizado, sem áudio e com emenda suave para repetição contínua.
-- `src/styles.css`: tokens, Manrope local, controles compartilhados e redução de movimento.
-- `PRODUCT.md`: contexto confirmado e limites da entrega.
-- `DESIGN.md`: fonte da verdade visual atual, extraída do código após a aprovação de C — Faixa de luz.
-- `.impeccable/design.json`: extensão do sistema com estados de componentes, sombras, movimento e breakpoints.
-- `.impeccable/surfaces/src-app-app-html.md`: direção e composição da landing aprovada.
-- `docs/NIVELO_BRAND.md`: símbolo fornecido pelo usuário, paleta da prancha e relação com os ativos atuais.
-- `docs/DESIGN_SYSTEM.md`: especificação histórica do protótipo de telas internas, ainda não implementadas.
-- `public/fonts/`: Manrope local com licença OFL e fontes IBM Plex históricas preservadas.
-- `public/images/`: símbolo vetorial, refração estática sem texto e evidências ilustrativas.
+```bash
+npm run test
+```
 
-Não há autenticação, API de produto ou coleta de contatos nesta entrega. Contratos, chamados operacionais, notificações, relatórios e fluxos por perfil continuam como capacidades previstas.
+#### Para executar testes E2E
 
-## Fundo e movimento
+Se está executando os testes E2E pela primeira vez, instale os navegadores e suas dependências:
 
-A hero usa o vídeo fornecido pelo usuário em um player HTML nativo, sem áudio, em repetição contínua e com reprodução inline no celular. O arquivo foi otimizado para H.264, 1280 × 720, 24 fps e 8,5 s (cerca de 1,9 MB). Uma mistura suave de 1,5 s entre o final e o início foi incorporada ao arquivo para evitar corte na volta do loop. O primeiro quadro é o poster `images/nivelo-hero-poster.webp`, usado durante o carregamento, com movimento reduzido, bloqueio de autoplay ou falha de reprodução. O vídeo só recebe a fonte após a hidratação, quando a hero está visível e o movimento é permitido; pausa fora da tela e em aba oculta. Não captura cliques ou toques. Consulte `docs/NIVELO_BRAND.md`.
+```bash
+npx playwright install --with-deps
+```
 
-## Validação da landing
+Em seguida, execute os testes:
 
-A validação anterior da landing passou o build de produção sem avisos, com uma rota pré-renderizada. Os dois testes Angular então existentes também passaram. Sua verificação automatizada e capturas cobrem seis larguras (320, 390, 768, 1024, 1440 e 1536 px), sem violações axe, transbordamento horizontal ou erros JavaScript nos cenários executados.
+```bash
+npm run e2e
+```
 
-Na rodada atual, o build de produção passou com uma rota pré-renderizada e os 8 testes Angular passaram. O vídeo foi confirmado em Chrome sem configurações especiais de autoplay, em desktop de 1440 px e celular de 390 px, sem erros JavaScript ou transbordamento horizontal. Duas voltas completas mantiveram os quadros decodificados sem tela preta. Também foram verificados os controles da hero, menu móvel, teclado, pausa fora da tela, retomada, poster com movimento reduzido, bloqueio de autoplay e conteúdo SSR sem JavaScript. O cenário inicial de movimento reduzido não baixou o MP4. Os testes do componente cobrem reprodução, visibilidade, preferências, falha de mídia e liberação de recursos.
+## Estrutura de pastas
 
-O relatório da landing original permanece em `.impeccable/review/nivelo-verification.json` como registro histórico. Os registros do efeito WebGL anterior ficam em `tmp/hero-reference/`. A preparação e a verificação do vídeo atual ficam em `tmp/hero-video/`, incluindo `encoding-report.json`, `verification.json`, `seam-sheet.jpg`, `desktop.png` e `mobile.png`. As ferramentas de inspeção do vídeo e do navegador ficam em `tmp/`, sem alterar as dependências da aplicação.
+```bash
+.
+├── angular.json
+├── e2e # Testes End-to-End (E2E)
+│   ├── example.spec.ts
+│   └── tsconfig.json
+├── eslint.config.js # Configuração das regras do ESLint
+├── package.json
+├── package-lock.json
+├── playwright.config.ts # Configuração do Playwright
+├── public
+│   └── favicon.ico
+├── README.md
+├── src # Código-fonte da aplicação
+│   ├── app # Componentes, páginas e lógica da aplicação
+│   ├── index.html
+│   ├── main.server.ts # Ponto de entrada da aplicação no servidor
+│   ├── main.ts # Ponto de entrada da aplicação no navegador
+│   ├── server.ts # Configuração do servidor para SSR
+│   └── styles.css # Estilos globais da aplicação
+├── tsconfig.app.json
+├── tsconfig.json
+└── tsconfig.spec.json
+
+
+```
+
+<!-- ADICIONAR TABELA EXPLICATIVA DA DOCUMENTAÇÃO DO FRONTEND -->
+
+## Repositórios relacionados
+
+| Repositório                                                             | Função             |
+| ----------------------------------------------------------------------- | ------------------ |
+| [docs](https://github.com/gestao-SLA-prestadoras-de-servico/docs)       | Documentação geral |
+| [backend](https://github.com/gestao-SLA-prestadoras-de-servico/backend) | Backend do projeto |
+
+## Autores
+
+|                                                                                                                         |                                                                                                                                |                                                                                                                                     |
+| :---------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: |
+|                <img src="https://github.com/genzo-dev.png" alt="Gabriel Enzo (genzo-dev)" width="160"/>                 |                        <img src="https://github.com/LuisF3L1P3dev.png" alt="Luis Felipe" width="160"/>                         |                                <img src="https://github.com/rangelro.png" alt="Rangel" width="160"/>                                |
+|                                              **Gabriel Enzo (genzo-dev)**                                               |                                                        **Luis Felipe**                                                         |                                                             **Rangel**                                                              |
+|                                           <sub>Fullstack web developer</sub>                                            |                                               <sub>Fullstack web developer</sub>                                               |                                                 <sub>Fullstack web developer</sub>                                                  |
+| <a href="https://www.linkedin.com/in/genzo-dev/">💼 LinkedIn</a> · <a href="https://github.com/genzo-dev">🐙 GitHub</a> | <a href="https://www.linkedin.com/in/luisfelipe15/">💼 LinkedIn</a> · <a href="https://github.com/LuisF3L1P3dev">🐙 GitHub</a> | <a href="https://www.linkedin.com/in/rangel-rocha-779139228/">💼 LinkedIn</a> · <a href="https://github.com/rangelro">🐙 GitHub</a> |
