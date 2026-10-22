@@ -1,4 +1,4 @@
 import { Routes } from '@angular/router';
-import { Landing } from './landing/landing';
+import { Landing } from './features/landing/landing';
 
 export const routes: Routes = [{ path: '', pathMatch: 'full', component: Landing }];
