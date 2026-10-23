@@ -237,26 +237,39 @@ Atualmente, o FlowSLA possui a seguinte estrutura:
 ```bash
 features/
 └── landing/
-    ├── action-label.ts
-    ├── availability-dialog.ts
-    ├── faq.ts
-    ├── hero-background.spec.ts
-    ├── hero-background.ts
-    ├── icon.ts
+    ├── components/
+    │   ├── action-label/
+    │   │   └── action-label.ts
+    │   ├── availability-dialog/
+    │   │   ├── availability-dialog.css
+    │   │   ├── availability-dialog.html
+    │   │   └── availability-dialog.ts
+    │   ├── faq/
+    │   │   ├── faq.css
+    │   │   ├── faq.html
+    │   │   └── faq.ts
+    │   ├── hero-background/
+    │   │   ├── hero-background.css
+    │   │   ├── hero-background.html
+    │   │   ├── hero-background.spec.ts
+    │   │   └── hero-background.ts
+    │   ├── icon/
+    │   │   └── icon.ts
+    │   ├── platform-overview/
+    │   │   ├── platform-overview.css
+    │   │   ├── platform-overview.html
+    │   │   └── platform-overview.ts
+    │   └── product-preview/
+    │       ├── product-preview.css
+    │       ├── product-preview.html
+    │       └── product-preview.ts
     ├── landing.css
     ├── landing.html
-    ├── landing-responsive.css
-    ├── landing-sections.css
-    ├── landing.ts
-    ├── platform-overview.css
-    ├── platform-overview.html
-    ├── platform-overview.ts
-    ├── product-preview.css
-    ├── product-preview.html
-    └── product-preview.ts
+    ├── landing.spec.ts
+    └── landing.ts
 ```
 
-Mas ela será revisada e modificada para atender a estrutura desejada do projeto.
+Os componentes utilizados pela landing ficam agrupados em `components/`, mantendo os arquivos da página no nível principal da feature.
 
 ### 3.1 O que pertence a uma feature?
 
