@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Icon } from './icon';
+import { Icon } from '../icon/icon';
 
 @Component({
   selector: 'app-product-preview',

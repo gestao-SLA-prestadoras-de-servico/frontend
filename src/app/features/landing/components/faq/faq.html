@@ -1,0 +1,16 @@
+<section class="section" id="faq" tabindex="-1" aria-labelledby="faq-title">
+  <div class="wrap faq-layout">
+    <div>
+      <h2 id="faq-title">Antes de começar,<br />vale saber.</h2>
+      <p class="lead">As principais dúvidas sobre a proposta da Nivelo.</p>
+    </div>
+    <div class="questions">
+      @for (item of questions; track item.question) {
+        <details>
+          <summary>{{ item.question }}<app-icon name="plus" /></summary>
+          <p>{{ item.answer }}</p>
+        </details>
+      }
+    </div>
+  </div>
+</section>

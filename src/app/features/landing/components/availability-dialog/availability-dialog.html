@@ -1,0 +1,20 @@
+<dialog
+  #dialog
+  tabindex="-1"
+  aria-labelledby="availability-title"
+  aria-describedby="availability-description"
+  (close)="restoreFocus()"
+  (keydown)="keepFocusInDialog($event)"
+>
+  <button class="close" type="button" aria-label="Fechar aviso" (click)="close()">
+    <app-icon name="close" />
+  </button>
+  <app-icon class="dialog-symbol" name="clock" />
+  <h2 id="availability-title">Estamos construindo a Nivelo</h2>
+  <p id="availability-description">
+    A Nivelo está em desenvolvimento. O acesso ao sistema ainda não está disponível.
+  </p>
+  <button class="button button-primary" type="button" autofocus (click)="close()">
+    <app-action-label label="Entendi" />
+  </button>
+</dialog>

@@ -3,7 +3,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 import { HeroBackground } from './hero-background';
 
-@Component({ imports: [HeroBackground], template: '<section class="hero"><app-hero-background /></section>' })
+@Component({
+  imports: [HeroBackground],
+  template: '<section class="hero"><app-hero-background /></section>',
+})
 class HeroHarness {}
 
 describe('HeroBackground video', () => {
@@ -20,17 +23,20 @@ describe('HeroBackground video', () => {
     motion = Object.assign(new EventTarget(), { matches: false });
     disconnect = vi.fn();
     vi.stubGlobal('matchMedia', () => motion);
-    vi.stubGlobal('IntersectionObserver', class {
-      constructor(callback: (entries: { isIntersecting: boolean }[]) => void) {
-        intersect = (visible) => callback([{ isIntersecting: visible }]);
-      }
-      observe() {}
-      disconnect = disconnect;
-    });
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        constructor(callback: (entries: { isIntersecting: boolean }[]) => void) {
+          intersect = (visible) => callback([{ isIntersecting: visible }]);
+        }
+        observe = vi.fn();
+        disconnect = disconnect;
+      },
+    );
     visibility = vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
     play = vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined);
-    pause = vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {});
-    load = vi.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => {});
+    pause = vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => undefined);
+    load = vi.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => undefined);
   });
 
   afterEach(() => {
@@ -55,7 +61,9 @@ describe('HeroBackground video', () => {
     const video = await render();
     expect(video.hasAttribute('src')).toBe(false);
     expect(play).not.toHaveBeenCalled();
-    expect(fixture.nativeElement.querySelector('img').getAttribute('src')).toBe('images/nivelo-hero-poster.webp');
+    expect(fixture.nativeElement.querySelector('img').getAttribute('src')).toBe(
+      'images/nivelo-hero-poster.webp',
+    );
     intersect(true);
     expect(video.getAttribute('src')).toBe('videos/nivelo-hero-loop.mp4');
     expect(video.muted).toBe(true);

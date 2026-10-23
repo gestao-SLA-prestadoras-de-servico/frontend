@@ -1,17 +1,25 @@
 import { DOCUMENT } from '@angular/common';
-import { afterNextRender, Component, DestroyRef, ElementRef, inject, signal, viewChild } from '@angular/core';
-import { AvailabilityDialog } from './availability-dialog';
-import { Icon, IconName } from './icon';
-import { HeroBackground } from './hero-background';
-import { ActionLabel } from './action-label';
-import { PlatformOverview } from './platform-overview';
-import { Faq } from './faq';
+import {
+  afterNextRender,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
+import { ActionLabel } from './components/action-label/action-label';
+import { AvailabilityDialog } from './components/availability-dialog/availability-dialog';
+import { Faq } from './components/faq/faq';
+import { HeroBackground } from './components/hero-background/hero-background';
+import { Icon, IconName } from './components/icon/icon';
+import { PlatformOverview } from './components/platform-overview/platform-overview';
 
 @Component({
   selector: 'app-landing',
   imports: [AvailabilityDialog, Icon, HeroBackground, ActionLabel, PlatformOverview, Faq],
   templateUrl: './landing.html',
-  styleUrls: ['./landing.css', './landing-sections.css', './landing-responsive.css'],
+  styleUrl: './landing.css',
 })
 export class Landing {
   private readonly document = inject(DOCUMENT);
@@ -29,26 +37,22 @@ export class Landing {
     {
       icon: 'clock',
       title: 'Cada contrato, seus prazos.',
-      description:
-        'Consulte os compromissos definidos para cada cliente.',
+      description: 'Consulte os compromissos definidos para cada cliente.',
     },
     {
       icon: 'camera',
       title: 'Evidências junto do serviço.',
-      description:
-        'Encontre as fotos no contexto do atendimento.',
+      description: 'Encontre as fotos no contexto do atendimento.',
     },
     {
       icon: 'history',
       title: 'Histórico do chamado.',
-      description:
-        'Consulte ações, horários e responsáveis.',
+      description: 'Consulte ações, horários e responsáveis.',
     },
     {
       icon: 'users',
       title: 'Uma visão compartilhada.',
-      description:
-        'Gestor, técnico e cliente com acesso conforme seu papel.',
+      description: 'Gestor, técnico e cliente com acesso conforme seu papel.',
     },
   ];
   protected readonly steps = [
@@ -77,7 +81,9 @@ export class Landing {
     afterNextRender(() => {
       if (typeof matchMedia === 'undefined') return;
       const desktop = matchMedia('(min-width: 901px)');
-      const onResize = () => { if (desktop.matches) this.closeMenu(); };
+      const onResize = () => {
+        if (desktop.matches) this.closeMenu();
+      };
       desktop.addEventListener('change', onResize);
       this.destroyRef.onDestroy(() => desktop.removeEventListener('change', onResize));
     });
@@ -101,7 +107,8 @@ export class Landing {
   protected onMenuBackdrop(event: MouseEvent): void {
     if (event.target !== this.mobileMenu().nativeElement) return;
     const rect = this.mobileMenu().nativeElement.getBoundingClientRect();
-    if (event.clientY < rect.top || event.clientX < rect.left || event.clientX > rect.right) this.closeMenu();
+    if (event.clientY < rect.top || event.clientX < rect.left || event.clientX > rect.right)
+      this.closeMenu();
   }
   protected openMobileAvailability(): void {
     this.closeMenu(false);
@@ -112,7 +119,12 @@ export class Landing {
     const items = this.mobileMenu().nativeElement.querySelectorAll<HTMLElement>('a[href], button');
     const first = items[0];
     const last = items[items.length - 1];
-    if (event.shiftKey && this.document.activeElement === first) { event.preventDefault(); last.focus(); }
-    else if (!event.shiftKey && this.document.activeElement === last) { event.preventDefault(); first.focus(); }
+    if (event.shiftKey && this.document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && this.document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   }
 }

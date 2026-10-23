@@ -1,4 +1,6 @@
-<a class="skip-link button button-primary" href="#conteudo" (click)="followAnchor('conteudo')">Pular para o conteúdo</a>
+<a class="skip-link button button-primary" href="#conteudo" (click)="followAnchor('conteudo')"
+  >Pular para o conteúdo</a
+>
 <header class="site-header">
   <div class="header-inner">
     <a class="brand" href="#inicio" aria-label="Nivelo, início" (click)="followAnchor('inicio')">
@@ -7,26 +9,64 @@
     </a>
     <nav class="desktop-navigation" aria-label="Navegação principal">
       <a class="nav-link" href="#beneficios" (click)="followAnchor('beneficios')">Benefícios</a>
-      <a class="nav-link" href="#como-funciona" (click)="followAnchor('como-funciona')">Como funciona</a>
+      <a class="nav-link" href="#como-funciona" (click)="followAnchor('como-funciona')"
+        >Como funciona</a
+      >
       <a class="nav-link" href="#plataforma" (click)="followAnchor('plataforma')">Plataforma</a>
       <a class="nav-link" href="#faq" (click)="followAnchor('faq')">FAQ</a>
-      <button #headerAccess class="button button-primary" type="button" (click)="access.open(headerAccess)">
+      <button
+        #headerAccess
+        class="button button-primary"
+        type="button"
+        (click)="access.open(headerAccess)"
+      >
         <app-action-label label="Disponibilidade" /><app-icon name="arrow" />
       </button>
     </nav>
-    <button #menuButton class="menu-toggle" type="button" [attr.aria-expanded]="menuOpen()" aria-controls="mobile-menu" aria-haspopup="dialog" aria-label="Abrir menu" (click)="openMenu()">
+    <button
+      #menuButton
+      class="menu-toggle"
+      type="button"
+      [attr.aria-expanded]="menuOpen()"
+      aria-controls="mobile-menu"
+      aria-haspopup="dialog"
+      aria-label="Abrir menu"
+      (click)="openMenu()"
+    >
       <app-icon name="menu" />
     </button>
   </div>
 </header>
-<dialog #mobileMenu id="mobile-menu" class="mobile-menu" aria-labelledby="menu-title" (close)="onMenuClosed()" (click)="onMenuBackdrop($event)" (keydown)="keepMenuFocus($event)">
-  <div class="mobile-menu-heading"><h2 id="menu-title">Explore a Nivelo</h2><button class="menu-close" type="button" aria-label="Fechar menu" (click)="closeMenu()"><app-icon name="close" /></button></div>
+<dialog
+  #mobileMenu
+  id="mobile-menu"
+  class="mobile-menu"
+  tabindex="-1"
+  aria-labelledby="menu-title"
+  (close)="onMenuClosed()"
+  (click)="onMenuBackdrop($event)"
+  (keydown)="keepMenuFocus($event)"
+>
+  <div class="mobile-menu-heading">
+    <h2 id="menu-title">Explore a Nivelo</h2>
+    <button class="menu-close" type="button" aria-label="Fechar menu" (click)="closeMenu()">
+      <app-icon name="close" />
+    </button>
+  </div>
   <nav aria-label="Navegação no celular">
-    <a href="#beneficios" autofocus (click)="followAnchor('beneficios')">Benefícios<app-icon name="arrow" /></a>
-    <a href="#como-funciona" (click)="followAnchor('como-funciona')">Como funciona<app-icon name="arrow" /></a>
-    <a href="#plataforma" (click)="followAnchor('plataforma')">Plataforma<app-icon name="arrow" /></a>
+    <a href="#beneficios" autofocus (click)="followAnchor('beneficios')"
+      >Benefícios<app-icon name="arrow"
+    /></a>
+    <a href="#como-funciona" (click)="followAnchor('como-funciona')"
+      >Como funciona<app-icon name="arrow"
+    /></a>
+    <a href="#plataforma" (click)="followAnchor('plataforma')"
+      >Plataforma<app-icon name="arrow"
+    /></a>
     <a href="#faq" (click)="followAnchor('faq')">Perguntas frequentes<app-icon name="arrow" /></a>
-    <button class="button button-primary" type="button" (click)="openMobileAvailability()"><app-action-label label="Sobre a disponibilidade" /><app-icon name="arrow" /></button>
+    <button class="button button-primary" type="button" (click)="openMobileAvailability()">
+      <app-action-label label="Sobre a disponibilidade" /><app-icon name="arrow" />
+    </button>
   </nav>
   <p>Em desenvolvimento. Acesso ainda indisponível.</p>
 </dialog>
@@ -36,13 +76,24 @@
     <div class="wrap hero-content">
       <div class="hero-heading">
         <h1 id="hero-title">Prazos sob controle.<br /><span>Atendimento comprovado.</span></h1>
-        <p class="availability-note"><span aria-hidden="true"></span>Em desenvolvimento · Acesso ainda indisponível.</p>
+        <p class="availability-note">
+          <span aria-hidden="true"></span>Em desenvolvimento · Acesso ainda indisponível.
+        </p>
       </div>
       <div class="hero-support">
         <p>Chamados, prazos e evidências em um só lugar para prestadoras de serviços técnicos.</p>
         <div class="hero-actions">
-          <a class="button button-primary" href="#plataforma" (click)="followAnchor('plataforma')"><app-action-label label="Conhecer a plataforma" /><app-icon name="arrow" /></a>
-          <button #heroAccess class="button button-secondary" type="button" (click)="access.open(heroAccess)"><app-action-label label="Sobre a disponibilidade" /></button>
+          <a class="button button-primary" href="#plataforma" (click)="followAnchor('plataforma')"
+            ><app-action-label label="Conhecer a plataforma" /><app-icon name="arrow"
+          /></a>
+          <button
+            #heroAccess
+            class="button button-secondary"
+            type="button"
+            (click)="access.open(heroAccess)"
+          >
+            <app-action-label label="Sobre a disponibilidade" />
+          </button>
         </div>
       </div>
     </div>
@@ -50,13 +101,24 @@
   <section id="beneficios" class="benefits section" tabindex="-1" aria-labelledby="benefits-title">
     <div class="wrap">
       <div class="benefits-opening">
-        <h2 id="benefits-title">Menos conferência manual.<br /><span>Mais clareza para agir.</span></h2>
+        <h2 id="benefits-title">
+          Menos conferência manual.<br /><span>Mais clareza para agir.</span>
+        </h2>
         <div class="deadline-intro">
           <p>Três compromissos. Um atendimento.</p>
           <ol>
-            <li><span class="deadline-symbol"><app-icon name="file" /></span><strong>Resposta</strong><span>Primeiro retorno</span></li>
-            <li><span class="deadline-symbol"><app-icon name="truck" /></span><strong>Atendimento em campo</strong><span>Início do serviço</span></li>
-            <li><span class="deadline-symbol"><app-icon name="check" /></span><strong>Resolução</strong><span>Solução apresentada</span></li>
+            <li>
+              <span class="deadline-symbol"><app-icon name="file" /></span><strong>Resposta</strong
+              ><span>Primeiro retorno</span>
+            </li>
+            <li>
+              <span class="deadline-symbol"><app-icon name="truck" /></span
+              ><strong>Atendimento em campo</strong><span>Início do serviço</span>
+            </li>
+            <li>
+              <span class="deadline-symbol"><app-icon name="check" /></span
+              ><strong>Resolução</strong><span>Solução apresentada</span>
+            </li>
           </ol>
           <p class="deadline-contract">Prazos definidos pela política de cada contrato.</p>
         </div>
@@ -75,7 +137,12 @@
       </div>
     </div>
   </section>
-  <section id="como-funciona" class="workflow section" tabindex="-1" aria-labelledby="workflow-title">
+  <section
+    id="como-funciona"
+    class="workflow section"
+    tabindex="-1"
+    aria-labelledby="workflow-title"
+  >
     <div class="wrap">
       <div class="workflow-heading">
         <h2 id="workflow-title">Do contrato à solução,<br /><span>cada etapa conectada.</span></h2>
@@ -85,7 +152,8 @@
         @for (step of steps; track step.title; let index = $index) {
           <li>
             <span class="step-number mono" aria-hidden="true">0{{ index + 1 }}</span>
-            <h3>{{ step.title }}</h3><p>{{ step.description }}</p>
+            <h3>{{ step.title }}</h3>
+            <p>{{ step.description }}</p>
           </li>
         }
       </ol>
@@ -95,11 +163,15 @@
   <section class="closing section" aria-labelledby="closing-title">
     <div class="wrap closing-inner">
       <div>
-        <h2 id="closing-title">Mais controle sobre os prazos.<br /><span>Mais contexto em cada atendimento.</span></h2>
+        <h2 id="closing-title">
+          Mais controle sobre os prazos.<br /><span>Mais contexto em cada atendimento.</span>
+        </h2>
         <p class="lead">Consulte as dúvidas sobre uso e disponibilidade.</p>
       </div>
       <div class="closing-action">
-        <a class="button button-primary" href="#faq" (click)="followAnchor('faq')"><app-action-label label="Consultar dúvidas" /><app-icon name="arrow" /></a>
+        <a class="button button-primary" href="#faq" (click)="followAnchor('faq')"
+          ><app-action-label label="Consultar dúvidas" /><app-icon name="arrow"
+        /></a>
         <p>Projeto em desenvolvimento.<br />Acesso ainda indisponível.</p>
       </div>
     </div>
@@ -109,11 +181,25 @@
 <footer class="site-footer">
   <div class="wrap">
     <div class="footer-top">
-      <a class="brand" href="#inicio" aria-label="Nivelo, voltar ao início" (click)="followAnchor('inicio')"><img src="images/nivelo-symbol.svg" alt="" width="50" height="40" /><span class="brand-name">NIVELO<small>GESTÃO DE SLA</small></span></a>
+      <a
+        class="brand"
+        href="#inicio"
+        aria-label="Nivelo, voltar ao início"
+        (click)="followAnchor('inicio')"
+        ><img src="images/nivelo-symbol.svg" alt="" width="50" height="40" /><span
+          class="brand-name"
+          >NIVELO<small>GESTÃO DE SLA</small></span
+        ></a
+      >
       <p>Chamados, prazos e evidências.<br />Todo o atendimento no mesmo lugar.</p>
-      <a class="footer-back" href="#inicio" (click)="followAnchor('inicio')">Voltar ao início<app-icon name="arrow" /></a>
+      <a class="footer-back" href="#inicio" (click)="followAnchor('inicio')"
+        >Voltar ao início<app-icon name="arrow"
+      /></a>
     </div>
-    <div class="footer-bottom"><p>Projeto Integrador 2026.2</p><p>Plataforma em desenvolvimento</p></div>
+    <div class="footer-bottom">
+      <p>Projeto Integrador 2026.2</p>
+      <p>Plataforma em desenvolvimento</p>
+    </div>
   </div>
 </footer>
 <app-availability-dialog #access />

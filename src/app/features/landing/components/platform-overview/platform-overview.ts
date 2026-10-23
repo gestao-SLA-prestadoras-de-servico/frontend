@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { ProductPreview } from './product-preview';
-import { Icon, IconName } from './icon';
+import { ProductPreview } from '../product-preview/product-preview';
+import { Icon, IconName } from '../icon/icon';
 
 @Component({
   selector: 'app-platform-overview',
@@ -13,32 +13,27 @@ export class PlatformOverview {
   protected readonly features = [
     {
       title: 'Contratos e chamados',
-      description:
-        'Demandas vinculadas ao contrato, com prazos e responsáveis definidos.',
+      description: 'Demandas vinculadas ao contrato, com prazos e responsáveis definidos.',
     },
     {
       title: 'Prazos e evidências',
-      description:
-        'Três prazos acompanhados separadamente, com fotos do serviço no chamado.',
+      description: 'Três prazos acompanhados separadamente, com fotos do serviço no chamado.',
     },
     {
       title: 'Notificações, relatórios e histórico',
-      description:
-        'Avisos dos chamados, relatórios e ações registradas com data e responsável.',
+      description: 'Avisos dos chamados, relatórios e ações registradas com data e responsável.',
     },
   ];
   protected readonly roles = [
     {
       name: 'Gestor',
       action: 'Organiza e acompanha.',
-      description:
-        'Define contratos, distribui demandas e consulta prazos e resultados.',
+      description: 'Define contratos, distribui demandas e consulta prazos e resultados.',
     },
     {
       name: 'Técnico',
       action: 'Executa e comprova.',
-      description:
-        'Atende chamados atribuídos e registra o serviço com fotos.',
+      description: 'Atende chamados atribuídos e registra o serviço com fotos.',
     },
     {
       name: 'Cliente',

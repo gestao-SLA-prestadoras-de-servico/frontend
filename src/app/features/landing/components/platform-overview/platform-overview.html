@@ -1,17 +1,28 @@
 <section id="plataforma" class="section" tabindex="-1" aria-labelledby="platform-title">
   <div class="wrap">
     <div class="platform-heading">
-      <div><h2 id="platform-title">Um atendimento.<br /><span>Todo o contexto.</span></h2><p class="lead">Veja o que está previsto para cada chamado.</p></div>
+      <div>
+        <h2 id="platform-title">Um atendimento.<br /><span>Todo o contexto.</span></h2>
+        <p class="lead">Veja o que está previsto para cada chamado.</p>
+      </div>
       <span class="development">Funcionalidades previstas</span>
     </div>
     <div class="platform-showcase">
       <div class="product-stage">
-        <div class="product-bar"><span class="product-brand"><img src="images/nivelo-symbol.svg" alt="" width="24" height="20" />NIVELO</span><span>Chamados / Visão geral</span></div>
+        <div class="product-bar">
+          <span class="product-brand"
+            ><img src="images/nivelo-symbol.svg" alt="" width="24" height="20" />NIVELO</span
+          ><span>Chamados / Visão geral</span>
+        </div>
         <app-product-preview />
       </div>
       <div class="feature-list">
         @for (feature of features; track feature.title; let index = $index) {
-          <article><app-icon [name]="featureIcons[index]" /><h3>{{ feature.title }}</h3><p>{{ feature.description }}</p></article>
+          <article>
+            <app-icon [name]="featureIcons[index]" />
+            <h3>{{ feature.title }}</h3>
+            <p>{{ feature.description }}</p>
+          </article>
         }
       </div>
     </div>
@@ -21,7 +32,11 @@
     </div>
     <div class="roles">
       @for (role of roles; track role.name) {
-        <article><h3>{{ role.name }}</h3><p class="role-action">{{ role.action }}</p><p>{{ role.description }}</p></article>
+        <article>
+          <h3>{{ role.name }}</h3>
+          <p class="role-action">{{ role.action }}</p>
+          <p>{{ role.description }}</p>
+        </article>
       }
     </div>
   </div>
