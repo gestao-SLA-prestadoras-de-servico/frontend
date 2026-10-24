@@ -11,7 +11,10 @@ import {
 
 @Component({
   selector: 'app-hero-background',
-  host: { '[attr.data-video-state]': "ready() ? 'ready' : 'poster'" },
+  host: {
+    class: 'pointer-events-none absolute inset-0 z-0 isolate overflow-hidden bg-navy',
+    '[attr.data-video-state]': "ready() ? 'ready' : 'poster'",
+  },
   templateUrl: './hero-background.html',
   styleUrl: './hero-background.css',
 })

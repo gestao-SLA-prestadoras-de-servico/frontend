@@ -47,26 +47,28 @@ describe('Landing', () => {
 
   it('should open and close the mobile menu', () => {
     const menu = page.querySelector<HTMLDialogElement>('#mobile-menu');
-    const menuButton = page.querySelector<HTMLButtonElement>('.menu-toggle');
+    const menuButton = page.querySelector<HTMLButtonElement>('[aria-controls="mobile-menu"]');
 
     menuButton?.click();
     fixture.detectChanges();
     expect(menu?.open).toBe(true);
 
-    page.querySelector<HTMLButtonElement>('.menu-close')?.click();
+    page.querySelector<HTMLButtonElement>('[aria-label="Fechar menu"]')?.click();
     fixture.detectChanges();
     expect(menu?.open).toBe(false);
   });
 
   it('should open the availability dialog from the hero and restore focus on close', () => {
-    const trigger = page.querySelector<HTMLButtonElement>('.hero-actions .button-secondary');
+    const trigger = page.querySelector<HTMLButtonElement>('#inicio button');
     const dialog = page.querySelector<HTMLDialogElement>('app-availability-dialog dialog');
 
     trigger?.click();
     fixture.detectChanges();
     expect(dialog?.open).toBe(true);
 
-    page.querySelector<HTMLButtonElement>('app-availability-dialog .close')?.click();
+    page
+      .querySelector<HTMLButtonElement>('app-availability-dialog [aria-label="Fechar aviso"]')
+      ?.click();
     fixture.detectChanges();
     expect(dialog?.open).toBe(false);
     expect(document.activeElement).toBe(trigger);

@@ -5,7 +5,7 @@ import { Icon } from '../icon/icon';
   selector: 'app-faq',
   imports: [Icon],
   templateUrl: './faq.html',
-  styleUrl: './faq.css',
+  host: { class: 'block' },
 })
 export class Faq {
   protected readonly questions = [

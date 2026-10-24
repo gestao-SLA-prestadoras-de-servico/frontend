@@ -5,6 +5,6 @@ import { Icon } from '../icon/icon';
   selector: 'app-product-preview',
   imports: [Icon],
   templateUrl: './product-preview.html',
-  styleUrl: './product-preview.css',
+  host: { class: 'block min-w-0' },
 })
 export class ProductPreview {}

@@ -71,9 +71,9 @@ describe('HeroBackground video', () => {
     expect(video.playsInline).toBe(true);
     expect(video.controls).toBe(false);
     expect(play).toHaveBeenCalledOnce();
-    expect(video.classList.contains('is-ready')).toBe(false);
+    expect(video.parentElement?.getAttribute('data-video-state')).toBe('poster');
     paint(video);
-    expect(video.classList.contains('is-ready')).toBe(true);
+    expect(video.parentElement?.getAttribute('data-video-state')).toBe('ready');
   });
 
   it('avoids loading with reduced motion and restores the poster when that preference changes', async () => {
@@ -85,11 +85,11 @@ describe('HeroBackground video', () => {
     motion.matches = false;
     motion.dispatchEvent(new Event('change'));
     paint(video);
-    expect(video.classList.contains('is-ready')).toBe(true);
+    expect(video.parentElement?.getAttribute('data-video-state')).toBe('ready');
     motion.matches = true;
     motion.dispatchEvent(new Event('change'));
     fixture.detectChanges();
-    expect(video.classList.contains('is-ready')).toBe(false);
+    expect(video.parentElement?.getAttribute('data-video-state')).toBe('poster');
     expect(pause).toHaveBeenCalled();
   });
 
@@ -118,11 +118,11 @@ describe('HeroBackground video', () => {
     intersect(true);
     await Promise.resolve();
     fixture.detectChanges();
-    expect(video.classList.contains('is-ready')).toBe(false);
+    expect(video.parentElement?.getAttribute('data-video-state')).toBe('poster');
     intersect(false);
     intersect(true);
     paint(video);
-    expect(video.classList.contains('is-ready')).toBe(true);
+    expect(video.parentElement?.getAttribute('data-video-state')).toBe('ready');
   });
 
   it('falls back to the poster after a media error', async () => {
@@ -131,7 +131,7 @@ describe('HeroBackground video', () => {
     paint(video);
     video.dispatchEvent(new Event('error'));
     fixture.detectChanges();
-    expect(video.classList.contains('is-ready')).toBe(false);
+    expect(video.parentElement?.getAttribute('data-video-state')).toBe('poster');
     intersect(false);
     intersect(true);
     expect(play).toHaveBeenCalledOnce();

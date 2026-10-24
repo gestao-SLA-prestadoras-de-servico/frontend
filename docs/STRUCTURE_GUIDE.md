@@ -245,7 +245,6 @@ features/
     │   │   ├── availability-dialog.html
     │   │   └── availability-dialog.ts
     │   ├── faq/
-    │   │   ├── faq.css
     │   │   ├── faq.html
     │   │   └── faq.ts
     │   ├── hero-background/
@@ -256,20 +255,19 @@ features/
     │   ├── icon/
     │   │   └── icon.ts
     │   ├── platform-overview/
-    │   │   ├── platform-overview.css
     │   │   ├── platform-overview.html
     │   │   └── platform-overview.ts
     │   └── product-preview/
-    │       ├── product-preview.css
     │       ├── product-preview.html
     │       └── product-preview.ts
-    ├── landing.css
     ├── landing.html
     ├── landing.spec.ts
     └── landing.ts
 ```
 
 Os componentes utilizados pela landing ficam agrupados em `components/`, mantendo os arquivos da página no nível principal da feature.
+
+Na landing, `src/styles.css` expõe os tokens Tailwind 4 em `@theme` e os padrões de documento em `@layer base`. Layout, responsividade, estados e tipografia ficam nos utilitários dos templates e hosts. Apenas `hero-background.css` (gradientes) e `availability-dialog.css` (transições nativas de abertura/fechamento) permanecem como estilos específicos; não é necessário criar CSS para cada componente. Navegação desktop e composições amplas usam `lg` (1024 px), em conjunto com os breakpoints padrão do Tailwind.
 
 ### 3.1 O que pertence a uma feature?
 

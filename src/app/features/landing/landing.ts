@@ -19,7 +19,7 @@ import { PlatformOverview } from './components/platform-overview/platform-overvi
   selector: 'app-landing',
   imports: [AvailabilityDialog, Icon, HeroBackground, ActionLabel, PlatformOverview, Faq],
   templateUrl: './landing.html',
-  styleUrl: './landing.css',
+  host: { class: 'block' },
 })
 export class Landing {
   private readonly document = inject(DOCUMENT);
@@ -80,7 +80,7 @@ export class Landing {
   constructor() {
     afterNextRender(() => {
       if (typeof matchMedia === 'undefined') return;
-      const desktop = matchMedia('(min-width: 901px)');
+      const desktop = matchMedia('(min-width: 1024px)');
       const onResize = () => {
         if (desktop.matches) this.closeMenu();
       };

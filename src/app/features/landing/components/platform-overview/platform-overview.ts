@@ -6,7 +6,7 @@ import { Icon, IconName } from '../icon/icon';
   selector: 'app-platform-overview',
   imports: [ProductPreview, Icon],
   templateUrl: './platform-overview.html',
-  styleUrl: './platform-overview.css',
+  host: { class: 'block' },
 })
 export class PlatformOverview {
   protected readonly featureIcons: IconName[] = ['file', 'camera', 'history'];

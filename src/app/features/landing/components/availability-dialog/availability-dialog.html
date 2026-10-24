@@ -1,20 +1,31 @@
 <dialog
   #dialog
+  class="fixed inset-0 m-auto max-h-[calc(100dvh-40px)] w-[min(460px,calc(100%-40px))] rounded-surface border-0 bg-sf p-dialog-compact text-ink shadow-dialog min-[400px]:p-dialog backdrop:bg-[#0b2545]/55"
   tabindex="-1"
   aria-labelledby="availability-title"
   aria-describedby="availability-description"
   (close)="restoreFocus()"
   (keydown)="keepFocusInDialog($event)"
 >
-  <button class="close" type="button" aria-label="Fechar aviso" (click)="close()">
+  <button
+    class="absolute top-2 right-2 grid size-11 place-items-center rounded-control border-0 bg-transparent text-ink2 transition-colors duration-(--motion-feedback) ease-out hover:bg-bg"
+    type="button"
+    aria-label="Fechar aviso"
+    (click)="close()"
+  >
     <app-icon name="close" />
   </button>
-  <app-icon class="dialog-symbol" name="clock" />
-  <h2 id="availability-title">Estamos construindo a Nivelo</h2>
-  <p id="availability-description">
+  <app-icon class="mb-5 [--icon-size:36px] text-pri" name="clock" />
+  <h2 class="text-[1.75rem]" id="availability-title">Estamos construindo a Nivelo</h2>
+  <p class="mt-4 mb-7 text-ink2" id="availability-description">
     A Nivelo está em desenvolvimento. O acesso ao sistema ainda não está disponível.
   </p>
-  <button class="button button-primary" type="button" autofocus (click)="close()">
+  <button
+    class="group/action inline-flex min-h-[50px] w-full items-center justify-center gap-2.5 rounded-control border border-transparent bg-pri px-button-inline py-button-block text-center text-sm leading-[1.4] font-semibold text-white no-underline transition-colors duration-(--motion-feedback) ease-out hover:bg-pri-d"
+    type="button"
+    autofocus
+    (click)="close()"
+  >
     <app-action-label label="Entendi" />
   </button>
 </dialog>

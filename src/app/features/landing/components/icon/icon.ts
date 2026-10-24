@@ -35,25 +35,15 @@ export type IconName = keyof typeof icons;
 
 @Component({
   selector: 'app-icon',
+  host: { class: 'inline-flex size-[var(--icon-size,22px)] shrink-0' },
   imports: [LucideDynamicIcon],
   template: `<svg
+    class="size-full"
     [lucideIcon]="icons[name()]"
     [strokeWidth]="1.7"
     aria-hidden="true"
     focusable="false"
   ></svg>`,
-  styles: `
-    :host {
-      display: inline-flex;
-      width: 22px;
-      height: 22px;
-      flex: 0 0 auto;
-    }
-    svg {
-      width: 100%;
-      height: 100%;
-    }
-  `,
 })
 export class Icon {
   readonly name = input.required<IconName>();

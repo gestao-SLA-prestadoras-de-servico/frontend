@@ -13,7 +13,7 @@ Este documento é um roteiro executável. Siga as tarefas **na ordem**, uma de c
 
 Objetivos da refatoração:
 
-1. Adotar **Tailwind de verdade** (hoje é dependência decorativa).
+1. Adotar **Tailwind de verdade** (migração da landing concluída na Fase 2).
 2. Criar **camadas reutilizáveis** (`core`, `shared`, `features`).
 3. Organizar a landing em subpastas por responsabilidade.
 4. Reduzir custo cognitivo: achar qualquer peça sabendo apenas a sua responsabilidade.
@@ -23,20 +23,20 @@ Objetivos da refatoração:
 
 ## 2. Diagnóstico do estado atual
 
-Evidências por problema:
+Evidências do diagnóstico original, com a resolução do problema 1 atualizada nesta entrega. Os demais itens não foram reavaliados nesta fase:
 
-| # | Problema | Evidência |
-|---|---|---|
-| 1 | Tailwind não é usado | Único uso é `@import 'tailwindcss';` em `src/styles.css:1`; zero classes utilitárias, zero `@theme`, zero `@apply`. |
-| 2 | Sem componentes reutilizáveis | Não existe `core`/`shared`; primitivos globais vivem em `landing/` (`icon.ts`, `action-label.ts`, `availability-dialog.ts`). |
-| 3 | Pasta `landing/` bagunçada | 17 arquivos soltos misturando página, seções, primitivos e infra. |
-| 4 | Custo cognitivo alto | Conteúdo hardcoded em TS (`landing.ts:24-71`, `faq.ts:95-126`, `platform-overview.ts:12-48`); 3 CSS de página com nomes genéricos (`landing.css`, `landing-sections.css`, `landing-responsive.css`). |
-| 5 | Global misturado com landing | Header/footer/skip-link/ícones/diálogo não são peças de landing, mas moram nela. Sem environments nem camada HTTP/auth. |
-| 6 | Dev mode quebrado | Ver seção 3. |
-| 7 | Estilo de componente inconsistente | Uns usam `styleUrl`, outros têm CSS inline grande (`availability-dialog.ts:29-130`, `faq.ts:23-92`, `hero-background.ts:7-16`, `icon.ts:20`). |
-| 8 | Botão/link sem componente | `.button`, `.button-primary`, `.button-secondary` são classes globais (`src/styles.css:69-73`); o markup se repete em `landing.html:13-14,44-45`. |
-| 9 | Focus trap duplicado | `landing.ts:110-117` e `availability-dialog.ts:145-161` reimplementam o que `<dialog>` nativo já faz. |
-| 10 | Higiene | `playwright-report/` e `test-results/` não estão no `.gitignore`; `shaders` é dependência morta (`package.json:26`); `src/app/app.css` vazio. |
+| #   | Problema                                   | Evidência                                                                                                                                                                                                                                                               |
+| --- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Resolvido: landing migrada para Tailwind 4 | `src/styles.css` define tokens em `@theme` e padrões em `@layer base` com `@apply`; templates e hosts em `features/landing/` usam utilitários, variantes de estado e breakpoints padrão. CSS local restrito aos gradientes do fundo e às transições nativas do diálogo. |
+| 2   | Sem componentes reutilizáveis              | Não existe `core`/`shared`; primitivos globais vivem em `landing/` (`icon.ts`, `action-label.ts`, `availability-dialog.ts`).                                                                                                                                            |
+| 3   | Pasta `landing/` bagunçada                 | 17 arquivos soltos misturando página, seções, primitivos e infra.                                                                                                                                                                                                       |
+| 4   | Custo cognitivo alto                       | Conteúdo hardcoded em TS (`landing.ts:24-71`, `faq.ts:95-126`, `platform-overview.ts:12-48`); 3 CSS de página com nomes genéricos (`landing.css`, `landing-sections.css`, `landing-responsive.css`).                                                                    |
+| 5   | Global misturado com landing               | Header/footer/skip-link/ícones/diálogo não são peças de landing, mas moram nela. Sem environments nem camada HTTP/auth.                                                                                                                                                 |
+| 6   | Dev mode quebrado                          | Ver seção 3.                                                                                                                                                                                                                                                            |
+| 7   | Estilo de componente inconsistente         | Uns usam `styleUrl`, outros têm CSS inline grande (`availability-dialog.ts:29-130`, `faq.ts:23-92`, `hero-background.ts:7-16`, `icon.ts:20`).                                                                                                                           |
+| 8   | Botão/link sem componente                  | `.button`, `.button-primary`, `.button-secondary` são classes globais (`src/styles.css:69-73`); o markup se repete em `landing.html:13-14,44-45`.                                                                                                                       |
+| 9   | Focus trap duplicado                       | `landing.ts:110-117` e `availability-dialog.ts:145-161` reimplementam o que `<dialog>` nativo já faz.                                                                                                                                                                   |
+| 10  | Higiene                                    | `playwright-report/` e `test-results/` não estão no `.gitignore`; `shaders` é dependência morta (`package.json:26`); `src/app/app.css` vazio.                                                                                                                           |
 
 ## 3. Causa do "dev mode dá timeout"
 
@@ -47,6 +47,7 @@ Causa provável (issue oficial do angular-cli): a partir do `@angular/build` **2
 Gatilhos no projeto: quatro componentes com `styles:` inline (tabela item 7).
 
 Mitigações possíveis (resolver na fase 0):
+
 - Eliminar os `styles:` inline.
 
 Contribui também para o acesso: o dev server, sem `options` no target `serve`, libera apenas o host `localhost`; acessos por `127.0.0.1` ou IP de rede caem em "Blocked request".
@@ -212,7 +213,6 @@ git merge origin/develop
 - `angular.json`: manter "analytics": false; restaurar schematicCollections, os targets lint e e2e.
 - `package-lock.json`: não edite à mão. Depois de resolver o package.json, rode npm install e aceite o lock gerado.
 
-
 **4. Reinstale e valide**
 
 ```bash
@@ -239,7 +239,6 @@ Depois abra o PR feature/landing-page → develop e valide os checks.
 - Proteja a develop: exigir PR, review e status checks (lint, unit-tests, e2e-tests, build).
 - Marcar "Require branches to be up to date before merging".
 - Padronizar: toda branch nova sai de origin/develop atualizada, nunca da main.
-
 
 ## 7. Tarefas passo a passo
 
@@ -275,12 +274,14 @@ Legenda de esforço: P = pequeno (≤1h), M = médio (meio dia), G = grande (1 d
 
 ### Fase 2 — Tailwind de verdade
 
-- [ ] **2.1 (M)** Criar `src/styles.css` com `@import 'tailwindcss'` + bloco `@theme` mapeando os tokens (cores, `--font-sans`, `--radius`, `--ease-out`, `--motion-*`) para variáveis do Tailwind.
-- [ ] **2.2 (G)** Migrar `features/landing/landing.*` para utilitários Tailwind onde fizer sentido (layout, grid, espaçamento, tipografia, cores), mantendo CSS semântico apenas nas composições complexas.
-- [ ] **2.3 (M)** Migrar `sections/hero-background` e demais seções para o esquema híbrido.
-- [ ] **2.4 (M)** Migrar `sections/product-preview.*` (CSS denso) preservando fidelidade visual.
-- [ ] **2.5 (P)** Remover CSS global morto após a migração e conferir `budgets` em `angular.json:42-53`.
-- [ ] **2.6 (P)** Validar visualmente em 320/390/768/1024/1440/1536 px e rodar build.
+Concluída mantendo a organização atual de `docs/STRUCTURE_GUIDE.md`: componentes em `features/landing/components/`. Esta entrega resolve o problema 1; não antecipa as extrações e diretivas das outras fases. As durações `--motion-*` permanecem variáveis globais consumidas por utilitários; os demais tokens usam os namespaces de tema do Tailwind.
+
+- [x] **2.1 (M)** Configurar `src/styles.css` com `@import 'tailwindcss'`, `@theme` (cores, fontes, raios, sombras, espaçamentos, tipografia e curva) e `@layer base`.
+- [x] **2.2 (G)** Migrar `features/landing/landing.*` para utilitários Tailwind em layout, grid, espaçamento, tipografia e cores; remover `landing.css`.
+- [x] **2.3 (M)** Migrar `components/hero-background` e demais componentes para o esquema híbrido, preservando gradientes e transições nativas de diálogo em CSS.
+- [x] **2.4 (M)** Migrar `components/product-preview/` preservando a composição, estados e dados ilustrativos.
+- [x] **2.5 (P)** Remover CSS global morto e arquivos CSS esvaziados, seus `styleUrl` e os estilos inline dos ícones; conferir os budgets existentes.
+- [x] **2.6 (P)** Comparar referências visuais em 320/390/768/1024/1440/1536 px, incluindo menu e diálogo, e validar build, lint e testes. Evidências em `docs/LANDING_TAILWIND_VALIDATION.md`.
 
 > **Observação**: Com relação a responsividade, deve ser utilizado as classes do próprio Tailwind para resolver isso (`sm:`,`md:`,`lg:`,`xl:`,`2xl:`), mantendo assim o padrão visual em todas as páginas.
 

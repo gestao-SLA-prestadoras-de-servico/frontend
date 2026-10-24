@@ -154,7 +154,7 @@ A Nivelo conecta prazos, atendimento e comprovação por uma linguagem clara e p
 
 Superfícies claras acolhem a informação mais densa. Divisórias, alinhamentos e texto explícito explicam a relação entre etapas e estados. Refração e movimento criam atmosfera sem carregar o conteúdo: títulos, ações e avisos continuam em HTML, legíveis sobre o fundo estático.
 
-Este arquivo é a fonte da verdade visual da landing implementada. Os tokens foram extraídos de `src/styles.css` e dos componentes em `src/app/landing/`. O documento histórico `docs/DESIGN_SYSTEM.md` descreve a proposta de telas internas ainda não implementadas; ele não substitui estes tokens. A prancha de identidade fixa também o slate de marca, enquanto os textos de apoio atuais usam as variantes legíveis extraídas acima.
+Este arquivo é a fonte da verdade visual da landing implementada. Os tokens estão em `@theme` de `src/styles.css` e os componentes em `src/app/features/landing/components/`. Templates e hosts usam utilitários Tailwind 4; somente gradientes do fundo e transições nativas do diálogo permanecem em CSS específico. O documento histórico `docs/DESIGN_SYSTEM.md` descreve a proposta de telas internas ainda não implementadas; ele não substitui estes tokens. A prancha de identidade fixa também o slate de marca, enquanto os textos de apoio atuais usam as variantes legíveis extraídas acima.
 
 **Key Characteristics:**
 
@@ -166,7 +166,7 @@ Este arquivo é a fonte da verdade visual da landing implementada. Os tokens for
 
 ## Colors
 
-A paleta combina a profundidade do azul-noite com azuis claros de apoio e verde operacional. Os nomes abaixo correspondem às chaves normativas do frontmatter e às variáveis CSS homônimas.
+A paleta combina a profundidade do azul-noite com azuis claros de apoio e verde operacional. Os nomes abaixo correspondem às chaves normativas do frontmatter e às variáveis Tailwind `--color-*`: por exemplo, `pri` corresponde a `--color-pri`, consumido por `bg-pri`, `text-pri` e `border-pri`.
 
 ### Primary
 
@@ -193,12 +193,12 @@ A paleta combina a profundidade do azul-noite com azuis claros de apoio e verde 
 **Display Font:** Manrope, com Arial e sans-serif de fallback.
 **Body Font:** Manrope, na mesma pilha.
 
-O arquivo variável local oferece pesos de 400 a 800, com `font-display: swap`. Não há chamada externa de fonte em runtime. Números e identificadores mantêm Manrope com `font-variant-numeric: tabular-nums`; a classe histórica `mono` não usa uma família monoespaçada.
+O arquivo variável local oferece pesos de 400 a 800, com `font-display: swap`. Não há chamada externa de fonte em runtime. Números e identificadores mantêm Manrope com `tabular-nums` e `font-semibold`; a antiga classe `mono` foi removida. `--font-sans` e `--font-mono` preservam a mesma pilha da marca.
 
-- **Display**: título principal amplo e compacto. A versão padrão recebe ajuste para `4.7vw` até 1200 px; até 900 px usa `display-stacked`, e até 600 px usa `display-mobile`.
-- **Headline**: títulos de seção com variações próprias em benefícios, perfis e encerramento. Até 600 px, o título genérico usa `clamp(1.85rem, 7.5vw, 2.5rem)`.
+- **Display**: título principal amplo e compacto. Usa `display-mobile` como base, `display-stacked` a partir de `sm` (640 px), `4.7vw` a partir de `lg` (1024 px) e `display` em `xl` (1280 px).
+- **Headline**: títulos de seção com variações próprias em benefícios, perfis e encerramento. Abaixo de `sm`, o título genérico usa `clamp(1.85rem, 7.5vw, 2.5rem)`.
 - **Title**: títulos de grupo; benefícios e capacidades usam a variação de `1.1875rem`.
-- **Body / lead**: leitura principal e aberturas; o lead genérico limita a linha a 65 caracteres e passa a `1rem` até 600 px.
+- **Body / lead**: leitura principal e aberturas; o lead genérico limita a linha a 65 caracteres, com `1rem` como base e `1.0625rem` a partir de `sm`.
 - **Action / label**: controles e informação de desenvolvimento. As ações da hero usam 14 px; avisos de desenvolvimento, legendas dos três prazos e metadados da barra do exemplo usam pelo menos 12 px, inclusive no celular. O mínimo de toque permanece separado do tamanho da letra.
 - **Preview body / meta**: conteúdo e metadados do exemplo de chamado, mantidos legíveis quando as colunas empilham.
 
@@ -206,13 +206,13 @@ O arquivo variável local oferece pesos de 400 a 800, com `font-display: swap`. 
 
 ## Layout
 
-A largura de conteúdo é `min(1440px, calc(100% - 112px))`. Os recuos passam a 32 px por lado até 1100 px e a 20 px por lado até 600 px. A separação principal entre seções usa o token fluido `section`.
+A largura de conteúdo tem máximo de 1440 px e recuos de 20 px por lado como base, 32 px a partir de `sm` (640 px) e 56 px a partir de `xl` (1280 px). A separação principal entre seções usa `--spacing-section`, com utilitários como `py-section` e `mt-section`.
 
 Grupos abertos e divisórias organizam benefícios, capacidades e perfis. A demonstração de chamado concentra a densidade dentro de uma superfície própria; textos de contexto permanecem próximos dela. A hierarquia não depende de cartões repetidos em toda a página.
 
-Até 900 px, a navegação desktop dá lugar ao menu móvel, as principais composições empilham e o fluxo passa a duas colunas. Até 600 px, benefícios, fluxo, capacidades, perfis e FAQ passam a uma coluna. Abaixo de 400 px, as linhas de prazo do exemplo empilham o estado sob a descrição. Abaixo de 360 px, as ações do hero se empilham. A composição específica do primeiro viewport e a referência aprovada estão em `.impeccable/surfaces/src-app-app-html.md`.
+A navegação desktop e as composições amplas entram em `lg` (1024 px). O fluxo usa uma coluna como base, duas em `sm` e quatro em `lg`. Benefícios, capacidades, perfis e FAQ usam uma coluna abaixo de `sm`. Abaixo de 400 px, as linhas de prazo do exemplo empilham o estado sob a descrição. Até 360 px, as ações do hero se empilham. Em `2xl` (1536 px), o respiro inferior do hero passa de 32 para 52 px. A composição específica do primeiro viewport e a referência aprovada estão em `.impeccable/surfaces/src-app-app-html.md`.
 
-A altura mínima da hero considera também `100svh`, sem limitar o crescimento necessário ao conteúdo. Em telas de até 700 px de altura, os recuos verticais e os intervalos diminuem para manter título, descrição e ações visíveis. No celular horizontal entre 601 e 900 px de largura e até 500 px de altura, título e apoio ficam lado a lado. A ordem das seções permanece a mesma; benefícios, fluxo e capacidades usam descrições concisas, sem repetir os problemas em uma segunda legenda.
+A altura mínima da hero considera também `100svh`, sem limitar o crescimento necessário ao conteúdo. Em telas de até 700 px de altura, os recuos verticais e os intervalos diminuem para manter título, descrição e ações visíveis. Entre `sm` e `lg`, com até 500 px de altura, título e apoio ficam lado a lado. Esses tratamentos usam variantes arbitrárias de mídia nos templates. A ordem das seções permanece a mesma; benefícios, fluxo e capacidades usam descrições concisas, sem repetir os problemas em uma segunda legenda.
 
 ## Elevation & Depth
 
@@ -244,7 +244,7 @@ O aviso de desenvolvimento é informativo e tem ponto acompanhado de texto. O es
 
 ### Cards and Containers
 
-O chamado ilustrativo usa fundo branco, borda, raio de superfície e padding de 24 px, reduzido para 16 px no celular. Evidências e histórico dividem a área em duas colunas e empilham até 600 px. Perfis e benefícios são grupos abertos com filete superior. Não há campos de formulário nesta entrega.
+O chamado ilustrativo usa fundo branco, borda, raio de superfície e padding de 24 px, reduzido para 16 px abaixo de `sm`. Evidências e histórico dividem a área em duas colunas a partir de `sm`. Perfis e benefícios são grupos abertos com filete superior. Não há campos de formulário nesta entrega.
 
 ### Availability Dialog
 
