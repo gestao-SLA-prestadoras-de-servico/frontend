@@ -1,0 +1,70 @@
+<section id="plataforma" class="py-section" tabindex="-1" aria-labelledby="platform-title">
+  <div
+    class="mx-auto w-[calc(100%-40px)] max-w-[1440px] sm:w-[calc(100%-64px)] xl:w-[calc(100%-112px)]"
+  >
+    <div
+      class="mb-8 flex flex-col items-start gap-5 sm:mb-14 sm:flex-row sm:justify-between sm:gap-8"
+    >
+      <div>
+        <h2 id="platform-title">
+          Um atendimento.<br /><span class="text-pri">Todo o contexto.</span>
+        </h2>
+        <p class="text-base leading-[1.75] text-ink2 sm:text-lead mt-6 max-w-[44ch]">
+          Veja o que está previsto para cada chamado.
+        </p>
+      </div>
+      <span
+        class="inline-flex shrink-0 items-center gap-2 text-xs leading-normal font-semibold text-pri-d before:size-[7px] before:shrink-0 before:rounded-full before:bg-current sm:mt-3.5"
+        >Funcionalidades previstas</span
+      >
+    </div>
+    <div
+      class="grid grid-cols-1 items-center gap-[clamp(32px,5vw,88px)] lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]"
+    >
+      <div class="min-w-0 rounded-surface bg-bg p-2.5 sm:p-4">
+        <div
+          class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-2 pt-1.5 pb-4 text-xs text-ink2 sm:px-3 sm:pt-1 sm:pb-5"
+        >
+          <span class="flex items-center gap-1.5 font-extrabold tracking-[-0.025em] text-navy"
+            ><img
+              class="h-5 w-6"
+              src="images/nivelo-symbol.svg"
+              alt=""
+              width="24"
+              height="20"
+            />NIVELO</span
+          ><span>Chamados / Visão geral</span>
+        </div>
+        <app-product-preview />
+      </div>
+      <div class="grid grid-cols-1 gap-7 sm:grid-cols-3 sm:gap-6 lg:block">
+        @for (feature of features; track feature.title; let index = $index) {
+          <article class="border-t border-line pt-6 sm:pb-6 lg:first:border-t-0 lg:first:pt-0">
+            <app-icon class="mb-5 [--icon-size:26px] text-pri" [name]="featureIcons[index]" />
+            <h3 class="mb-3 text-[1.1875rem]">{{ feature.title }}</h3>
+            <p class="max-w-[47ch] text-sm leading-[1.8] text-ink2">{{ feature.description }}</p>
+          </article>
+        }
+      </div>
+    </div>
+    <div class="mt-section grid grid-cols-1 items-end gap-6 lg:grid-cols-[1.25fr_1fr] lg:gap-16">
+      <h2 class="text-[clamp(1.875rem,3vw,2.875rem)]">
+        Um fluxo em comum.<br /><span class="text-pri">Um papel para cada pessoa.</span>
+      </h2>
+      <p class="max-w-[42ch] text-base leading-[1.75] text-ink2">
+        Informações e ações conforme o papel no atendimento.
+      </p>
+    </div>
+    <div class="mt-8 grid grid-cols-1 gap-7 sm:mt-12 sm:grid-cols-3 sm:gap-6 lg:gap-10">
+      @for (role of roles; track role.name) {
+        <article class="border-t border-line2 pt-6">
+          <h3 class="text-[0.8125rem] font-semibold text-pri-d">{{ role.name }}</h3>
+          <p class="mt-4 text-[1.375rem] leading-[1.35] font-bold tracking-[-0.025em]">
+            {{ role.action }}
+          </p>
+          <p class="mt-4 max-w-[60ch] text-sm text-ink2 sm:max-w-[38ch]">{{ role.description }}</p>
+        </article>
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,47 @@
+@supports (transition-behavior: allow-discrete) {
+  dialog {
+    opacity: 0;
+    transform: scale(0.98);
+    transition:
+      opacity var(--motion-overlay-out) var(--ease-out),
+      transform var(--motion-overlay-out) var(--ease-out),
+      display var(--motion-overlay-out) allow-discrete,
+      overlay var(--motion-overlay-out) allow-discrete;
+  }
+  dialog[open] {
+    opacity: 1;
+    transform: none;
+    transition-duration: var(--motion-overlay-in);
+  }
+  dialog::backdrop {
+    opacity: 0;
+    transition:
+      opacity var(--motion-overlay-out) var(--ease-out),
+      display var(--motion-overlay-out) allow-discrete,
+      overlay var(--motion-overlay-out) allow-discrete;
+  }
+  dialog[open]::backdrop {
+    opacity: 1;
+    transition-duration: var(--motion-overlay-in);
+  }
+  @starting-style {
+    dialog[open] {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+    dialog[open]::backdrop {
+      opacity: 0;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog {
+    transform: none;
+  }
+  @starting-style {
+    dialog[open] {
+      transform: none;
+    }
+  }
+}
