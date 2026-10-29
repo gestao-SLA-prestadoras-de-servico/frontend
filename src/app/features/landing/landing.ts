@@ -14,10 +14,20 @@ import { Faq } from './components/faq/faq';
 import { HeroBackground } from './components/hero-background/hero-background';
 import { Icon, IconName } from './components/icon/icon';
 import { PlatformOverview } from './components/platform-overview/platform-overview';
+import { ButtonPrimary, ButtonSecondary } from '../../shared/ui/button';
 
 @Component({
   selector: 'app-landing',
-  imports: [AvailabilityDialog, Icon, HeroBackground, ActionLabel, PlatformOverview, Faq],
+  imports: [
+    AvailabilityDialog,
+    Icon,
+    HeroBackground,
+    ActionLabel,
+    PlatformOverview,
+    Faq,
+    ButtonPrimary,
+    ButtonSecondary,
+  ],
   templateUrl: './landing.html',
   host: { class: 'block' },
 })

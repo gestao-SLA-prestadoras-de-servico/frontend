@@ -1,10 +1,11 @@
 import { Component, ElementRef, viewChild } from '@angular/core';
 import { ActionLabel } from '../action-label/action-label';
 import { Icon } from '../icon/icon';
+import { ButtonPrimary } from '../../../../shared/ui/button';
 
 @Component({
   selector: 'app-availability-dialog',
-  imports: [Icon, ActionLabel],
+  imports: [Icon, ActionLabel, ButtonPrimary],
   templateUrl: './availability-dialog.html',
   styleUrl: './availability-dialog.css',
 })

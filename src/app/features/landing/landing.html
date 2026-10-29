@@ -1,5 +1,6 @@
 <a
-  class="group/action inline-flex min-h-[50px] items-center justify-center gap-2.5 rounded-control border border-transparent px-button-inline py-button-block text-center text-sm leading-[1.4] font-semibold no-underline transition-colors duration-(--motion-feedback) ease-out bg-pri text-white hover:bg-pri-d fixed top-3 left-4 z-100 -translate-y-[180%] focus:translate-y-0"
+  appButtonPrimary
+  class="min-h-[50px] px-button-inline py-button-block fixed top-3 left-4 z-100 -translate-y-[180%] focus:translate-y-0"
   href="#conteudo"
   (click)="followAnchor('conteudo')"
   >Pular para o conteúdo</a
@@ -50,7 +51,8 @@
       >
       <button
         #headerAccess
-        class="group/action inline-flex items-center justify-center gap-2.5 rounded-control border border-transparent text-center leading-[1.4] font-semibold no-underline transition-colors duration-(--motion-feedback) ease-out bg-pri text-white hover:bg-pri-d min-h-11 px-5 py-[11px] text-xs"
+        appButtonPrimary
+        class="min-h-11 px-5 py-[11px] text-xs"
         type="button"
         (click)="access.open(headerAccess)"
       >
@@ -110,7 +112,8 @@
     /></a>
     <a href="#faq" (click)="followAnchor('faq')">Perguntas frequentes<app-icon name="arrow" /></a>
     <button
-      class="group/action inline-flex min-h-[50px] items-center justify-center gap-2.5 rounded-control border border-transparent px-button-inline py-button-block text-center text-sm leading-[1.4] font-semibold no-underline transition-colors duration-(--motion-feedback) ease-out bg-pri text-white hover:bg-pri-d mt-[18px]"
+      appButtonPrimary
+      class="mt-[18px] min-h-[50px] px-button-inline py-button-block"
       type="button"
       (click)="openMobileAvailability()"
     >
@@ -159,7 +162,8 @@
           class="mt-[22px] flex flex-col flex-wrap gap-2.5 min-[361px]:flex-row sm:mt-6 lg:gap-2 xl:gap-2.5 [@media(max-height:700px)]:mt-[18px] [@media(640px<=width<1024px)_and_(max-height:500px)]:gap-2"
         >
           <a
-            class="group/action inline-flex items-center justify-center gap-2.5 rounded-control border border-transparent py-button-block text-center text-sm leading-[1.4] font-semibold no-underline transition-colors duration-(--motion-feedback) ease-out bg-pri text-white hover:bg-pri-d min-h-12 px-4 whitespace-nowrap sm:min-h-[46px] sm:px-[17px] xl:min-h-[50px]"
+            appButtonPrimary
+            class="min-h-12 px-4 py-button-block whitespace-nowrap sm:min-h-[46px] sm:px-[17px] xl:min-h-[50px]"
             href="#plataforma"
             (click)="followAnchor('plataforma')"
             ><app-action-label label="Conhecer a plataforma" /><app-icon
@@ -168,7 +172,8 @@
           /></a>
           <button
             #heroAccess
-            class="group/action inline-flex items-center justify-center gap-2.5 rounded-control border py-button-block text-center text-sm leading-[1.4] font-semibold no-underline transition-colors duration-(--motion-feedback) ease-out bg-transparent min-h-12 border-[#b0c3dc] px-4 whitespace-nowrap text-white hover:border-pri hover:bg-white/10 sm:min-h-[46px] sm:px-[17px] xl:min-h-[50px]"
+            appButtonSecondary="inverse"
+            class="min-h-12 px-4 py-button-block whitespace-nowrap sm:min-h-[46px] sm:px-[17px] xl:min-h-[50px]"
             type="button"
             (click)="access.open(heroAccess)"
           >
@@ -295,7 +300,8 @@
       </div>
       <div class="shrink-0 text-left lg:text-right">
         <a
-          class="group/action inline-flex min-h-[50px] items-center justify-center gap-2.5 rounded-control border border-transparent px-button-inline py-button-block text-center text-sm leading-[1.4] font-semibold no-underline transition-colors duration-(--motion-feedback) ease-out bg-pri text-white hover:bg-pri-d"
+          appButtonPrimary
+          class="min-h-[50px] px-button-inline py-button-block"
           href="#faq"
           (click)="followAnchor('faq')"
           ><app-action-label label="Consultar dúvidas" /><app-icon
