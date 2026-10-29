@@ -287,7 +287,7 @@ Concluída mantendo a organização atual de `docs/STRUCTURE_GUIDE.md`: componen
 
 ### Fase 3 — Componentes e consistência
 
-- [ ] **3.1 (M)** Criar diretiva `shared/ui/button` com variantes (`appButton`, `appButtonPrimary`, `appButtonSecondary`) para uso em `<a>` e `<button>`; substituir `.button*` em `styles.css:69-73` e o markup repetido de `landing.html`.
+- [x] **3.1 (M)** Criar diretivas `shared/ui/button` com variantes (`appButton`, `appButtonPrimary`, `appButtonSecondary`) para uso em `<a>` e `<button>`; aplicar nos CTAs repetidos da landing e do diálogo de disponibilidade. As classes `.button*` já haviam sido removidas na Fase 2.
 - [ ] **3.2 (M)** Criar `shared/ui/link` (aparência/estilo de link de navegação) e aplicar onde hoje há classes soltas.
 - [ ] **3.3 (M)** Criar `shared/ui/section-heading` e `shared/ui/card` se a migração revelar repetição (usar nas seções e na visão de plataforma).
 - [ ] **3.4 (M)** Confirmar que não restou nenhum `style:` inline (isto também elimina o gatilho da Fase 0).

@@ -154,7 +154,7 @@ A Nivelo conecta prazos, atendimento e comprovação por uma linguagem clara e p
 
 Superfícies claras acolhem a informação mais densa. Divisórias, alinhamentos e texto explícito explicam a relação entre etapas e estados. Refração e movimento criam atmosfera sem carregar o conteúdo: títulos, ações e avisos continuam em HTML, legíveis sobre o fundo estático.
 
-Este arquivo é a fonte da verdade visual da landing implementada. Os tokens estão em `@theme` de `src/styles.css` e os componentes em `src/app/features/landing/components/`. Templates e hosts usam utilitários Tailwind 4; somente gradientes do fundo e transições nativas do diálogo permanecem em CSS específico. O documento histórico `docs/DESIGN_SYSTEM.md` descreve a proposta de telas internas ainda não implementadas; ele não substitui estes tokens. A prancha de identidade fixa também o slate de marca, enquanto os textos de apoio atuais usam as variantes legíveis extraídas acima.
+Este arquivo é a fonte da verdade visual da landing implementada. Os tokens estão em `@theme` de `src/styles.css`; os primitivos reutilizáveis ficam em `src/app/shared/ui/`, e os componentes específicos da landing em `src/app/features/landing/components/`. Templates e hosts usam utilitários Tailwind 4; somente gradientes do fundo e transições nativas do diálogo permanecem em CSS específico. O documento histórico `docs/DESIGN_SYSTEM.md` descreve a proposta de telas internas ainda não implementadas; ele não substitui estes tokens. A prancha de identidade fixa também o slate de marca, enquanto os textos de apoio atuais usam as variantes legíveis extraídas acima.
 
 **Key Characteristics:**
 
@@ -230,7 +230,9 @@ O símbolo obrigatório é o check em camadas fornecido na primeira imagem do us
 
 ### Buttons
 
-Botões em cápsula, com altura mínima padrão de 50 px, texto de ação claro e foco visível. A variante primária usa o azul corporativo e branco; a secundária tem fundo transparente e borda. No hero escuro, a secundária usa texto e borda claros. O cabeçalho usa altura mínima de 44 px; no hero móvel, 48 px.
+Botões nativos `<a>` e `<button>` usam as diretivas `appButton`, `appButtonPrimary` e `appButtonSecondary` de `src/app/shared/ui/button/`. A base concentra alinhamento, espaçamento interno entre conteúdo, forma em cápsula, tipografia e transição de cor; classes Tailwind locais ajustam altura, padding e largura para cada contexto. A altura mínima padrão é 50 px, a do cabeçalho é 44 px e a ação do hero começa em 48 px.
+
+A variante primária usa o azul corporativo e branco. A secundária usa fundo transparente, texto azul-noite e borda `line2`, com fundo azul-claro no hover. No hero escuro, `appButtonSecondary="inverse"` usa texto branco, borda clara e hover branco translúcido.
 
 Hover e foco deslizam uma cópia visual do rótulo e giram a seta em 45 graus durante 450 ms, preservando uma única identificação acessível. O modo de movimento reduzido elimina esses deslocamentos. O foco global usa contorno de 3 px com offset de 5 px; sobre o hero ele usa ciano.
 
