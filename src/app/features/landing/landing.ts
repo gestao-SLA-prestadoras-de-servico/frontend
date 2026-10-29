@@ -15,6 +15,7 @@ import { HeroBackground } from './components/hero-background/hero-background';
 import { Icon, IconName } from './components/icon/icon';
 import { PlatformOverview } from './components/platform-overview/platform-overview';
 import { ButtonPrimary, ButtonSecondary } from '../../shared/ui/button';
+import { Link } from '../../shared/ui/link';
 
 @Component({
   selector: 'app-landing',
@@ -27,6 +28,7 @@ import { ButtonPrimary, ButtonSecondary } from '../../shared/ui/button';
     Faq,
     ButtonPrimary,
     ButtonSecondary,
+    Link,
   ],
   templateUrl: './landing.html',
   host: { class: 'block' },

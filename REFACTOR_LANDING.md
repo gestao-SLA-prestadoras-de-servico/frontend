@@ -288,7 +288,7 @@ Concluída mantendo a organização atual de `docs/STRUCTURE_GUIDE.md`: componen
 ### Fase 3 — Componentes e consistência
 
 - [x] **3.1 (M)** Criar diretivas `shared/ui/button` com variantes (`appButton`, `appButtonPrimary`, `appButtonSecondary`) para uso em `<a>` e `<button>`; aplicar nos CTAs repetidos da landing e do diálogo de disponibilidade. As classes `.button*` já haviam sido removidas na Fase 2.
-- [ ] **3.2 (M)** Criar `shared/ui/link` (aparência/estilo de link de navegação) e aplicar onde hoje há classes soltas.
+- [x] **3.2 (M)** Criar `shared/ui/link` com variantes para navegação desktop, menu móvel e retorno ao início no rodapé; aplicar aos links de navegação que tinham estilos repetidos.
 - [ ] **3.3 (M)** Criar `shared/ui/section-heading` e `shared/ui/card` se a migração revelar repetição (usar nas seções e na visão de plataforma).
 - [ ] **3.4 (M)** Confirmar que não restou nenhum `style:` inline (isto também elimina o gatilho da Fase 0).
 - [ ] **3.5 (M)** Reavaliar os focus-traps manuais (`landing.ts:110-117`, `availability-dialog.ts:145-161`): confiar no comportamento nativo do `<dialog>` e remover código redundante, mantendo devolução de foco ao acionador.

@@ -26,25 +26,25 @@
     </a>
     <nav class="hidden items-center gap-[25px] lg:flex" aria-label="Navegação principal">
       <a
-        class="inline-flex min-h-11 items-center text-xs font-medium whitespace-nowrap no-underline hover:underline hover:decoration-pri"
+        appLink
         href="#beneficios"
         (click)="followAnchor('beneficios')"
         >Benefícios</a
       >
       <a
-        class="inline-flex min-h-11 items-center text-xs font-medium whitespace-nowrap no-underline hover:underline hover:decoration-pri"
+        appLink
         href="#como-funciona"
         (click)="followAnchor('como-funciona')"
         >Como funciona</a
       >
       <a
-        class="inline-flex min-h-11 items-center text-xs font-medium whitespace-nowrap no-underline hover:underline hover:decoration-pri"
+        appLink
         href="#plataforma"
         (click)="followAnchor('plataforma')"
         >Plataforma</a
       >
       <a
-        class="inline-flex min-h-11 items-center text-xs font-medium whitespace-nowrap no-underline hover:underline hover:decoration-pri"
+        appLink
         href="#faq"
         (click)="followAnchor('faq')"
         >FAQ</a
@@ -98,19 +98,21 @@
     </button>
   </div>
   <nav
-    class="flex flex-col [&>a]:flex [&>a]:min-h-14 [&>a]:items-center [&>a]:justify-between [&>a]:border-t [&>a]:border-line [&>a]:py-4 [&>a]:text-lg [&>a]:no-underline"
+    class="flex flex-col"
     aria-label="Navegação no celular"
   >
-    <a href="#beneficios" autofocus (click)="followAnchor('beneficios')"
+    <a appLink="menu" href="#beneficios" autofocus (click)="followAnchor('beneficios')"
       >Benefícios<app-icon name="arrow"
     /></a>
-    <a href="#como-funciona" (click)="followAnchor('como-funciona')"
+    <a appLink="menu" href="#como-funciona" (click)="followAnchor('como-funciona')"
       >Como funciona<app-icon name="arrow"
     /></a>
-    <a href="#plataforma" (click)="followAnchor('plataforma')"
+    <a appLink="menu" href="#plataforma" (click)="followAnchor('plataforma')"
       >Plataforma<app-icon name="arrow"
     /></a>
-    <a href="#faq" (click)="followAnchor('faq')">Perguntas frequentes<app-icon name="arrow" /></a>
+    <a appLink="menu" href="#faq" (click)="followAnchor('faq')"
+      >Perguntas frequentes<app-icon name="arrow" /></a
+    >
     <button
       appButtonPrimary
       class="mt-[18px] min-h-[50px] px-button-inline py-button-block"
@@ -343,7 +345,7 @@
         Chamados, prazos e evidências.<br />Todo o atendimento no mesmo lugar.
       </p>
       <a
-        class="inline-flex min-h-11 items-center gap-[18px] text-[0.8125rem] no-underline hover:text-white hover:underline"
+        appLink="footer"
         href="#inicio"
         (click)="followAnchor('inicio')"
         >Voltar ao início<app-icon name="arrow"

@@ -238,7 +238,7 @@ Hover e foco deslizam uma cópia visual do rótulo e giram a seta em 45 graus du
 
 ### Navigation
 
-A navegação desktop vive na cápsula branca fixa e usa âncoras com área mínima de 44 px. No celular, um botão identificado abre um `dialog` nativo em formato de folha inferior, com links de pelo menos 56 px, fechamento, Escape, foco contido e retorno ao acionador. Selecionar uma seção fecha o menu e leva o foco ao destino.
+Os links de navegação da landing usam a diretiva `appLink` de `src/app/shared/ui/link/`: a variante padrão atende à navegação desktop, `appLink="menu"` às âncoras do menu móvel e `appLink="footer"` ao retorno ao início no rodapé. A navegação desktop vive na cápsula branca fixa e usa âncoras com área mínima de 44 px. No celular, um botão identificado abre um `dialog` nativo em formato de folha inferior, com links de pelo menos 56 px, fechamento, Escape, foco contido e retorno ao acionador. Selecionar uma seção fecha o menu e leva o foco ao destino.
 
 ### Labels and Status
 
