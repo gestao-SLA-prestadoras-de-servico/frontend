@@ -195,10 +195,7 @@
       class="mx-auto w-[calc(100%-40px)] max-w-[1440px] sm:w-[calc(100%-64px)] xl:w-[calc(100%-112px)]"
     >
       <div class="grid grid-cols-1 items-center gap-9 lg:grid-cols-2 lg:gap-7 xl:gap-12">
-        <h2
-          class="text-[1.85rem] sm:text-[clamp(2rem,5.4vw,3.375rem)] lg:text-[clamp(2rem,3.45vw,3.375rem)]"
-          id="benefits-title"
-        >
+        <h2 appSectionHeading="responsive" id="benefits-title">
           Menos conferência manual.<br /><span class="text-pri">Mais clareza para agir.</span>
         </h2>
         <div class="max-w-[640px] lg:max-w-none lg:border-l lg:border-line2 lg:pl-6 xl:pl-10">
@@ -234,7 +231,7 @@
         </p>
         <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-x-12 sm:gap-y-11">
           @for (benefit of benefits; track benefit.title) {
-            <article class="border-t border-line2 pt-[22px]">
+            <article appCard="benefit">
               <app-icon
                 class="mb-[18px] [--icon-size:26px] text-pri sm:mb-[25px]"
                 [name]="benefit.icon"
@@ -261,7 +258,7 @@
       <div
         class="flex flex-col items-start gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10"
       >
-        <h2 class="text-white" id="workflow-title">
+        <h2 appSectionHeading="inverse" id="workflow-title">
           Do contrato à solução,<br /><span class="text-cyan">cada etapa conectada.</span>
         </h2>
         <p class="max-w-[50ch] text-[0.9375rem] lg:max-w-[33ch]">
@@ -291,7 +288,7 @@
       class="mx-auto w-[calc(100%-40px)] max-w-[1440px] sm:w-[calc(100%-64px)] xl:w-[calc(100%-112px)] flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-14"
     >
       <div>
-        <h2 class="max-w-[32ch] text-[clamp(1.875rem,3vw,2.875rem)]" id="closing-title">
+        <h2 appSectionHeading="prominent" class="max-w-[32ch]" id="closing-title">
           Mais controle sobre os prazos.<br /><span class="text-pri"
             >Mais contexto em cada atendimento.</span
           >

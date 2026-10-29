@@ -240,13 +240,17 @@ Hover e foco deslizam uma cópia visual do rótulo e giram a seta em 45 graus du
 
 Os links de navegação da landing usam a diretiva `appLink` de `src/app/shared/ui/link/`: a variante padrão atende à navegação desktop, `appLink="menu"` às âncoras do menu móvel e `appLink="footer"` ao retorno ao início no rodapé. A navegação desktop vive na cápsula branca fixa e usa âncoras com área mínima de 44 px. No celular, um botão identificado abre um `dialog` nativo em formato de folha inferior, com links de pelo menos 56 px, fechamento, Escape, foco contido e retorno ao acionador. Selecionar uma seção fecha o menu e leva o foco ao destino.
 
+### Section Headings
+
+As diretivas `appSectionHeading="responsive"`, `appSectionHeading="inverse"` e `appSectionHeading="prominent"` aplicam as variantes tipográficas diretamente em `<h2>`, mantendo o nível do título e o identificador usado por `aria-labelledby`.
+
 ### Labels and Status
 
 O aviso de desenvolvimento é informativo e tem ponto acompanhado de texto. O estado do chamado usa azul suave com texto azul escuro. Prazos cumpridos recebem o par verde de fundo e texto; o prazo em andamento usa o par azul. Esses estados descrevem dados fictícios, não uma operação em tempo real.
 
 ### Cards and Containers
 
-O chamado ilustrativo usa fundo branco, borda, raio de superfície e padding de 24 px, reduzido para 16 px abaixo de `sm`. Evidências e histórico dividem a área em duas colunas a partir de `sm`. Perfis e benefícios são grupos abertos com filete superior. Não há campos de formulário nesta entrega.
+Os grupos abertos de benefícios, funcionalidades e perfis usam a diretiva `appCard` em seus `<article>`, com as variantes `benefit`, `feature` e `role` preservando as bordas e os espaçamentos próprios de cada grupo. O chamado ilustrativo usa fundo branco, borda, raio de superfície e padding de 24 px, reduzido para 16 px abaixo de `sm`. Evidências e histórico dividem a área em duas colunas a partir de `sm`. Não há campos de formulário nesta entrega.
 
 ### Availability Dialog
 

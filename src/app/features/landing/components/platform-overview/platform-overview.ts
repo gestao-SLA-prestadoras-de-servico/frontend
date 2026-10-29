@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import { ProductPreview } from '../product-preview/product-preview';
 import { Icon, IconName } from '../icon/icon';
+import { Card } from '../../../../shared/ui/card';
+import { SectionHeading } from '../../../../shared/ui/section-heading';
 
 @Component({
   selector: 'app-platform-overview',
-  imports: [ProductPreview, Icon],
+  imports: [ProductPreview, Icon, Card, SectionHeading],
   templateUrl: './platform-overview.html',
   host: { class: 'block' },
 })

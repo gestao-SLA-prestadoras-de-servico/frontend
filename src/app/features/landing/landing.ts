@@ -15,7 +15,9 @@ import { HeroBackground } from './components/hero-background/hero-background';
 import { Icon, IconName } from './components/icon/icon';
 import { PlatformOverview } from './components/platform-overview/platform-overview';
 import { ButtonPrimary, ButtonSecondary } from '../../shared/ui/button';
+import { Card } from '../../shared/ui/card';
 import { Link } from '../../shared/ui/link';
+import { SectionHeading } from '../../shared/ui/section-heading';
 
 @Component({
   selector: 'app-landing',
@@ -29,6 +31,8 @@ import { Link } from '../../shared/ui/link';
     ButtonPrimary,
     ButtonSecondary,
     Link,
+    Card,
+    SectionHeading,
   ],
   templateUrl: './landing.html',
   host: { class: 'block' },
