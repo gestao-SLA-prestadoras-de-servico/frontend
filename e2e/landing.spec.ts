@@ -78,6 +78,20 @@ test('mobile navigation follows anchors and closes only at the desktop breakpoin
   );
 });
 
+test('mobile menu closes on backdrop pointer and restores focus', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.goto('/');
+  const trigger = page.getByRole('button', { name: 'Abrir menu' });
+  await trigger.focus();
+  await page.keyboard.press('Enter');
+
+  const menu = page.locator('#mobile-menu');
+  await expect(menu).toBeVisible();
+  await page.mouse.click(195, 10);
+  await expect(menu).not.toBeVisible();
+  await expect(trigger).toBeFocused();
+});
+
 test('reduced motion keeps the poster and suppresses decorative movement', async ({ page }) => {
   await page.goto('/');
   const background = page.locator('app-hero-background');

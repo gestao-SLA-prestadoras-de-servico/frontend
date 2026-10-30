@@ -1,4 +1,4 @@
-import { Component, ElementRef, viewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, viewChild } from '@angular/core';
 import { ActionLabel } from '../action-label/action-label';
 import { Icon } from '../icon/icon';
 import { ButtonPrimary } from '../../../../shared/ui/button';
@@ -26,6 +26,7 @@ export class AvailabilityDialog {
     this.dialog().nativeElement.close();
   }
 
+  @HostListener('keydown', ['$event'])
   protected keepFocusInDialog(event: KeyboardEvent): void {
     if (event.key !== 'Tab') return;
 

@@ -4,6 +4,7 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  HostListener,
   inject,
   signal,
   viewChild,
@@ -120,7 +121,7 @@ export class Landing {
     this.menuOpen.set(false);
     if (this.restoreMenuFocus) this.menuButton().nativeElement.focus({ preventScroll: true });
   }
-  protected onMenuBackdrop(event: MouseEvent): void {
+  protected onMenuBackdrop(event: PointerEvent): void {
     if (event.target !== this.mobileMenu().nativeElement) return;
     const rect = this.mobileMenu().nativeElement.getBoundingClientRect();
     if (event.clientY < rect.top || event.clientX < rect.left || event.clientX > rect.right)
@@ -130,6 +131,8 @@ export class Landing {
     this.closeMenu(false);
     this.access().open(this.menuButton().nativeElement);
   }
+
+  @HostListener('keydown', ['$event'])
   protected keepMenuFocus(event: KeyboardEvent): void {
     if (event.key !== 'Tab') return;
     const items = this.mobileMenu().nativeElement.querySelectorAll<HTMLElement>('a[href], button');
