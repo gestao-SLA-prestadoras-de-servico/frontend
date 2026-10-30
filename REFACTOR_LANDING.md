@@ -294,8 +294,8 @@ Concluída mantendo a organização atual de `docs/STRUCTURE_GUIDE.md`: componen
 - [x] **3.5 (M)** Reavaliar os focus-traps: manter o ciclo manual de Tab/Shift+Tab, pois os testes Playwright no Chromium mostraram que o foco não retorna ao outro extremo do `<dialog>` nativamente; remover `tabindex` inválido e preservar `autofocus`, Escape e retorno ao acionador.
 - [x] **3.6 (P)** Adicionar `ChangeDetectionStrategy.OnPush` aos componentes de produção. Migrar as variantes das diretivas compartilhadas para `input()`; manter signals nos estados interativos e propriedades somente leitura para conteúdo estático.
 - [x] **3.7 (P)** Remover `NgZone`/`runOutsideAngular` de `hero-background.ts`: Angular 21 usa zoneless por padrão neste app, e o signal `ready` notifica a view.
-- [ ] **3.8 (P)** Remover `src/app/app.css` vazio e limpar `app.html`/`app.ts` se necessário.
-- [ ] **3.9 (P)** Validar build, testes e fluxos de teclado (menu, diálogo, skip-link).
+- [x] **3.8 (P)** Remover `src/app/app.css` vazio e sua referência em `app.ts`; manter o shell mínimo com o `router-outlet` em `app.html`.
+- [x] **3.9 (P)** Validar build e os 20 testes unitários; Playwright confirmou os fluxos de teclado do menu, diálogo e skip-link em Chromium e Firefox (14 cenários).
 
 ### Fase 4 — Testes, qualidade e higiene
 

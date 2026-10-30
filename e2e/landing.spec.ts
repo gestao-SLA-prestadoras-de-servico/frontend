@@ -56,6 +56,18 @@ for (const width of [320, 390, 768, 1024, 1440, 1536]) {
   });
 }
 
+test('skip link takes keyboard users to the main content', async ({ page }) => {
+  await page.goto('/');
+  const skipLink = page.locator('a[href="#conteudo"]');
+  const main = page.locator('#conteudo');
+
+  await page.keyboard.press('Tab');
+  await expect(skipLink).toBeFocused();
+  await expect(skipLink).toBeInViewport();
+  await page.keyboard.press('Enter');
+  await expect(main).toBeFocused();
+});
+
 test('mobile navigation follows anchors and closes only at the desktop breakpoint', async ({
   page,
 }) => {
