@@ -1,0 +1,21 @@
+<img
+  class="absolute inset-0 size-full object-cover object-[center_30%]"
+  src="images/nivelo-hero-poster.webp"
+  width="1280"
+  height="720"
+  alt=""
+  fetchpriority="high"
+  decoding="async"
+/>
+<video
+  class="absolute inset-0 size-full object-cover object-[center_30%] transition-opacity duration-(--motion-video) ease-out motion-reduce:hidden motion-reduce:transition-none"
+  #video
+  muted
+  loop
+  playsinline
+  preload="none"
+  disablepictureinpicture
+  aria-hidden="true"
+  [class.opacity-100]="ready()"
+  [class.opacity-0]="!ready()"
+></video>

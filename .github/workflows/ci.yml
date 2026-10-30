@@ -37,6 +37,10 @@ jobs:
 
   e2e-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
 
     steps:
       - uses: actions/checkout@v4
@@ -47,7 +51,6 @@ jobs:
           cache: 'npm'
 
       - run: npm ci
-      - run: npx playwright install --with-deps
       - run: npm run e2e
 
   build:

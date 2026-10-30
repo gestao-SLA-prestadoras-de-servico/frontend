@@ -1,0 +1,357 @@
+<a
+  appButtonPrimary
+  class="min-h-[50px] px-button-inline py-button-block fixed top-3 left-4 z-100 -translate-y-[180%] focus:translate-y-0"
+  href="#conteudo"
+  (click)="followAnchor('conteudo')"
+  >Pular para o conteúdo</a
+>
+<header
+  class="fixed top-5 left-1/2 z-20 w-[calc(100%-40px)] max-w-[600px] -translate-x-1/2 text-navy lg:top-7 lg:w-max lg:max-w-[calc(100%-40px)]"
+>
+  <div
+    class="flex min-h-16 items-center justify-between gap-8 rounded-control bg-sf py-2 pr-2.5 pl-[22px] shadow-header lg:justify-start lg:pl-6"
+  >
+    <a
+      class="inline-flex items-center gap-2.5 whitespace-nowrap no-underline min-h-11"
+      href="#inicio"
+      aria-label="Nivelo, início"
+      (click)="followAnchor('inicio')"
+    >
+      <img class="h-7 w-[35px]" src="images/nivelo-symbol.svg" alt="" width="35" height="28" />
+      <span class="flex flex-col text-[1.375rem] leading-[1.05] font-extrabold tracking-[-0.035em]"
+        >NIVELO<small class="mt-[5px] text-[0.45rem] leading-none font-semibold tracking-[0.3em]"
+          >GESTÃO DE SLA</small
+        ></span
+      >
+    </a>
+    <nav class="hidden items-center gap-[25px] lg:flex" aria-label="Navegação principal">
+      <a
+        appLink
+        href="#beneficios"
+        (click)="followAnchor('beneficios')"
+        >Benefícios</a
+      >
+      <a
+        appLink
+        href="#como-funciona"
+        (click)="followAnchor('como-funciona')"
+        >Como funciona</a
+      >
+      <a
+        appLink
+        href="#plataforma"
+        (click)="followAnchor('plataforma')"
+        >Plataforma</a
+      >
+      <a
+        appLink
+        href="#faq"
+        (click)="followAnchor('faq')"
+        >FAQ</a
+      >
+      <button
+        #headerAccess
+        appButtonPrimary
+        class="min-h-11 px-5 py-[11px] text-xs"
+        type="button"
+        (click)="access.open(headerAccess)"
+      >
+        <app-action-label label="Disponibilidade" /><app-icon
+          class="[--icon-size:19px] transition-transform duration-(--motion-label) ease-out motion-safe:group-hover/action:rotate-45 motion-safe:group-focus-visible/action:rotate-45 motion-reduce:transition-none"
+          name="arrow"
+        />
+      </button>
+    </nav>
+    <button
+      #menuButton
+      class="flex size-11 items-center justify-center rounded-full border-0 bg-transparent p-0 text-navy lg:hidden"
+      type="button"
+      [attr.aria-expanded]="menuOpen()"
+      aria-controls="mobile-menu"
+      aria-haspopup="dialog"
+      aria-label="Abrir menu"
+      (click)="openMenu()"
+    >
+      <app-icon name="menu" />
+    </button>
+  </div>
+</header>
+<dialog
+  #mobileMenu
+  id="mobile-menu"
+  class="fixed inset-x-0 top-auto bottom-0 m-0 max-h-[calc(100dvh-32px)] w-full max-w-full overflow-auto rounded-t-menu border-0 bg-sf px-6 pt-6 pb-[max(24px,env(safe-area-inset-bottom))] text-navy shadow-dialog backdrop:bg-[#041026]/65 open:animate-menu-enter motion-reduce:animate-none"
+  aria-labelledby="menu-title"
+  (close)="onMenuClosed()"
+  (pointerdown)="onMenuBackdrop($event)"
+>
+  <div class="mb-4 flex items-center justify-between gap-4">
+    <h2 class="text-lg tracking-[-0.02em]" id="menu-title">Explore a Nivelo</h2>
+    <button
+      class="flex size-11 items-center justify-center rounded-full border-0 bg-transparent p-0 text-navy"
+      type="button"
+      aria-label="Fechar menu"
+      (click)="closeMenu()"
+    >
+      <app-icon name="close" />
+    </button>
+  </div>
+  <nav
+    class="flex flex-col"
+    aria-label="Navegação no celular"
+  >
+    <a appLink="menu" href="#beneficios" autofocus (click)="followAnchor('beneficios')"
+      >Benefícios<app-icon name="arrow"
+    /></a>
+    <a appLink="menu" href="#como-funciona" (click)="followAnchor('como-funciona')"
+      >Como funciona<app-icon name="arrow"
+    /></a>
+    <a appLink="menu" href="#plataforma" (click)="followAnchor('plataforma')"
+      >Plataforma<app-icon name="arrow"
+    /></a>
+    <a appLink="menu" href="#faq" (click)="followAnchor('faq')"
+      >Perguntas frequentes<app-icon name="arrow" /></a
+    >
+    <button
+      appButtonPrimary
+      class="mt-[18px] min-h-[50px] px-button-inline py-button-block"
+      type="button"
+      (click)="openMobileAvailability()"
+    >
+      <app-action-label label="Sobre a disponibilidade" /><app-icon
+        class="[--icon-size:19px] transition-transform duration-(--motion-label) ease-out motion-safe:group-hover/action:rotate-45 motion-safe:group-focus-visible/action:rotate-45 motion-reduce:transition-none"
+        name="arrow"
+      />
+    </button>
+  </nav>
+  <p class="mt-5 text-xs text-ink2">Em desenvolvimento. Acesso ainda indisponível.</p>
+</dialog>
+<main id="conteudo" tabindex="-1">
+  <section
+    class="relative flex min-h-svh items-end bg-navy pt-[clamp(144px,28svh,240px)] pb-8 sm:min-h-[min(100svh,1000px)] sm:pt-[180px] sm:pb-9 lg:min-h-[min(clamp(680px,50.85vw,980px),100svh)] lg:pb-8 2xl:pb-[52px] [@media(max-height:700px)]:pt-32 [@media(max-height:700px)]:pb-6 [&_:focus-visible]:outline-cyan"
+    id="inicio"
+    tabindex="-1"
+    aria-labelledby="hero-title"
+  >
+    <app-hero-background />
+    <div
+      class="mx-auto w-[calc(100%-40px)] max-w-[1440px] sm:w-[calc(100%-64px)] xl:w-[calc(100%-112px)] relative z-1 grid grid-cols-1 items-end gap-6 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)] lg:gap-7 xl:grid-cols-[minmax(0,2.25fr)_minmax(0,1fr)] xl:gap-8 [@media(max-height:700px)]:gap-[18px] [@media(640px<=width<1024px)_and_(max-height:500px)]:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] [@media(640px<=width<1024px)_and_(max-height:500px)]:gap-6"
+    >
+      <div>
+        <h1
+          class="text-display-mobile leading-[1.12] text-white text-wrap sm:text-display-stacked sm:leading-[1.06] lg:text-[4.7vw] xl:text-display [@media(640px<=width<1024px)_and_(max-height:500px)]:text-[clamp(2rem,4.8vw,2.5rem)]"
+          id="hero-title"
+        >
+          Prazos sob controle.<br /><span class="text-cyan lg:whitespace-nowrap"
+            >Atendimento comprovado.</span
+          >
+        </h1>
+        <p
+          class="mt-[18px] flex items-baseline gap-2 text-xs leading-[1.65] text-[#d0e0f0] sm:items-center lg:mt-[26px] [@media(max-height:700px)]:mt-3"
+        >
+          <span class="size-[7px] shrink-0 rounded-full bg-turquoise" aria-hidden="true"></span>Em
+          desenvolvimento · Acesso ainda indisponível.
+        </p>
+      </div>
+      <div class="max-w-[560px] self-end lg:max-w-none lg:pb-4 xl:pb-[23px]">
+        <p
+          class="max-w-[50ch] text-base leading-[1.65] text-[#f2f6fc] sm:leading-normal lg:max-w-[43ch] lg:text-[clamp(1rem,1.25vw,1.1875rem)] [@media(max-height:700px)]:leading-normal [@media(640px<=width<1024px)_and_(max-height:500px)]:text-sm"
+        >
+          Chamados, prazos e evidências em um só lugar para prestadoras de serviços técnicos.
+        </p>
+        <div
+          class="mt-[22px] flex flex-col flex-wrap gap-2.5 min-[361px]:flex-row sm:mt-6 lg:gap-2 xl:gap-2.5 [@media(max-height:700px)]:mt-[18px] [@media(640px<=width<1024px)_and_(max-height:500px)]:gap-2"
+        >
+          <a
+            appButtonPrimary
+            class="min-h-12 px-4 py-button-block whitespace-nowrap sm:min-h-[46px] sm:px-[17px] xl:min-h-[50px]"
+            href="#plataforma"
+            (click)="followAnchor('plataforma')"
+            ><app-action-label label="Conhecer a plataforma" /><app-icon
+              class="[--icon-size:19px] transition-transform duration-(--motion-label) ease-out motion-safe:group-hover/action:rotate-45 motion-safe:group-focus-visible/action:rotate-45 motion-reduce:transition-none"
+              name="arrow"
+          /></a>
+          <button
+            #heroAccess
+            appButtonSecondary="inverse"
+            class="min-h-12 px-4 py-button-block whitespace-nowrap sm:min-h-[46px] sm:px-[17px] xl:min-h-[50px]"
+            type="button"
+            (click)="access.open(heroAccess)"
+          >
+            <app-action-label label="Sobre a disponibilidade" />
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section
+    id="beneficios"
+    class="bg-bg pt-[clamp(48px,4.5vw,72px)] pb-section"
+    tabindex="-1"
+    aria-labelledby="benefits-title"
+  >
+    <div
+      class="mx-auto w-[calc(100%-40px)] max-w-[1440px] sm:w-[calc(100%-64px)] xl:w-[calc(100%-112px)]"
+    >
+      <div class="grid grid-cols-1 items-center gap-9 lg:grid-cols-2 lg:gap-7 xl:gap-12">
+        <h2 appSectionHeading="responsive" id="benefits-title">
+          Menos conferência manual.<br /><span class="text-pri">Mais clareza para agir.</span>
+        </h2>
+        <div class="max-w-[640px] lg:max-w-none lg:border-l lg:border-line2 lg:pl-6 xl:pl-10">
+          <p class="text-xs text-ink2">Três compromissos. Um atendimento.</p>
+          <ol
+            class="mt-[18px] mb-3 grid list-none grid-cols-[0.85fr_1.25fr_0.85fr] gap-2 p-0 sm:grid-cols-[0.8fr_1.3fr_0.8fr] sm:gap-3 [&>li]:relative [&>li]:flex [&>li]:min-w-0 [&>li]:flex-col [&>li]:items-start [&>li]:gap-2 [&>li]:text-xs [&>li]:leading-normal [&>li]:text-ink2 [&>li:not(:last-child)]:after:absolute [&>li:not(:last-child)]:after:top-[23px] [&>li:not(:last-child)]:after:right-0 [&>li:not(:last-child)]:after:left-[50px] [&>li:not(:last-child)]:after:h-px [&>li:not(:last-child)]:after:bg-line2 sm:[&>li:not(:last-child)]:after:left-[58px] [&_strong]:text-[0.8125rem] [&_strong]:font-bold [&_strong]:text-navy"
+          >
+            <li>
+              <span class="grid size-[46px] place-items-center rounded-full bg-[#dbe8fc] text-pri"
+                ><app-icon name="file" /></span
+              ><strong>Resposta</strong><span>Primeiro retorno</span>
+            </li>
+            <li>
+              <span
+                class="grid size-[46px] place-items-center rounded-full bg-[#b7f0ed] text-[#08666e]"
+                ><app-icon name="truck" /></span
+              ><strong>Atendimento em campo</strong><span>Início do serviço</span>
+            </li>
+            <li>
+              <span class="grid size-[46px] place-items-center rounded-full bg-[#d3f2e5] text-grn-t"
+                ><app-icon name="check" /></span
+              ><strong>Resolução</strong><span>Solução apresentada</span>
+            </li>
+          </ol>
+          <p class="text-xs text-ink2">Prazos definidos pela política de cada contrato.</p>
+        </div>
+      </div>
+      <div
+        class="mt-14 grid grid-cols-1 items-start gap-9 lg:mt-[88px] lg:grid-cols-[0.8fr_2fr] lg:gap-11 xl:gap-[72px]"
+      >
+        <p class="max-w-[60ch] text-base leading-[1.75] text-ink2 lg:max-w-[29ch]">
+          Do contrato à evidência, a informação acompanha o chamado.
+        </p>
+        <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-x-12 sm:gap-y-11">
+          @for (benefit of benefits; track benefit.title) {
+            <article appCard="benefit">
+              <app-icon
+                class="mb-[18px] [--icon-size:26px] text-pri sm:mb-[25px]"
+                [name]="benefit.icon"
+              />
+              <h3 class="mb-3 text-[1.1875rem]">{{ benefit.title }}</h3>
+              <p class="max-w-[60ch] text-sm text-ink2 sm:max-w-[40ch]">
+                {{ benefit.description }}
+              </p>
+            </article>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+  <section
+    id="como-funciona"
+    class="bg-navy py-section text-on-navy"
+    tabindex="-1"
+    aria-labelledby="workflow-title"
+  >
+    <div
+      class="mx-auto w-[calc(100%-40px)] max-w-[1440px] sm:w-[calc(100%-64px)] xl:w-[calc(100%-112px)]"
+    >
+      <div
+        class="flex flex-col items-start gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10"
+      >
+        <h2 appSectionHeading="inverse" id="workflow-title">
+          Do contrato à solução,<br /><span class="text-cyan">cada etapa conectada.</span>
+        </h2>
+        <p class="max-w-[50ch] text-[0.9375rem] lg:max-w-[33ch]">
+          Um fluxo previsto para gestores, técnicos e clientes.
+        </p>
+      </div>
+      <ol
+        class="mt-12 ml-5 grid list-none grid-cols-1 gap-9 border-l border-[#436078] p-0 sm:mt-[72px] sm:ml-0 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-14 sm:border-l-0 lg:grid-cols-4"
+      >
+        @for (step of steps; track step.title; let index = $index) {
+          <li class="relative pl-10 sm:border-t sm:border-[#436078] sm:pt-[22px] sm:pl-0">
+            <span
+              class="absolute top-0 -left-[21px] m-0 grid size-[42px] place-items-center rounded-full border border-[#436078] bg-navy text-[0.8125rem] font-semibold text-cyan tabular-nums sm:static sm:mt-[-44px] sm:mb-8"
+              aria-hidden="true"
+              >0{{ index + 1 }}</span
+            >
+            <h3 class="mb-3.5 text-lg text-white sm:max-w-[20ch]">{{ step.title }}</h3>
+            <p class="text-sm leading-[1.8]">{{ step.description }}</p>
+          </li>
+        }
+      </ol>
+    </div>
+  </section>
+  <app-platform-overview />
+  <section class="bg-bg py-section" aria-labelledby="closing-title">
+    <div
+      class="mx-auto w-[calc(100%-40px)] max-w-[1440px] sm:w-[calc(100%-64px)] xl:w-[calc(100%-112px)] flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-14"
+    >
+      <div>
+        <h2 appSectionHeading="prominent" class="max-w-[32ch]" id="closing-title">
+          Mais controle sobre os prazos.<br /><span class="text-pri"
+            >Mais contexto em cada atendimento.</span
+          >
+        </h2>
+        <p class="text-base leading-[1.75] text-ink2 sm:text-lead mt-6 max-w-[65ch]">
+          Consulte as dúvidas sobre uso e disponibilidade.
+        </p>
+      </div>
+      <div class="shrink-0 text-left lg:text-right">
+        <a
+          appButtonPrimary
+          class="min-h-[50px] px-button-inline py-button-block"
+          href="#faq"
+          (click)="followAnchor('faq')"
+          ><app-action-label label="Consultar dúvidas" /><app-icon
+            class="[--icon-size:19px] transition-transform duration-(--motion-label) ease-out motion-safe:group-hover/action:rotate-45 motion-safe:group-focus-visible/action:rotate-45 motion-reduce:transition-none"
+            name="arrow"
+        /></a>
+        <p class="mt-[18px] text-xs text-ink2">
+          Projeto em desenvolvimento.<br />Acesso ainda indisponível.
+        </p>
+      </div>
+    </div>
+  </section>
+  <app-faq />
+</main>
+<footer class="bg-navy pt-14 pb-6 text-on-navy">
+  <div
+    class="mx-auto w-[calc(100%-40px)] max-w-[1440px] sm:w-[calc(100%-64px)] xl:w-[calc(100%-112px)]"
+  >
+    <div class="grid grid-cols-1 items-center gap-7 sm:grid-cols-[1fr_1fr_auto] sm:gap-8">
+      <a
+        class="inline-flex items-center gap-2.5 whitespace-nowrap text-white no-underline"
+        href="#inicio"
+        aria-label="Nivelo, voltar ao início"
+        (click)="followAnchor('inicio')"
+        ><img
+          class="h-10 w-[50px]"
+          src="images/nivelo-symbol.svg"
+          alt=""
+          width="50"
+          height="40"
+        /><span
+          class="flex flex-col text-[1.875rem] leading-[1.05] font-extrabold tracking-[-0.035em]"
+          >NIVELO<small class="mt-[5px] text-[0.45rem] leading-none font-semibold tracking-[0.3em]"
+            >GESTÃO DE SLA</small
+          ></span
+        ></a
+      >
+      <p class="text-[0.8125rem]">
+        Chamados, prazos e evidências.<br />Todo o atendimento no mesmo lugar.
+      </p>
+      <a
+        appLink="footer"
+        href="#inicio"
+        (click)="followAnchor('inicio')"
+        >Voltar ao início<app-icon name="arrow"
+      /></a>
+    </div>
+    <div
+      class="mt-12 flex flex-col gap-2 border-t border-[#334b62] pt-[22px] sm:flex-row sm:justify-between sm:gap-6"
+    >
+      <p class="text-[0.8125rem]">Projeto Integrador 2026.2</p>
+      <p class="text-[0.8125rem]">Plataforma em desenvolvimento</p>
+    </div>
+  </div>
+</footer>
+<app-availability-dialog #access />
