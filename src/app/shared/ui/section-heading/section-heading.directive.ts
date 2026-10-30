@@ -1,4 +1,4 @@
-import { Directive, HostBinding, Input } from '@angular/core';
+import { Directive, HostBinding, input } from '@angular/core';
 
 type SectionHeadingVariant = 'responsive' | 'inverse' | 'prominent';
 
@@ -14,10 +14,10 @@ const sectionHeadingClasses: Record<SectionHeadingVariant, string> = {
   standalone: true,
 })
 export class SectionHeading {
-  @Input() appSectionHeading: SectionHeadingVariant = 'responsive';
+  readonly appSectionHeading = input<SectionHeadingVariant | ''>('responsive');
 
   @HostBinding('class')
   protected get classes(): string {
-    return sectionHeadingClasses[this.appSectionHeading];
+    return sectionHeadingClasses[this.appSectionHeading() || 'responsive'];
   }
 }

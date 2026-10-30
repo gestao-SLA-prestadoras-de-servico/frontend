@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Icon } from '../icon/icon';
 
 @Component({
   selector: 'app-faq',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [Icon],
   templateUrl: './faq.html',
   host: { class: 'block' },

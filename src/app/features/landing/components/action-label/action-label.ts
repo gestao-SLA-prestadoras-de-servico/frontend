@@ -1,7 +1,8 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-action-label',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'inline-flex min-w-0' },
   template: `<span class="relative block overflow-hidden"
     ><span

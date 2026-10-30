@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import {
   afterNextRender,
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
@@ -22,6 +23,7 @@ import { SectionHeading } from '../../shared/ui/section-heading';
 
 @Component({
   selector: 'app-landing',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AvailabilityDialog,
     Icon,

@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import {
   LucideDynamicIcon,
   LucideClock3,
@@ -35,6 +35,7 @@ export type IconName = keyof typeof icons;
 
 @Component({
   selector: 'app-icon',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'inline-flex size-[var(--icon-size,22px)] shrink-0' },
   imports: [LucideDynamicIcon],
   template: `<svg

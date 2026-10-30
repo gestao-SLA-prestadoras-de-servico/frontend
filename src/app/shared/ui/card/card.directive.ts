@@ -1,4 +1,4 @@
-import { Directive, HostBinding, Input } from '@angular/core';
+import { Directive, HostBinding, input } from '@angular/core';
 
 type CardVariant = 'benefit' | 'feature' | 'role';
 
@@ -13,10 +13,10 @@ const cardClasses: Record<CardVariant, string> = {
   standalone: true,
 })
 export class Card {
-  @Input() appCard: CardVariant = 'benefit';
+  readonly appCard = input<CardVariant | ''>('benefit');
 
   @HostBinding('class')
   protected get classes(): string {
-    return cardClasses[this.appCard];
+    return cardClasses[this.appCard() || 'benefit'];
   }
 }

@@ -1,10 +1,17 @@
-import { Component, ElementRef, HostListener, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  HostListener,
+  viewChild,
+} from '@angular/core';
 import { ActionLabel } from '../action-label/action-label';
 import { Icon } from '../icon/icon';
 import { ButtonPrimary } from '../../../../shared/ui/button';
 
 @Component({
   selector: 'app-availability-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [Icon, ActionLabel, ButtonPrimary],
   templateUrl: './availability-dialog.html',
   styleUrl: './availability-dialog.css',

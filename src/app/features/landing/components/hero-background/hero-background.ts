@@ -1,5 +1,6 @@
 import {
   afterNextRender,
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
@@ -11,6 +12,7 @@ import {
 
 @Component({
   selector: 'app-hero-background',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'pointer-events-none absolute inset-0 z-0 isolate overflow-hidden bg-navy',
     '[attr.data-video-state]': "ready() ? 'ready' : 'poster'",

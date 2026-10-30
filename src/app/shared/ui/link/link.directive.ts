@@ -1,4 +1,4 @@
-import { Directive, HostBinding, Input } from '@angular/core';
+import { Directive, HostBinding, input } from '@angular/core';
 
 type LinkVariant = 'navigation' | 'menu' | 'footer';
 
@@ -15,10 +15,10 @@ const linkClasses: Record<LinkVariant, string> = {
   standalone: true,
 })
 export class Link {
-  @Input() appLink: LinkVariant | '' = '';
+  readonly appLink = input<LinkVariant | ''>('');
 
   @HostBinding('class')
   protected get classes(): string {
-    return linkClasses[this.appLink || 'navigation'];
+    return linkClasses[this.appLink() || 'navigation'];
   }
 }
