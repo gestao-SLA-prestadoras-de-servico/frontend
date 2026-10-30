@@ -5,7 +5,6 @@ import {
   DestroyRef,
   ElementRef,
   inject,
-  NgZone,
   signal,
   viewChild,
 } from '@angular/core';
@@ -23,11 +22,10 @@ import {
 export class HeroBackground {
   private readonly video = viewChild.required<ElementRef<HTMLVideoElement>>('video');
   private readonly destroyRef = inject(DestroyRef);
-  private readonly zone = inject(NgZone);
   protected readonly ready = signal(false);
 
   constructor() {
-    afterNextRender(() => this.zone.runOutsideAngular(() => this.mount()));
+    afterNextRender(() => this.mount());
   }
 
   private mount(): void {

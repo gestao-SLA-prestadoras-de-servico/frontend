@@ -293,7 +293,7 @@ Concluída mantendo a organização atual de `docs/STRUCTURE_GUIDE.md`: componen
 - [x] **3.4 (M)** Confirmar que não restou nenhum `style:`/`styles:` inline; busca em componentes e templates não encontrou estilos inline nem bindings de estilo.
 - [x] **3.5 (M)** Reavaliar os focus-traps: manter o ciclo manual de Tab/Shift+Tab, pois os testes Playwright no Chromium mostraram que o foco não retorna ao outro extremo do `<dialog>` nativamente; remover `tabindex` inválido e preservar `autofocus`, Escape e retorno ao acionador.
 - [x] **3.6 (P)** Adicionar `ChangeDetectionStrategy.OnPush` aos componentes de produção. Migrar as variantes das diretivas compartilhadas para `input()`; manter signals nos estados interativos e propriedades somente leitura para conteúdo estático.
-- [ ] **3.7 (P)** Remover `NgZone`/`runOutsideAngular` de `hero-background.ts:21,25` se não fizer diferença em app zoneless.
+- [x] **3.7 (P)** Remover `NgZone`/`runOutsideAngular` de `hero-background.ts`: Angular 21 usa zoneless por padrão neste app, e o signal `ready` notifica a view.
 - [ ] **3.8 (P)** Remover `src/app/app.css` vazio e limpar `app.html`/`app.ts` se necessário.
 - [ ] **3.9 (P)** Validar build, testes e fluxos de teclado (menu, diálogo, skip-link).
 
