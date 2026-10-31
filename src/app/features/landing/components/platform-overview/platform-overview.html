@@ -1,12 +1,14 @@
-<section id="plataforma" class="chapter bg-bg" tabindex="-1" aria-labelledby="platform-title">
+<section
+  id="plataforma"
+  class="chapter platform-section"
+  tabindex="-1"
+  aria-labelledby="platform-title"
+>
   <div class="page-frame grid items-center gap-12 lg:grid-cols-[0.65fr_1.35fr] lg:gap-12">
     <div appReveal>
-      <p class="chapter-label">Plataforma</p>
       <h2 id="platform-title">
         <span class="motion-line"><span>Um atendimento.</span></span>
-        <span class="motion-line"
-          ><span><span class="text-pri">Todo o contexto.</span></span></span
-        >
+        <span class="motion-line"><span>Todo o contexto.</span></span>
       </h2>
       <p class="chapter-lead">
         Do que foi solicitado ao que foi feito. A proposta reúne o contrato, os prazos, a equipe e
@@ -42,3 +44,19 @@
     </div>
   </div>
 </section>
+<div class="status-bands" aria-label="Prazos do chamado ilustrativo #1042">
+  @for (status of statuses; track status.title; let i = $index) {
+    <div class="status-band" appScrollMotion="color-row" motionTrigger=".status-band">
+      <div class="page-frame status-inner">
+        <span class="status-number" appScrollMotion="date" motionTrigger=".status-band">{{
+          status.mark
+        }}</span>
+        <div>
+          <h3>{{ status.title }}</h3>
+          <p>{{ status.description }}</p>
+        </div>
+        <span class="status-state">{{ status.state }}<small>Chamado #1042 · exemplo</small></span>
+      </div>
+    </div>
+  }
+</div>

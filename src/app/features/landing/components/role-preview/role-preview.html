@@ -2,18 +2,39 @@
   <div class="page-frame">
     <div class="flex flex-col justify-between gap-6 lg:flex-row lg:items-end" appReveal>
       <div>
-        <p class="chapter-label">Perfis de acesso</p>
         <h2 id="roles-title">
           <span class="motion-line"><span>Um fluxo em comum.</span></span>
-          <span class="motion-line"
-            ><span><span class="text-pri">Um papel para cada pessoa.</span></span></span
-          >
+          <span class="motion-line"><span>Um papel para cada pessoa.</span></span>
         </h2>
       </div>
       <p class="max-w-[35ch] text-sm text-ink2">
         Informações e atribuições previstas para cada pessoa envolvida no atendimento.
       </p>
     </div>
+    <div class="profile-portraits">
+      @for (item of roles; track item.name; let i = $index) {
+        <figure class="profile-portrait" data-profile>
+          <div class="profile-art">
+            <app-contour [tone]="i" motion="rings" trigger="[data-profile]" /><img
+              [src]="'images/nivelo-' + portraits[i] + '-ilustrativo.webp'"
+              alt=""
+              width="1024"
+              height="1536"
+              loading="lazy"
+            />
+          </div>
+          <figcaption>
+            <span class="level-badge" [attr.data-tone]="i">{{ item.name }}</span>
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.description }}</p>
+          </figcaption>
+        </figure>
+      }
+    </div>
+    <p class="illustrative-note">
+      Pessoas geradas por IA · ilustrativas dos perfis previstos. Experimente cada papel na
+      demonstração abaixo.
+    </p>
     <div class="role-tabs" role="tablist" aria-label="Perfis da plataforma">
       @for (item of roles; track item.name; let i = $index) {
         <button

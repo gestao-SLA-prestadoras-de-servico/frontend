@@ -66,50 +66,35 @@ test('all twelve chapters are prerendered and readable without JavaScript', asyn
   }
   await expect(page.locator('#faq details')).toHaveCount(6);
   await expect(page.locator('app-hero-background img')).toBeVisible();
-  await expect(page.locator('#prazos .deadline-hold')).toHaveCSS('position', 'static');
+  await expect(page.locator('#prazos .poster-print')).toHaveCount(3);
   await context.close();
 });
 
-test('desktop deadline scene follows scrolling and becomes static with reduced motion', async ({
+test('the three deadline posters follow scrolling and become static with reduced motion', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  const errors: string[] = [];
-  page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
+  await page.evaluate(() => document.fonts.ready);
   const scene = page.locator('#prazos');
-  const newAction = page.locator('#disponibilidade button');
-  await expect(newAction).toHaveCSS('transition-duration', '0.14s');
-  await expect(newAction).toHaveCSS('transition-property', 'transform, background-color, color');
-  await expect(scene.locator('.deadline-hold')).toHaveCSS('position', 'sticky');
-  const geometry = await scene.evaluate((el) => {
-    const track = el.querySelector('.deadline-track')!.getBoundingClientRect();
-    const icons = el.querySelectorAll('.deadline-icon');
-    const first = icons[0].getBoundingClientRect();
-    const last = icons[2].getBoundingClientRect();
-    return {
-      start: track.left - (first.left + first.width / 2),
-      end: track.right - (last.left + last.width / 2),
-    };
-  });
-  expect(Math.abs(geometry.start)).toBeLessThan(2);
-  expect(Math.abs(geometry.end)).toBeLessThan(2);
-  const bounds = await scene.evaluate((el) => ({
-    top: el.getBoundingClientRect().top + scrollY,
-    height: el.getBoundingClientRect().height,
-  }));
-  expect(bounds.height).toBeLessThanOrEqual(1800);
+  await expect(scene.locator('.poster-print')).toHaveCount(3);
+  const first = scene.locator('.poster-print').first();
+  await expect(first).toHaveAttribute('data-motion-active', '');
+  const top = await scene.evaluate((el) => el.getBoundingClientRect().top + scrollY);
+  await page.evaluate((top) => scrollTo({ top, behavior: 'instant' }), top - 650);
   await page.evaluate(
-    (bounds) => scrollTo({ top: bounds.top + bounds.height - innerHeight, behavior: 'instant' }),
-    bounds,
+    () =>
+      new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      ),
   );
-  await expect(scene.locator('[data-stage="2"]')).toHaveClass(/current/);
+  const initial = await first.evaluate((el) => getComputedStyle(el).transform);
+  await page.evaluate((top) => scrollTo({ top, behavior: 'instant' }), top + 600);
+  await expect.poll(() => first.evaluate((el) => getComputedStyle(el).transform)).not.toBe(initial);
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await expect(newAction).toHaveCSS('transition-duration', '0s');
-  await expect(scene.locator('.deadline-hold')).toHaveCSS('position', 'static');
-  await expect(scene.locator('li')).toHaveCount(3);
-  expect(errors).toEqual([]);
+  for (const poster of await scene.locator('.poster-print').all())
+    await expect(poster).toHaveCSS('transform', 'none');
 });
 
 test('closing availability dialog returns focus to its trigger', async ({ page }) => {

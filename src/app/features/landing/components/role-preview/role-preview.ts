@@ -1,3 +1,4 @@
+import { Contour } from '../contour/contour';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -11,12 +12,13 @@ import { ButtonPrimary } from '../../../../shared/ui/button';
 
 @Component({
   selector: 'app-role-preview',
-  imports: [Icon, Reveal, ButtonPrimary],
+  imports: [Contour, Icon, Reveal, ButtonPrimary],
   templateUrl: './role-preview.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RolePreview {
   private readonly tabs = viewChildren<ElementRef<HTMLButtonElement>>('roleTab');
+  protected readonly portraits = ['gestor', 'tecnico', 'cliente'];
   protected readonly selected = signal(0);
   protected readonly simulated = signal(false);
   protected readonly roles: {

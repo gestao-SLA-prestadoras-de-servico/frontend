@@ -9,8 +9,8 @@ test('photo, product and history follow scrolling and return to their earlier po
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
   await page.evaluate(() => document.fonts.ready);
-  const photo = page.locator('[data-scroll-motion="photo"]');
-  const section = page.locator('#evidencias');
+  const photo = page.locator('[data-scroll-motion="photo"]').first();
+  const section = photo.locator('..');
   const top = await section.evaluate((element) => element.getBoundingClientRect().top + scrollY);
   const scrollTo = async (y: number) => {
     await page.evaluate((top) => window.scrollTo({ top, behavior: 'instant' }), y);
@@ -51,13 +51,8 @@ test('photo, product and history follow scrolling and return to their earlier po
     'data-motion-active',
     '',
   );
-  const history = page.locator('[data-scroll-motion="history"]').first();
-  await history.scrollIntoViewIfNeeded();
-  await expect
-    .poll(() =>
-      history.evaluate((element) => new DOMMatrix(getComputedStyle(element).transform).m22),
-    )
-    .toBeGreaterThan(0);
+  const dial = page.locator('#historico [data-scroll-motion="dial"]').last();
+  await expect(dial).toHaveAttribute('data-motion-active', '');
   expect(errors).toEqual([]);
 });
 
@@ -154,6 +149,6 @@ test('missing animation APIs leave the same headings and images readable', async
     await expect(title).toBeVisible();
     await expect(title).toHaveCSS('opacity', '1');
   }
-  await expect(page.locator('.evidence-photo')).toHaveCSS('clip-path', 'none');
+  await expect(page.locator('.record-photo').first()).toHaveCSS('clip-path', 'none');
   expect(errors).toEqual([]);
 });

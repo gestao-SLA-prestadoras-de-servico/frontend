@@ -10,12 +10,30 @@ import {
   NgZone,
 } from '@angular/core';
 
-export type ScrollEffect = 'hero' | 'photo' | 'contract' | 'platform' | 'phone' | 'history';
+export type ScrollEffect =
+  | 'none'
+  | 'hero'
+  | 'photo'
+  | 'contract'
+  | 'platform'
+  | 'phone'
+  | 'history'
+  | 'opening-band'
+  | 'opening-figure'
+  | 'opening-copy'
+  | 'hang'
+  | 'dial'
+  | 'rings'
+  | 'strata-left'
+  | 'strata-right'
+  | 'color-row'
+  | 'date';
 
 interface ScrollActor {
   element: HTMLElement;
   trigger: HTMLElement;
   effect: ScrollEffect;
+  index: number;
   animation?: Animation;
   top: number;
   height: number;
@@ -40,12 +58,16 @@ export class ScrollMotionDriver {
     inject(DestroyRef).onDestroy(() => this.unmount());
   }
 
-  register(element: HTMLElement, effect: ScrollEffect): () => void {
+  register(element: HTMLElement, effect: ScrollEffect, index = 0, trigger = ''): () => void {
     const actor: ScrollActor = {
       element,
       // The stationary frame supplies geometry; never measure the transformed image.
-      trigger: element.parentElement ?? element,
+      trigger:
+        (trigger ? element.closest<HTMLElement>(trigger) : null) ??
+        element.parentElement ??
+        element,
       effect,
+      index,
       top: 0,
       height: 0,
       visible: false,
@@ -113,11 +135,11 @@ export class ScrollMotionDriver {
     actor.animation = undefined;
     actor.lastTime = undefined;
     actor.element.removeAttribute('data-motion-active');
-    if (this.media?.matches) return;
+    if (this.media?.matches || actor.effect === 'none') return;
     const narrow = window.innerWidth < 768;
     // Small viewports keep the photo drift, but do not tilt product text or the phone.
     if (narrow && ['contract', 'platform', 'phone'].includes(actor.effect)) return;
-    const transforms: Record<ScrollEffect, [string, string]> = {
+    const transforms: Partial<Record<ScrollEffect, [string, string]>> = {
       hero: ['translateY(0) scale(1.06)', 'translateY(32px) scale(1.1)'],
       photo: [
         `translateY(${narrow ? 12 : 30}px) scale(1.12)`,
@@ -134,11 +156,87 @@ export class ScrollMotionDriver {
       phone: ['translateY(42px) rotate(-3deg)', 'translateY(-18px) rotate(1deg)'],
       history: ['scaleY(0)', 'scaleY(1)'],
     };
+    const depth = actor.index;
+    let frames: Keyframe[];
+    const pair = transforms[actor.effect];
+    if (pair) frames = pair.map((transform) => ({ transform }));
+    else if (actor.effect === 'opening-band') {
+      const expanded = `scale(${1 + 17 * Math.pow(depth, 2.4)}) rotate(${-16 * depth}deg)`;
+      frames = [
+        { transform: 'scale(1) rotate(0)' },
+        {
+          transform: expanded,
+          offset: 0.74,
+        },
+        { transform: expanded, offset: 0.779 },
+        { transform: depth === 1 ? expanded : 'scale(1) rotate(0)', offset: 0.78 },
+        { transform: depth === 1 ? expanded : 'scale(1) rotate(0)' },
+      ];
+    } else if (actor.effect === 'opening-figure') {
+      frames = [
+        { transform: 'translate(0,0) scale(1)', opacity: 1 },
+        { transform: 'translate(20%,-36%) scale(.22)', opacity: 0, offset: 0.55 },
+        { transform: 'translate(20%,-36%) scale(.22)', opacity: 0 },
+      ];
+    } else if (actor.effect === 'opening-copy') {
+      frames = [
+        { transform: 'translateY(0)', opacity: 1 },
+        { transform: 'translateY(-12vh)', opacity: 0, offset: 0.38 },
+        { transform: 'translateY(-12vh)', opacity: 0 },
+      ];
+    } else if (actor.effect === 'hang') {
+      const sign = actor.index % 2 ? 1 : -1;
+      frames = [
+        { transform: `translateY(-70px) rotate(${3.2 * sign}deg)` },
+        { transform: `translateY(-28px) rotate(${-1.8 * sign}deg)`, offset: 0.38 },
+        { transform: `translateY(-8px) rotate(${0.8 * sign}deg)`, offset: 0.72 },
+        { transform: 'translateY(0) rotate(0)' },
+      ];
+    } else if (actor.effect === 'dial') {
+      frames = [
+        {
+          transform: `translate(${-130 * depth}px,${90 * depth}px)`,
+          fill: `color-mix(in srgb, #2054bb ${depth * 100}%, #90e4f9)`,
+        },
+        {
+          transform: 'translate(0,0)',
+          fill: `color-mix(in srgb, #087a69 ${depth * 100}%, #b8eee6)`,
+          offset: 0.5,
+        },
+        {
+          transform: `translate(${130 * depth}px,${90 * depth}px)`,
+          fill: `color-mix(in srgb, #10243a ${depth * 100}%, #a3c8fa)`,
+        },
+      ];
+    } else if (actor.effect === 'rings') {
+      frames = [
+        { transform: 'scale(.86)', opacity: 0.15 },
+        { transform: 'scale(1)', opacity: 1 },
+      ];
+    } else if (actor.effect === 'strata-left' || actor.effect === 'strata-right') {
+      const distance = actor.trigger.clientWidth * 0.22 * (actor.effect === 'strata-left' ? 1 : -1);
+      const start = Math.min(0.35, depth * 0.022);
+      frames = [
+        { transform: `translateX(${distance}px)` },
+        { transform: `translateX(${distance}px)`, offset: start },
+        { transform: 'translateX(0)', offset: Math.min(1, start + 0.65) },
+        { transform: 'translateX(0)' },
+      ];
+    } else if (actor.effect === 'color-row') {
+      frames = [
+        { backgroundColor: '#10243a' },
+        { backgroundColor: '#2054bb', offset: 0.5 },
+        { backgroundColor: '#087a69' },
+      ];
+    } else {
+      frames = [{ transform: 'translateY(24px)' }, { transform: 'translateY(-24px)' }];
+    }
     try {
-      actor.animation = actor.element.animate(
-        [{ transform: transforms[actor.effect][0] }, { transform: transforms[actor.effect][1] }],
-        { duration: 1000, fill: 'both', easing: 'linear' },
-      );
+      actor.animation = actor.element.animate(frames, {
+        duration: 1000,
+        fill: 'both',
+        easing: 'linear',
+      });
       actor.animation.pause();
       // Settle immediately at the current scroll position (including restored anchors).
       actor.element.setAttribute('data-motion-active', '');
@@ -174,6 +272,21 @@ export class ScrollMotionDriver {
       } else if (actor.effect === 'history') {
         start = actor.top - viewport * 0.7;
         end = actor.top + actor.height - viewport * 0.45;
+      } else if (actor.effect.startsWith('opening-')) {
+        start = actor.top;
+        end = actor.top + Math.max(viewport, actor.height - viewport);
+      } else if (actor.effect === 'hang') {
+        start = actor.top - viewport * 0.9;
+        end = actor.top + Math.min(actor.height * 0.45, viewport * 0.4) - viewport * 0.35;
+      } else if (actor.effect === 'dial') {
+        start = actor.top - viewport * 0.3;
+        end = actor.top + actor.height - viewport * 0.7;
+      } else if (actor.effect.startsWith('strata-')) {
+        start = actor.top - viewport * 0.78;
+        end = actor.top + actor.height - viewport * 0.88;
+      } else if (actor.effect === 'rings') {
+        start = actor.top - viewport * 0.9;
+        end = actor.top - viewport * 0.15;
       }
       // Firefox may report a fully masked frame as non-intersecting during its reveal.
       // Its stationary geometry still supplies the correct initial scroll position.
@@ -181,7 +294,13 @@ export class ScrollMotionDriver {
         actor.top < scroll + viewport + 120 && actor.top + actor.height > scroll - 120;
       if (!actor.visible && !nearViewport && scroll > start && scroll < end) continue;
       const progress = Math.max(0, Math.min(1, (scroll - start) / Math.max(1, end - start)));
-      const time = progress * 1000;
+      const time =
+        // Once the second panel covers the stage, drop the enlarged SVG geometry.
+        // Keeping scaled SVG paths behind it can stall Firefox's refresh/scroll delivery.
+        (actor.effect === 'opening-band' && progress >= 1) ||
+        (actor.effect === 'opening-copy' && actor.element.contains(this.document.activeElement))
+          ? 0
+          : progress * 1000;
       if (actor.lastTime !== time) {
         actor.animation.currentTime = time;
         actor.lastTime = time;
@@ -213,6 +332,8 @@ export class ScrollMotionDriver {
 })
 export class ScrollMotion {
   readonly appScrollMotion = input.required<ScrollEffect>();
+  readonly motionIndex = input(0);
+  readonly motionTrigger = input('');
   private readonly driver = inject(ScrollMotionDriver);
   private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly destroyRef = inject(DestroyRef);
@@ -226,7 +347,13 @@ export class ScrollMotion {
         typeof element.animate !== 'function'
       )
         return;
-      const unregister = this.driver.register(element, this.appScrollMotion());
+      if (this.appScrollMotion() === 'none') return;
+      const unregister = this.driver.register(
+        element,
+        this.appScrollMotion(),
+        this.motionIndex(),
+        this.motionTrigger(),
+      );
       this.destroyRef.onDestroy(unregister);
     });
   }

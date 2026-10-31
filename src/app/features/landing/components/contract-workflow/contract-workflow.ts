@@ -1,15 +1,17 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Icon, IconName } from '../icon/icon';
+import { IconName } from '../icon/icon';
 import { Reveal } from '../../reveal.directive';
 import { ScrollMotion } from '../../scroll-motion.directive';
 
 @Component({
   selector: 'app-contract-workflow',
-  imports: [ScrollMotion, Icon, Reveal],
+  imports: [ScrollMotion, Reveal],
   templateUrl: './contract-workflow.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContractWorkflow {
+  protected readonly labels = ['Contrato', 'Equipe', 'Evidências', 'Cliente'];
+  protected readonly bands = Array.from({ length: 12 }, (_, i) => i);
   protected readonly steps: { icon: IconName; title: string; description: string }[] = [
     {
       icon: 'file',

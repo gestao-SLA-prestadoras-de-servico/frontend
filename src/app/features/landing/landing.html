@@ -127,128 +127,125 @@
 </dialog>
 <main id="conteudo" tabindex="-1">
   <section
-    class="landing-hero relative flex items-end bg-navy [&_:focus-visible]:outline-cyan"
     id="inicio"
+    class="opening"
     tabindex="-1"
     aria-labelledby="hero-title"
+    data-scroll-scene="opening-fall"
   >
-    <app-hero-background appScrollMotion="hero" />
-    <div class="page-frame relative z-1">
-      <h1 class="hero-heading text-white" appReveal revealEffect="lines" id="hero-title">
-          <span class="motion-line"><span>Prazos sob controle.</span></span>
-          <span class="motion-line"><span><span class="text-cyan">Atendimento comprovado.</span></span></span>
-        </h1>
-      <p class="hero-description" [appReveal]="1">
-        Chamados, prazos e evidências em um só lugar<br class="hidden sm:block" />
-        para prestadoras de serviços técnicos.
-      </p>
-      <div class="hero-actions" [appReveal]="2" revealEffect="fade">
-        <a
-          appButtonPrimary
-          class="press-feedback min-h-[50px] px-5 py-button-block"
-          href="#plataforma"
-          (click)="followAnchor('plataforma')"
-          ><app-action-label label="Conhecer a plataforma" /><app-icon
-            class="[--icon-size:19px] transition-transform duration-(--motion-label) ease-out motion-safe:group-hover/action:rotate-45 motion-safe:group-focus-visible/action:rotate-45 motion-reduce:transition-none"
-            name="arrow"
-        /></a>
-        <button
-          #heroAccess
-          appButtonSecondary="inverse"
-          class="press-feedback min-h-[50px] px-5 py-button-block"
-          type="button"
-          (click)="access.open(heroAccess)"
-        >
-          <app-action-label label="Sobre a disponibilidade" />
-        </button>
+    <div class="opening-stage">
+      <app-contour
+        class="opening-contour"
+        shape="opening"
+        motion="opening-band"
+        trigger="#inicio"
+      />
+      <div class="opening-person" appScrollMotion="opening-figure" motionTrigger="#inicio">
+        <img
+          src="images/nivelo-gestor-ilustrativo.webp"
+          alt="Gestor consultando um notebook. Imagem gerada por IA, ilustrativa."
+          width="1024"
+          height="1536"
+          fetchpriority="high"
+        />
+        <span class="opening-image-note">Imagem gerada por IA · ilustrativa</span>
       </div>
-      <p class="hero-development" [appReveal]="3" revealEffect="fade">
-        <span aria-hidden="true"></span>Em desenvolvimento · Acesso ainda indisponível.
-      </p>
+      <div class="opening-film"><app-hero-background /><span>Fluxo de luz · Nivelo</span></div>
     </div>
+    <div class="page-frame opening-first">
+      <div class="opening-copy" appScrollMotion="opening-copy" motionTrigger="#inicio">
+        <h1 class="hero-heading" appReveal revealEffect="lines" id="hero-title">
+          <span class="motion-line"><span>Prazos sob controle.</span></span>
+          <span class="motion-line"><span>Atendimento comprovado.</span></span>
+        </h1>
+        <p class="hero-description" [appReveal]="1">
+          Chamados, prazos e evidências em um só lugar para prestadoras de serviços técnicos.
+        </p>
+        <div class="hero-actions" [appReveal]="2" revealEffect="fade">
+          <a
+            appButtonPrimary
+            class="press-feedback min-h-[50px] px-5 py-button-block"
+            href="#plataforma"
+            (click)="followAnchor('plataforma')"
+            ><app-action-label label="Conhecer a plataforma" /><app-icon name="arrow"
+          /></a>
+          <button
+            #heroAccess
+            appButtonSecondary
+            class="press-feedback min-h-[50px] px-5 py-button-block"
+            type="button"
+            (click)="access.open(heroAccess)"
+          >
+            <app-action-label label="Sobre a disponibilidade" />
+          </button>
+        </div>
+        <p class="hero-development" [appReveal]="3" revealEffect="fade">
+          <span aria-hidden="true"></span>Em desenvolvimento · Acesso ainda indisponível.
+        </p>
+      </div>
+    </div>
+    <app-benefits />
   </section>
-  <app-benefits />
   <app-deadline-story />
-  <app-contract-workflow />
-  <app-platform-overview />
   <app-service-record />
+  <app-contract-workflow />
   <app-role-preview />
+  <app-platform-overview />
+  <app-contract-terms />
   <app-mobile-access />
   <app-faq />
-  <section
-    id="disponibilidade"
-    class="chapter light-flow bg-navy text-on-navy"
-    aria-labelledby="closing-title"
-  >
-    <div
-      class="page-frame relative z-1 flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-center"
-    >
+  <section id="disponibilidade" class="chapter closing-section" aria-labelledby="closing-title">
+    <div class="page-frame closing-grid">
       <div appReveal>
-        <p class="chapter-label text-cyan">Nivelo</p>
-        <h2 id="closing-title" class="text-white">
-          <span class="motion-line"><span>Mais contexto hoje.</span></span>
-          <span class="motion-line"><span><span class="text-cyan">Mais clareza para agir.</span></span></span>
+        <h2 id="closing-title">
+          <span class="motion-line"><span>Mais contexto hoje.</span></span
+          ><span class="motion-line"><span>Mais clareza para agir.</span></span>
         </h2>
-        <p class="chapter-lead max-w-[49ch] text-on-navy">
+        <p class="chapter-lead">
           Uma proposta para conectar os compromissos de cada contrato ao que acontece em cada
           atendimento.
         </p>
-      </div>
-      <div class="max-w-[350px]" [appReveal]="1">
         <button
           #closingAccess
           appButtonPrimary
           type="button"
-          class="press-feedback min-h-[50px] px-button-inline py-button-block"
+          class="press-feedback mt-8 min-h-[50px] px-button-inline py-button-block"
           (click)="access.open(closingAccess)"
         >
-          <app-action-label label="Sobre a disponibilidade" /><app-icon
-            name="arrow"
-            class="[--icon-size:19px]"
-          />
+          <app-action-label label="Sobre a disponibilidade" /><app-icon name="arrow" />
         </button>
-        <p class="mt-5 text-sm">
+        <p class="mt-6 text-sm text-ink2">
           A Nivelo está em desenvolvimento.<br />O acesso ao sistema ainda não está disponível.
         </p>
+      </div>
+      <div class="closing-art">
+        <app-contour [outline]="true" motion="rings" trigger="#disponibilidade" /><img
+          src="images/nivelo-symbol.svg"
+          alt=""
+          width="110"
+          height="88"
+        />
       </div>
     </div>
   </section>
 </main>
-<footer class="bg-navy pt-14 pb-6 text-on-navy">
-  <div
-    class="mx-auto w-[calc(100%-40px)] max-w-[1440px] sm:w-[calc(100%-64px)] xl:w-[calc(100%-112px)]"
-  >
-    <div class="grid grid-cols-1 items-center gap-7 sm:grid-cols-[1fr_1fr_auto] sm:gap-8">
-      <a
-        class="inline-flex items-center gap-2.5 whitespace-nowrap text-white no-underline"
-        href="#inicio"
-        aria-label="Nivelo, voltar ao início"
-        (click)="followAnchor('inicio')"
-        ><img
-          class="h-10 w-[50px]"
-          src="images/nivelo-symbol.svg"
-          alt=""
-          width="50"
-          height="40"
-        /><span
-          class="flex flex-col text-[1.875rem] leading-[1.05] font-extrabold tracking-[-0.035em]"
-          >NIVELO<small class="mt-[5px] text-[0.45rem] leading-none font-semibold tracking-[0.3em]"
-            >GESTÃO DE SLA</small
-          ></span
-        ></a
-      >
-      <p class="text-[0.8125rem]">
-        Chamados, prazos e evidências.<br />Todo o atendimento no mesmo lugar.
-      </p>
+<footer class="isoline-footer">
+  <div class="page-frame">
+    <div class="footer-top">
+      <p>Chamados, prazos e evidências.<br />Todo o atendimento no mesmo lugar.</p>
       <a appLink="footer" href="#inicio" (click)="followAnchor('inicio')"
         >Voltar ao início<app-icon name="arrow"
       /></a>
     </div>
-    <div
-      class="mt-12 flex flex-col gap-2 border-t border-[#334b62] pt-[22px] sm:flex-row sm:justify-between sm:gap-6"
+    <a
+      href="#inicio"
+      class="footer-word"
+      aria-label="Nivelo, voltar ao início"
+      (click)="followAnchor('inicio')"
+      >Nivelo</a
     >
-      <p class="text-[0.8125rem]">Projeto Integrador 2026.2</p>
-      <p class="text-[0.8125rem]">Plataforma em desenvolvimento</p>
+    <div class="footer-fine">
+      <span>Projeto Integrador 2026.2</span><span>Plataforma em desenvolvimento</span>
     </div>
   </div>
 </footer>

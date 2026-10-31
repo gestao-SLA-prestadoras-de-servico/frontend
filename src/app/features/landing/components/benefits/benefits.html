@@ -1,33 +1,18 @@
-<section id="beneficios" class="chapter bg-bg" tabindex="-1" aria-labelledby="benefits-title">
-  <div class="page-frame grid items-center gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-24">
-    <div appReveal>
-      <p class="chapter-label">Benefícios</p>
-      <h2 id="benefits-title">
-        <span class="motion-line"><span>Menos conferência manual.</span></span>
-        <span class="motion-line"
-          ><span><span class="text-pri">Mais clareza para agir.</span></span></span
-        >
+<section id="beneficios" class="benefits-statement" tabindex="-1" aria-labelledby="benefits-title">
+  <div class="page-frame">
+    <div class="statement-grid">
+      <h2 id="benefits-title" appReveal revealEffect="lines">
+        <span class="motion-line"><span>Menos conferência manual.</span></span
+        ><span class="motion-line"><span>Mais clareza para agir.</span></span>
       </h2>
-      <p class="chapter-lead max-w-[48ch]">
+      <p class="statement-note" appReveal>
         A Nivelo foi pensada para conectar organização, acompanhamento e comprovação. Do contrato à
         evidência, a informação acompanha o chamado.
       </p>
     </div>
-    <div class="grid gap-7 lg:border-l lg:border-line2 lg:pl-14">
-      @for (benefit of benefits; track benefit.title; let i = $index) {
-        <article class="flex items-start gap-5" [appReveal]="i + 1">
-          <span
-            class="benefit-icon"
-            [class.benefit-icon-teal]="i === 1"
-            [class.benefit-icon-green]="i === 2"
-            ><app-icon [name]="benefit.icon"
-          /></span>
-          <div>
-            <h3 class="text-base">{{ benefit.title }}</h3>
-            <p class="mt-2 max-w-[42ch] text-sm text-ink2">{{ benefit.description }}</p>
-          </div>
-        </article>
-      }
+    <div class="statement-links" appReveal>
+      <a href="#prazos">Três prazos</a><a href="#historico">Um histórico</a
+      ><a href="#evidencias">Cada evidência</a>
     </div>
   </div>
 </section>

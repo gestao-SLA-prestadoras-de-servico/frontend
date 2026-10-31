@@ -1,40 +1,51 @@
 <section
-  #scene
   id="prazos"
-  class="deadline-scene"
+  class="chapter poster-section"
   aria-labelledby="sla-story-title"
-  data-scroll-scene="three-deadlines"
+  data-scroll-scene="hanging-posters"
 >
-  <div class="deadline-hold">
-    <div class="page-frame">
-      <div class="max-w-[760px]" appReveal>
-        <p class="chapter-label">Três compromissos. Um atendimento.</p>
-        <h2 id="sla-story-title">
-          <span class="motion-line"><span>Da abertura à solução,</span></span>
-          <span class="motion-line"><span>cada prazo tem seu papel.</span></span>
-        </h2>
-        <p class="chapter-lead max-w-[54ch]">
-          SLA é o acordo de nível de serviço. A Nivelo prevê acompanhar três marcos, cada um com as
-          regras do seu contrato.
-        </p>
-      </div>
-      <div class="deadline-track" aria-hidden="true"><span #progress></span></div>
-      <ol class="deadline-steps">
-        @for (step of steps; track step.title; let i = $index) {
-          <li [class.current]="stage() === i" [attr.data-stage]="i" [appReveal]="i">
-            <span class="deadline-icon"
-              ><app-icon [name]="step.icon" class="[--icon-size:30px]"
-            /></span>
-            <h3>{{ step.title }}</h3>
-            <p class="mt-2 font-semibold text-pri-d">{{ step.subtitle }}</p>
-            <p class="mt-3 max-w-[32ch] text-sm text-ink2">{{ step.description }}</p>
-          </li>
-        }
-      </ol>
-      <p class="mt-10 text-caption text-ink2">
-        Os prazos são definidos por contrato. Esta apresentação não estabelece tempos de
-        atendimento.
+  <div class="page-frame">
+    <div class="section-intro" appReveal>
+      <h2 id="sla-story-title">
+        <span class="motion-line"><span>Três prazos.</span></span
+        ><span class="motion-line"><span>Cada um com seu papel.</span></span>
+      </h2>
+      <p class="chapter-lead">
+        SLA é o acordo de nível de serviço. A Nivelo prevê acompanhar três marcos, cada um com as
+        regras do seu contrato.
       </p>
     </div>
+    <ol class="deadline-posters">
+      @for (step of steps; track step.title; let i = $index) {
+        <li [attr.data-stage]="i" data-poster>
+          <div
+            class="poster-print"
+            appScrollMotion="hang"
+            [motionIndex]="i"
+            motionTrigger="[data-poster]"
+          >
+            <div class="print-clips" aria-hidden="true"><i></i><i></i></div>
+            <div class="poster-sheet">
+              <app-contour [tone]="i" motion="rings" trigger="[data-poster]" /><img
+                [src]="'images/nivelo-' + step.image + '-ilustrativo.webp'"
+                alt=""
+                width="1024"
+                height="1536"
+                loading="lazy"
+              /><span class="poster-caption">Nivelo · {{ step.subtitle }}</span>
+            </div>
+          </div>
+          <div class="poster-description" appReveal>
+            <span class="level-badge" [attr.data-tone]="i">{{ step.subtitle }}</span>
+            <h3>{{ step.title }}</h3>
+            <p>{{ step.description }}</p>
+          </div>
+        </li>
+      }
+    </ol>
+    <p class="illustrative-note">
+      Os prazos são definidos por contrato. Esta apresentação não estabelece tempos de atendimento.
+      Pessoas geradas por IA · ilustrativas.
+    </p>
   </div>
 </section>

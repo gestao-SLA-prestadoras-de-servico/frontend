@@ -1,5 +1,7 @@
 # Landing Nivelo — A · Fluxo de luz
 
+> Registro histórico da composição A, aprovada em 30/10/2026. Em 31/10/2026, o usuário a substituiu pela referência Isoline, preservando a identidade Nivelo e os controles existentes. A composição atual e sua verificação estão em [ISOLINE_REFERENCE.md](ISOLINE_REFERENCE.md). As decisões e evidências abaixo pertencem à entrega anterior e foram preservadas.
+
 A composição A — Fluxo de luz foi aprovada em 30/10/2026 para ampliar a landing pública em `/`. A implementação mantém Angular, prerenderização e hidratação com repetição de eventos. A identidade, a navbar, o vídeo de fundo e o poster existentes foram preservados. [PRODUCT.md](../PRODUCT.md) descreve o produto e seus limites; [DESIGN.md](../DESIGN.md) registra o sistema visual, e o [briefing da superfície](../.impeccable/surfaces/src-app-app-html.md) registra a direção.
 
 ## Composição implementada

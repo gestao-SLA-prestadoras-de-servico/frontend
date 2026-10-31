@@ -1,100 +1,94 @@
-<section id="evidencias" class="evidence-section" aria-labelledby="evidence-section-title">
-  <div class="evidence-photo" appReveal revealEffect="wipe">
-    <img
-      src="images/manutencao-ilustrativa.png"
-      appScrollMotion="photo"
-      alt="Técnico com capacete registrando pelo celular uma unidade de climatização em manutenção. Cena ilustrativa."
-      width="1536"
-      height="1024"
-      loading="lazy"
-    />
-    <div class="photo-record" [appReveal]="2" revealEffect="left">
-      <span class="grid size-10 shrink-0 place-items-center rounded-full bg-grn text-white"
-        ><app-icon name="check"
-      /></span>
-      <div>
-        <strong class="block text-sm">Evidência registrada</strong
-        ><span class="text-caption text-on-navy">Chamado #1042 · 10:15 · exemplo</span>
+<section
+  id="historico"
+  class="chapter day-section"
+  aria-labelledby="history-section-title"
+  data-scroll-scene="history-dial"
+>
+  <div class="page-frame day-grid">
+    <div class="day-dial"><app-contour motion="dial" trigger="#historico" /></div>
+    <div class="day-main">
+      <div appReveal>
+        <h2 id="history-section-title">
+          <span class="motion-line"><span>Cada ação</span></span
+          ><span class="motion-line"><span>tem uma história.</span></span>
+        </h2>
+        <p class="chapter-lead">
+          Acompanhe o caminho do chamado sem perder os detalhes. Ações, horários e responsáveis
+          compõem a memória do atendimento.
+        </p>
       </div>
+      <ol class="day-list">
+        @for (event of events; track event.time; let i = $index) {
+          <li class="day-row">
+            <time>{{ event.time }}</time>
+            <div appReveal>
+              <span class="level-badge" [attr.data-tone]="i % 3">{{ event.role }}</span>
+              <h3>{{ event.action }}</h3>
+              <p>{{ event.description }}</p>
+              <p class="day-person">{{ event.person }} · {{ event.role }}</p>
+            </div>
+          </li>
+        }
+      </ol>
+      <p class="illustrative-note">
+        Chamado #1042 · sequência ilustrativa · dados fictícios. Serviço iniciado e evidências
+        registradas; resolução em andamento.
+      </p>
     </div>
-    <p class="photo-caption">Imagem gerada por IA · ilustrativa</p>
-  </div>
-  <div class="evidence-copy" [appReveal]="1">
-    <p class="chapter-label">Evidências do atendimento</p>
-    <h2 id="evidence-section-title">
-      <span class="motion-line"><span>O serviço acontece.</span></span>
-      <span class="motion-line"
-        ><span><span class="text-pri">O registro fica.</span></span></span
-      >
-    </h2>
-    <p class="chapter-lead max-w-[43ch]">
-      A proposta é registrar fotos pelo celular e associá-las ao chamado. Assim, o atendimento ganha
-      um registro que a equipe e o cliente poderão consultar.
-    </p>
-    <ul class="mt-8 grid list-none gap-6 p-0">
-      <li class="flex gap-4">
-        <app-icon class="mt-1 text-pri" name="camera" />
-        <div>
-          <h3 class="text-base">Fotos junto do chamado</h3>
-          <p class="mt-1 text-sm text-ink2">Evidências no contexto do serviço realizado.</p>
-        </div>
-      </li>
-      <li class="flex gap-4">
-        <app-icon class="mt-1 text-pri" name="history" />
-        <div>
-          <h3 class="text-base">Informação que permanece</h3>
-          <p class="mt-1 text-sm text-ink2">Consulte o que foi registrado, quando e por quem.</p>
-        </div>
-      </li>
-      <li class="flex gap-4">
-        <app-icon class="mt-1 text-pri" name="shield" />
-        <div>
-          <h3 class="text-base">Consulta conforme o papel</h3>
-          <p class="mt-1 text-sm text-ink2">Registros disponíveis para as pessoas com permissão.</p>
-        </div>
-      </li>
-    </ul>
   </div>
 </section>
-<section id="historico" class="chapter bg-bg" aria-labelledby="history-section-title">
-  <div class="page-frame grid items-start gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-24">
-    <div appReveal>
-      <p class="chapter-label">Histórico</p>
-      <h2 id="history-section-title">
-        <span class="motion-line"><span>Cada ação</span></span>
-        <span class="motion-line"
-          ><span><span class="text-pri">tem uma história.</span></span></span
-        >
+<section id="evidencias" class="chapter record-section" aria-labelledby="evidence-section-title">
+  <div class="page-frame">
+    <div class="section-intro" appReveal>
+      <h2 id="evidence-section-title">
+        <span class="motion-line"><span>O serviço acontece.</span></span
+        ><span class="motion-line"><span>O registro fica.</span></span>
       </h2>
-      <p class="chapter-lead max-w-[43ch]">
-        Acompanhe o caminho do chamado sem perder os detalhes. Ações, horários e responsáveis
-        compõem a memória do atendimento.
-      </p>
-      <p class="mt-6 max-w-[43ch] text-sm text-ink2">
-        Neste exemplo, o serviço já começou e as evidências foram registradas. A resolução segue em
-        andamento.
-      </p>
-      <p class="mt-6 text-caption text-ink3">
-        Chamado #1042 · sequência ilustrativa · dados fictícios
+      <p class="chapter-lead">
+        Do pedido à comprovação. Informações e fotografias reunidas no contexto de cada chamado.
       </p>
     </div>
-    <ol class="history-list" data-ui>
-      @for (event of events; track event.time; let i = $index) {
-        <li [appReveal]="i">
-          <time class="font-semibold tabular-nums text-pri-d">{{ event.time }}</time>
-          <div>
-            <h3 class="text-base">{{ event.action }}</h3>
-            <p class="mt-1 text-sm text-ink2">{{ event.description }}</p>
-            <p class="mt-3 text-caption text-ink3">
-              <strong class="font-semibold text-navy">{{ event.person }}</strong> · {{ event.role }}
-            </p>
+    <div class="record-list">
+      @for (record of records; track record.title; let i = $index) {
+        <article class="record-row" data-record>
+          <figure
+            class="record-print"
+            appScrollMotion="hang"
+            [motionIndex]="i"
+            motionTrigger="[data-record]"
+          >
+            <div class="print-clips" aria-hidden="true"><i></i><i></i></div>
+            <div
+              class="record-photo"
+              [class.person-photo]="record.person"
+              appReveal
+              revealEffect="wipe"
+            >
+              <img
+                [src]="'images/' + record.image"
+                [alt]="
+                  record.person
+                    ? 'Pessoa gerada por IA, ilustrativa do perfil ' + record.label
+                    : 'Registro ilustrativo de manutenção de climatização'
+                "
+                width="1024"
+                height="1024"
+                loading="lazy"
+                [appScrollMotion]="record.person ? 'none' : 'photo'"
+              />
+            </div>
+          </figure>
+          <div class="record-body" appReveal>
+            <span class="level-badge" [attr.data-tone]="i % 3">{{ record.label }}</span>
+            <h3>{{ record.title }}</h3>
+            <p>{{ record.text }}</p>
           </div>
-          <span class="history-dot" aria-hidden="true"></span>
-          @if (i < events.length - 1) {
-            <span class="history-fill" appScrollMotion="history" aria-hidden="true"></span>
-          }
-        </li>
+        </article>
       }
-    </ol>
+    </div>
+    <p class="illustrative-note">
+      Pessoas e cena de manutenção geradas por IA · imagens ilustrativas. Não representam equipe,
+      cliente ou atendimento real.
+    </p>
   </div>
 </section>

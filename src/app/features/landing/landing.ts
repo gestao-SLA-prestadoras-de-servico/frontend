@@ -1,3 +1,5 @@
+import { ContractTerms } from './components/contract-terms/contract-terms';
+import { Contour } from './components/contour/contour';
 import { DOCUMENT } from '@angular/common';
 import {
   afterNextRender,
@@ -31,6 +33,8 @@ import { ScrollMotion } from './scroll-motion.directive';
   selector: 'app-landing',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    ContractTerms,
+    Contour,
     AvailabilityDialog,
     Icon,
     HeroBackground,

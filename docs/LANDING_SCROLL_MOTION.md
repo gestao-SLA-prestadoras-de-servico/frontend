@@ -1,5 +1,7 @@
 # Movimento da landing Nivelo
 
+> Registro histórico do refinamento de movimento da composição A — Fluxo de luz. A composição e a sequência de movimentos foram substituídas pela referência Isoline a pedido do usuário em 31/10/2026. A implementação atual e suas evidências estão em [ISOLINE_REFERENCE.md](ISOLINE_REFERENCE.md). Os valores, métricas e verificações abaixo descrevem a entrega anterior.
+
 O refinamento preserva a composição A, as doze seções, a navbar, a identidade e o conteúdo factual. A referência solicitada é o [Isoline](https://8b.com/templates/isoline/demo.html). O HTML e os scripts públicos da referência foram examinados; o navegador conectado estava indisponível. A comparação de movimento partiu desses scripts, sem afirmar uma reprodução visual exata da página externa.
 
 A tese é acompanhar o caminho **contrato → chamado → evidência → histórico**. Textos apresentam o contexto; as superfícies do exemplo se acomodam durante a rolagem; a fotografia revela o serviço e a linha do histórico acompanha seus registros. As demonstrações e os horários continuam ilustrativos.
