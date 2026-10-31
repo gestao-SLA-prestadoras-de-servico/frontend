@@ -25,6 +25,7 @@ import { ServiceRecord } from './components/service-record/service-record';
 import { RolePreview } from './components/role-preview/role-preview';
 import { MobileAccess } from './components/mobile-access/mobile-access';
 import { Reveal } from './reveal.directive';
+import { ScrollMotion } from './scroll-motion.directive';
 
 @Component({
   selector: 'app-landing',
@@ -46,6 +47,7 @@ import { Reveal } from './reveal.directive';
     RolePreview,
     MobileAccess,
     Reveal,
+    ScrollMotion,
   ],
   templateUrl: './landing.html',
   host: { class: 'block' },

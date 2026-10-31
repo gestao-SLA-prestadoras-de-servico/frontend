@@ -1,13 +1,14 @@
 <section id="evidencias" class="evidence-section" aria-labelledby="evidence-section-title">
-  <div class="evidence-photo" appReveal>
+  <div class="evidence-photo" appReveal revealEffect="wipe">
     <img
       src="images/manutencao-ilustrativa.png"
+      appScrollMotion="photo"
       alt="Técnico com capacete registrando pelo celular uma unidade de climatização em manutenção. Cena ilustrativa."
       width="1536"
       height="1024"
       loading="lazy"
     />
-    <div class="photo-record">
+    <div class="photo-record" [appReveal]="2" revealEffect="left">
       <span class="grid size-10 shrink-0 place-items-center rounded-full bg-grn text-white"
         ><app-icon name="check"
       /></span>
@@ -21,7 +22,10 @@
   <div class="evidence-copy" [appReveal]="1">
     <p class="chapter-label">Evidências do atendimento</p>
     <h2 id="evidence-section-title">
-      O serviço acontece.<br /><span class="text-pri">O registro fica.</span>
+      <span class="motion-line"><span>O serviço acontece.</span></span>
+      <span class="motion-line"
+        ><span><span class="text-pri">O registro fica.</span></span></span
+      >
     </h2>
     <p class="chapter-lead max-w-[43ch]">
       A proposta é registrar fotos pelo celular e associá-las ao chamado. Assim, o atendimento ganha
@@ -57,7 +61,10 @@
     <div appReveal>
       <p class="chapter-label">Histórico</p>
       <h2 id="history-section-title">
-        Cada ação<br /><span class="text-pri">tem uma história.</span>
+        <span class="motion-line"><span>Cada ação</span></span>
+        <span class="motion-line"
+          ><span><span class="text-pri">tem uma história.</span></span></span
+        >
       </h2>
       <p class="chapter-lead max-w-[43ch]">
         Acompanhe o caminho do chamado sem perder os detalhes. Ações, horários e responsáveis
@@ -67,7 +74,9 @@
         Neste exemplo, o serviço já começou e as evidências foram registradas. A resolução segue em
         andamento.
       </p>
-      <p class="mt-6 text-caption text-ink3">Chamado #1042 · sequência ilustrativa · dados fictícios</p>
+      <p class="mt-6 text-caption text-ink3">
+        Chamado #1042 · sequência ilustrativa · dados fictícios
+      </p>
     </div>
     <ol class="history-list" data-ui>
       @for (event of events; track event.time; let i = $index) {
@@ -81,6 +90,9 @@
             </p>
           </div>
           <span class="history-dot" aria-hidden="true"></span>
+          @if (i < events.length - 1) {
+            <span class="history-fill" appScrollMotion="history" aria-hidden="true"></span>
+          }
         </li>
       }
     </ol>

@@ -38,6 +38,8 @@ A página apresenta funcionalidades previstas. Não implementa API de produto, a
 
 ## Movimento, responsividade e acessibilidade
 
+O refinamento posterior de títulos, fotografias e superfícies ligadas à rolagem está documentado em [LANDING_SCROLL_MOTION.md](LANDING_SCROLL_MOTION.md). O registro de testes abaixo descreve a entrega original da composição A; a confirmação do refinamento está nesse documento específico.
+
 Os capítulos usam largura máxima de 1328 px e recuos laterais de 20, 32 e 56 px conforme o viewport. O fluxo passa de quatro para duas e depois uma coluna. Foto e texto empilham abaixo de 1024 px; os painéis de perfil empilham abaixo de 640 px. O chamado quebra suas linhas de prazo abaixo de 400 px. Títulos e espaçamentos do hero se ajustam também à altura disponível. O token `caption` define metadados de 13 px na área principal; navbar e marca textual conservam sua tipografia anterior.
 
 A cena dos três prazos ocupa `180svh` e mantém sua área interna em `100svh` com sticky apenas em telas com largura ≥1024 px e altura ≥700 px, quando o movimento é permitido. Uma animação pausada da Web Animations API recebe o progresso da rolagem, com atualização via `requestAnimationFrame` enquanto a cena está visível. Os três compromissos seguem no HTML. Em telas estreitas, baixas ou com movimento reduzido, a apresentação é estática e não reserva essa altura adicional.

@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Icon } from '../icon/icon';
 import { Reveal } from '../../reveal.directive';
+import { ScrollMotion } from '../../scroll-motion.directive';
 
 @Component({
   selector: 'app-service-record',
-  imports: [Icon, Reveal],
+  imports: [ScrollMotion, Icon, Reveal],
   templateUrl: './service-record.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -132,16 +132,17 @@
     tabindex="-1"
     aria-labelledby="hero-title"
   >
-    <app-hero-background />
+    <app-hero-background appScrollMotion="hero" />
     <div class="page-frame relative z-1">
-      <h1 class="hero-heading text-white" id="hero-title">
-        Prazos sob controle.<br /><span class="text-cyan">Atendimento comprovado.</span>
-      </h1>
-      <p class="hero-description">
+      <h1 class="hero-heading text-white" appReveal revealEffect="lines" id="hero-title">
+          <span class="motion-line"><span>Prazos sob controle.</span></span>
+          <span class="motion-line"><span><span class="text-cyan">Atendimento comprovado.</span></span></span>
+        </h1>
+      <p class="hero-description" [appReveal]="1">
         Chamados, prazos e evidências em um só lugar<br class="hidden sm:block" />
         para prestadoras de serviços técnicos.
       </p>
-      <div class="hero-actions">
+      <div class="hero-actions" [appReveal]="2" revealEffect="fade">
         <a
           appButtonPrimary
           class="press-feedback min-h-[50px] px-5 py-button-block"
@@ -161,7 +162,7 @@
           <app-action-label label="Sobre a disponibilidade" />
         </button>
       </div>
-      <p class="hero-development">
+      <p class="hero-development" [appReveal]="3" revealEffect="fade">
         <span aria-hidden="true"></span>Em desenvolvimento · Acesso ainda indisponível.
       </p>
     </div>
@@ -185,7 +186,8 @@
       <div appReveal>
         <p class="chapter-label text-cyan">Nivelo</p>
         <h2 id="closing-title" class="text-white">
-          Mais contexto hoje.<br /><span class="text-cyan">Mais clareza para agir.</span>
+          <span class="motion-line"><span>Mais contexto hoje.</span></span>
+          <span class="motion-line"><span><span class="text-cyan">Mais clareza para agir.</span></span></span>
         </h2>
         <p class="chapter-lead max-w-[49ch] text-on-navy">
           Uma proposta para conectar os compromissos de cada contrato ao que acontece em cada

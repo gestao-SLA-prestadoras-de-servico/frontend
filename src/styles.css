@@ -79,6 +79,11 @@
     --motion-overlay-out: 160ms;
     --motion-label: 450ms;
     --motion-video: 600ms;
+    --motion-reveal: 800ms;
+    --motion-line: 900ms;
+    --motion-image: 1100ms;
+    --motion-stagger: 70ms;
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
     color-scheme: light;
   }
 

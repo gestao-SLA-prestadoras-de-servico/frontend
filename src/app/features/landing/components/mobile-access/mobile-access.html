@@ -3,7 +3,10 @@
     <div appReveal>
       <p class="chapter-label">Uso no celular</p>
       <h2 id="mobile-title">
-        O contexto do serviço.<br /><span class="text-pri">Também em campo.</span>
+        <span class="motion-line"><span>O contexto do serviço.</span></span>
+        <span class="motion-line"
+          ><span><span class="text-pri">Também em campo.</span></span></span
+        >
       </h2>
       <p class="chapter-lead max-w-[46ch]">
         O acesso pelo navegador do celular está previsto para aproximar as informações do lugar onde
@@ -24,8 +27,8 @@
         Plataforma em desenvolvimento.
       </p>
     </div>
-    <figure class="mobile-figure" [appReveal]="1" data-ui>
-      <div class="phone-preview">
+    <figure class="mobile-figure" [appReveal]="1" revealEffect="fade" data-ui>
+      <div class="phone-preview" appScrollMotion="phone">
         <div class="phone-browser">
           <span aria-hidden="true" class="size-1.5 rounded-full bg-grn"></span>Nivelo · navegador
         </div>

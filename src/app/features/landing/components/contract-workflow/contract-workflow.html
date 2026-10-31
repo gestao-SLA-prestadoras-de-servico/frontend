@@ -3,7 +3,10 @@
     <div appReveal>
       <p class="chapter-label">Contratos</p>
       <h2 id="contracts-title">
-        Cada contrato,<br /><span class="text-pri">seus compromissos.</span>
+        <span class="motion-line"><span>Cada contrato,</span></span>
+        <span class="motion-line"
+          ><span><span class="text-pri">seus compromissos.</span></span></span
+        >
       </h2>
       <p class="chapter-lead max-w-[45ch]">
         O atendimento começa com o que foi combinado. Os chamados estarão vinculados ao contrato do
@@ -13,42 +16,44 @@
         Uma base em comum para orientar a equipe e consultar as condições de cada serviço.
       </p>
     </div>
-    <figure class="contract-figure" [appReveal]="1" data-ui>
-      <div class="flex items-center gap-4 border-b border-line pb-6">
-        <span class="benefit-icon"><app-icon name="file" /></span>
-        <div>
-          <p class="text-caption text-ink2">Contrato de manutenção · exemplo</p>
-          <h3 class="mt-1 text-xl">Climatização do edifício</h3>
+    <div class="motion-object-frame" [appReveal]="1" revealEffect="fade">
+      <figure class="contract-figure" appScrollMotion="contract" data-ui>
+        <div class="flex items-center gap-4 border-b border-line pb-6">
+          <span class="benefit-icon"><app-icon name="file" /></span>
+          <div>
+            <p class="text-caption text-ink2">Contrato de manutenção · exemplo</p>
+            <h3 class="mt-1 text-xl">Climatização do edifício</h3>
+          </div>
         </div>
-      </div>
-      <dl class="grid gap-5 py-6 sm:grid-cols-2">
-        <div>
-          <dt class="text-caption text-ink2">Serviço</dt>
-          <dd class="mt-1 text-sm font-semibold">Manutenção de climatização</dd>
+        <dl class="grid gap-5 py-6 sm:grid-cols-2">
+          <div>
+            <dt class="text-caption text-ink2">Serviço</dt>
+            <dd class="mt-1 text-sm font-semibold">Manutenção de climatização</dd>
+          </div>
+          <div>
+            <dt class="text-caption text-ink2">Política de SLA</dt>
+            <dd class="mt-1 text-sm font-semibold">Conforme o contrato</dd>
+          </div>
+        </dl>
+        <div class="rounded-deadline bg-bg p-5">
+          <p class="text-caption font-semibold text-ink2">Compromissos associados</p>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <span class="record-tag">Resposta</span
+            ><span class="record-tag">Atendimento em campo</span
+            ><span class="record-tag">Resolução</span>
+          </div>
         </div>
-        <div>
-          <dt class="text-caption text-ink2">Política de SLA</dt>
-          <dd class="mt-1 text-sm font-semibold">Conforme o contrato</dd>
+        <div class="mt-6 flex items-center justify-between gap-4 text-sm">
+          <span class="text-ink2">Chamado vinculado</span
+          ><strong class="text-pri-d"
+            >#1042 <app-icon name="arrow" class="align-middle [--icon-size:18px]"
+          /></strong>
         </div>
-      </dl>
-      <div class="rounded-deadline bg-bg p-5">
-        <p class="text-caption font-semibold text-ink2">Compromissos associados</p>
-        <div class="mt-4 flex flex-wrap gap-2">
-          <span class="record-tag">Resposta</span
-          ><span class="record-tag">Atendimento em campo</span
-          ><span class="record-tag">Resolução</span>
-        </div>
-      </div>
-      <div class="mt-6 flex items-center justify-between gap-4 text-sm">
-        <span class="text-ink2">Chamado vinculado</span
-        ><strong class="text-pri-d"
-          >#1042 <app-icon name="arrow" class="align-middle [--icon-size:18px]"
-        /></strong>
-      </div>
-      <figcaption class="mt-6 text-caption text-ink3">
-        Demonstração ilustrativa · dados fictícios
-      </figcaption>
-    </figure>
+        <figcaption class="mt-6 text-caption text-ink3">
+          Demonstração ilustrativa · dados fictícios
+        </figcaption>
+      </figure>
+    </div>
   </div>
 </section>
 <section
@@ -62,7 +67,10 @@
       <div>
         <p class="chapter-label text-cyan">Como funciona</p>
         <h2 id="workflow-title" class="text-white">
-          Do contrato à solução.<br /><span class="text-cyan">Um fluxo conectado.</span>
+          <span class="motion-line"><span>Do contrato à solução.</span></span>
+          <span class="motion-line"
+            ><span><span class="text-cyan">Um fluxo conectado.</span></span></span
+          >
         </h2>
       </div>
       <p class="max-w-[35ch] text-sm">

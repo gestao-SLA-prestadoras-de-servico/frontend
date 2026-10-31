@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Icon, IconName } from '../icon/icon';
 import { Reveal } from '../../reveal.directive';
+import { ScrollMotion } from '../../scroll-motion.directive';
 
 @Component({
   selector: 'app-contract-workflow',
-  imports: [Icon, Reveal],
+  imports: [ScrollMotion, Icon, Reveal],
   templateUrl: './contract-workflow.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

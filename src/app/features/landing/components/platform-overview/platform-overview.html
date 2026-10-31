@@ -3,7 +3,10 @@
     <div appReveal>
       <p class="chapter-label">Plataforma</p>
       <h2 id="platform-title">
-        Um atendimento.<br /><span class="text-pri">Todo o contexto.</span>
+        <span class="motion-line"><span>Um atendimento.</span></span>
+        <span class="motion-line"
+          ><span><span class="text-pri">Todo o contexto.</span></span></span
+        >
       </h2>
       <p class="chapter-lead">
         Do que foi solicitado ao que foi feito. A proposta reúne o contrato, os prazos, a equipe e
@@ -27,13 +30,15 @@
         Funcionalidades previstas · projeto em desenvolvimento
       </p>
     </div>
-    <div class="product-window" [appReveal]="1" data-ui>
-      <div class="product-window-bar">
-        <span class="inline-flex items-center gap-2 text-sm font-extrabold"
-          ><img src="images/nivelo-symbol.svg" alt="" width="24" height="20" />NIVELO</span
-        ><span class="text-caption text-ink2">Chamados / Visão geral</span>
+    <div class="motion-object-frame" [appReveal]="1" revealEffect="fade">
+      <div class="product-window" appScrollMotion="platform" data-ui>
+        <div class="product-window-bar">
+          <span class="inline-flex items-center gap-2 text-sm font-extrabold"
+            ><img src="images/nivelo-symbol.svg" alt="" width="24" height="20" />NIVELO</span
+          ><span class="text-caption text-ink2">Chamados / Visão geral</span>
+        </div>
+        <app-product-preview />
       </div>
-      <app-product-preview />
     </div>
   </div>
 </section>

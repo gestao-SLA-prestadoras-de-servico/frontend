@@ -222,6 +222,8 @@ O hero usa altura mínima de `min(760px, 100svh)` no desktop, `min(900px, 100svh
 
 A cena dos três prazos ocupa `180svh`, com área interna sticky de `100svh`, apenas a partir de 1024 px de largura e 700 px de altura e quando o movimento é permitido. Nas demais condições, os mesmos três compromissos ficam estáticos, sem espaço artificial de rolagem. A ordem do conteúdo não depende da animação.
 
+O refinamento de movimento usa títulos revelados por frase, entradas em sequência e superfícies ligadas à rolagem no percurso contrato, chamado, evidência e histórico. As durações são 800 ms para partes, 900 ms para linhas, 1100 ms para a máscara de imagem e 70 ms entre partes, com atraso total limitado a 280 ms. O `--ease-out` existente permanece; `--ease-in-out: cubic-bezier(0.77, 0, 0.175, 1)` atende à abertura da fotografia. Abaixo de 768 px, a foto tem deslocamento menor e as demonstrações ficam sem inclinação contínua. Foco encerra entradas pendentes; movimento reduzido e falha das APIs mantêm a apresentação estática. O contrato de movimento e sua verificação estão em `docs/LANDING_SCROLL_MOTION.md`.
+
 ## Elevation & Depth
 
 A página usa principalmente contraste tonal e bordas finas. A cápsula de navegação recebe sombra suave; diálogo e menu móvel usam a sombra de overlay. O chamado permanece plano dentro de uma janela branca; essa janela e a moldura do navegador de celular usam `shadow-preview`. A sombra separa a demonstração do fundo e não é aplicada a todos os grupos abertos.
