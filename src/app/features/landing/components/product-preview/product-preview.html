@@ -11,16 +11,26 @@
       >
     </div>
     <div
-      class="mt-5 flex flex-wrap justify-between gap-x-3 gap-y-2 border-b border-line text-xs text-ink3"
+      class="mt-5 flex flex-wrap justify-between gap-x-3 gap-y-2 border-b border-line text-caption text-ink3"
     >
       <span class="border-b-2 border-pri pb-3 font-medium text-pri-d">Visão geral</span
       ><span class="pb-3">Demonstração ilustrativa · dados fictícios</span>
     </div>
+    <dl class="mt-5 grid grid-cols-2 gap-4 text-caption">
+      <div>
+        <dt class="text-ink3">Contrato</dt>
+        <dd class="mt-1 font-semibold">Manutenção de climatização</dd>
+      </div>
+      <div>
+        <dt class="text-ink3">Responsável</dt>
+        <dd class="mt-1 font-semibold">João · Técnico</dd>
+      </div>
+    </dl>
     <section class="pt-5" aria-labelledby="deadlines-title">
       <h3 class="text-sm leading-normal font-semibold text-wrap" id="deadlines-title">
         Prazos do SLA
       </h3>
-      <p class="mt-2 text-xs leading-[1.6] text-ink2">
+      <p class="mt-2 text-caption leading-[1.6] text-ink2">
         SLA é o acordo de nível de serviço: os compromissos de prazo definidos no contrato.
       </p>
       <dl class="mt-2.5 divide-y divide-line rounded-deadline border border-line">
@@ -32,7 +42,7 @@
               ><app-icon class="[--icon-size:14px]" name="check"
             /></span>
             <span class="min-w-0"
-              >Resposta<small class="mt-0.5 block text-xs font-normal text-ink3"
+              >Resposta<small class="mt-0.5 block text-caption font-normal text-ink3"
                 >Primeiro posicionamento da prestadora.</small
               ></span
             >
@@ -51,7 +61,7 @@
               ><app-icon class="[--icon-size:14px]" name="check"
             /></span>
             <span class="min-w-0"
-              >Atendimento em campo<small class="mt-0.5 block text-xs font-normal text-ink3"
+              >Atendimento em campo<small class="mt-0.5 block text-caption font-normal text-ink3"
                 >Início do atendimento técnico no local.</small
               ></span
             >
@@ -68,7 +78,7 @@
           <dt class="flex min-w-0 items-start gap-[7px] text-sm text-navy sm:gap-2.5">
             <app-icon class="mt-0.5 [--icon-size:20px] shrink-0 text-pri" name="clock" /><span
               class="min-w-0"
-              >Resolução<small class="mt-0.5 block text-xs font-normal text-ink3"
+              >Resolução<small class="mt-0.5 block text-caption font-normal text-ink3"
                 >Apresentação da solução para o problema.</small
               ></span
             >
@@ -76,7 +86,7 @@
           <dd
             class="ml-[27px] rounded-[4px] bg-pri-bg px-2 py-[3px] text-sm whitespace-nowrap text-pri-d min-[400px]:ml-0"
           >
-            Restam <span class="font-semibold tabular-nums">6h20</span>
+            Em andamento
           </dd>
         </div>
       </dl>
@@ -92,9 +102,9 @@
           <li
             class="relative flex gap-2.5 pb-4 pl-[18px] text-sm leading-[1.45] text-ink2 before:absolute before:top-1 before:left-0 before:size-[7px] before:rounded-full before:bg-pri last:pb-0 sm:pb-3.5 [&:not(:last-child)]:after:absolute [&:not(:last-child)]:after:top-3 [&:not(:last-child)]:after:bottom-[-1px] [&:not(:last-child)]:after:left-[3px] [&:not(:last-child)]:after:w-px [&:not(:last-child)]:after:bg-line2"
           >
-            <time class="text-xs leading-[1.6] font-semibold tabular-nums">08:10</time>
+            <time class="text-caption leading-[1.6] font-semibold tabular-nums">08:10</time>
             <div>
-              Chamado aberto<small class="mt-0.5 block text-xs font-normal text-ink3"
+              Chamado aberto<small class="mt-0.5 block text-caption font-normal text-ink3"
                 >Marina · Cliente</small
               >
             </div>
@@ -102,9 +112,9 @@
           <li
             class="relative flex gap-2.5 pb-4 pl-[18px] text-sm leading-[1.45] text-ink2 before:absolute before:top-1 before:left-0 before:size-[7px] before:rounded-full before:bg-pri last:pb-0 sm:pb-3.5 [&:not(:last-child)]:after:absolute [&:not(:last-child)]:after:top-3 [&:not(:last-child)]:after:bottom-[-1px] [&:not(:last-child)]:after:left-[3px] [&:not(:last-child)]:after:w-px [&:not(:last-child)]:after:bg-line2"
           >
-            <time class="text-xs leading-[1.6] font-semibold tabular-nums">08:25</time>
+            <time class="text-caption leading-[1.6] font-semibold tabular-nums">08:25</time>
             <div>
-              Resposta enviada<small class="mt-0.5 block text-xs font-normal text-ink3"
+              Resposta enviada<small class="mt-0.5 block text-caption font-normal text-ink3"
                 >Rafael · Gestor</small
               >
             </div>
@@ -112,9 +122,9 @@
           <li
             class="relative flex gap-2.5 pb-4 pl-[18px] text-sm leading-[1.45] text-ink2 before:absolute before:top-1 before:left-0 before:size-[7px] before:rounded-full before:bg-pri last:pb-0 sm:pb-3.5 [&:not(:last-child)]:after:absolute [&:not(:last-child)]:after:top-3 [&:not(:last-child)]:after:bottom-[-1px] [&:not(:last-child)]:after:left-[3px] [&:not(:last-child)]:after:w-px [&:not(:last-child)]:after:bg-line2"
           >
-            <time class="text-xs leading-[1.6] font-semibold tabular-nums">09:40</time>
+            <time class="text-caption leading-[1.6] font-semibold tabular-nums">09:40</time>
             <div>
-              Atendimento iniciado<small class="mt-0.5 block text-xs font-normal text-ink3"
+              Atendimento iniciado<small class="mt-0.5 block text-caption font-normal text-ink3"
                 >João · Técnico</small
               >
             </div>
@@ -137,11 +147,11 @@
         <p class="mt-2 flex items-center gap-1.5 rounded-[6px] bg-bg p-2 text-sm text-ink2">
           <app-icon class="[--icon-size:16px]" name="paperclip" />2 fotos vinculadas
         </p>
-        <p class="mt-1.5 text-xs text-ink3">Imagens ilustrativas</p>
+        <p class="mt-1.5 text-caption text-ink3">Imagens ilustrativas</p>
       </section>
     </div>
   </div>
-  <figcaption class="px-2 pt-2.5 text-right text-xs text-ink3" id="preview-caption">
+  <figcaption class="px-2 pt-2.5 text-right text-caption text-ink3" id="preview-caption">
     Demonstração ilustrativa · dados fictícios
   </figcaption>
 </figure>

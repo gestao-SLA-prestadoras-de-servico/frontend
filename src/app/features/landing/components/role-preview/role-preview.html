@@ -1,0 +1,85 @@
+<section id="perfis" class="chapter bg-sf" aria-labelledby="roles-title">
+  <div class="page-frame">
+    <div class="flex flex-col justify-between gap-6 lg:flex-row lg:items-end" appReveal>
+      <div>
+        <p class="chapter-label">Perfis de acesso</p>
+        <h2 id="roles-title">
+          Um fluxo em comum.<br /><span class="text-pri">Um papel para cada pessoa.</span>
+        </h2>
+      </div>
+      <p class="max-w-[35ch] text-sm text-ink2">
+        Informações e atribuições previstas para cada pessoa envolvida no atendimento.
+      </p>
+    </div>
+    <div class="role-tabs" role="tablist" aria-label="Perfis da plataforma">
+      @for (item of roles; track item.name; let i = $index) {
+        <button
+          #roleTab
+          type="button"
+          role="tab"
+          class="press-feedback"
+          [id]="'role-tab-' + i"
+          [attr.aria-selected]="selected() === i"
+          [attr.aria-controls]="'role-panel-' + i"
+          [tabIndex]="selected() === i ? 0 : -1"
+          (click)="select(i)"
+          (keydown)="onKeydown($event, i)"
+        >
+          <app-icon [name]="item.icon" />{{ item.name }}
+        </button>
+      }
+    </div>
+    @for (item of roles; track item.name; let i = $index) {
+      <div
+        class="role-panel"
+        role="tabpanel"
+        [id]="'role-panel-' + i"
+        [attr.aria-labelledby]="'role-tab-' + i"
+        [hidden]="selected() !== i"
+        tabindex="0"
+      >
+        <div>
+          <h3 class="text-[clamp(1.6rem,2.8vw,2.25rem)]">{{ item.title }}</h3>
+          <p class="mt-5 max-w-[48ch] text-ink2">{{ item.description }}</p>
+          <ul class="role-tasks">
+            @for (task of item.tasks; track task) {
+              <li><app-icon name="check" class="text-grn [--icon-size:18px]" />{{ task }}</li>
+            }
+          </ul>
+        </div>
+        <div class="role-demo" data-ui>
+          <div class="flex flex-wrap justify-between gap-2 text-caption text-ink2">
+            <span>Chamado #1042</span><span>Simulação local</span>
+          </div>
+          <p class="mt-7 text-sm font-semibold">{{ item.label }}</p>
+          <div class="mt-4 flex min-h-16 items-center gap-3 rounded-deadline bg-sf p-4">
+            <app-icon [name]="simulated() ? 'check' : item.icon" class="text-pri" />
+            <p class="text-sm font-semibold" aria-live="polite">
+              {{ simulated() ? item.result : item.initial }}
+            </p>
+          </div>
+          <button
+            type="button"
+            appButtonPrimary
+            class="press-feedback mt-6 min-h-[50px] px-5 py-3"
+            (click)="simulated.set(!simulated())"
+          >
+            {{ simulated() ? 'Reiniciar simulação' : item.action
+            }}<app-icon name="arrow" class="[--icon-size:18px]" />
+          </button>
+          <p class="mt-4 min-h-[4.95em] text-caption text-ink2" role="status">
+            {{
+              simulated()
+                ? item.feedback
+                : 'Experimente esta atribuição. A demonstração usa dados fictícios e não altera o sistema.'
+            }}
+          </p>
+        </div>
+      </div>
+    }
+    <p class="mt-6 text-caption text-ink3">
+      Demonstrações ilustrativas de funcionalidades previstas. O acesso ao sistema ainda está
+      indisponível.
+    </p>
+  </div>
+</section>

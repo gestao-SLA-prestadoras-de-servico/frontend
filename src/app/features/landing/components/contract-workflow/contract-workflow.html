@@ -1,0 +1,84 @@
+<section id="contratos" class="chapter bg-sf" aria-labelledby="contracts-title">
+  <div class="page-frame grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-24">
+    <div appReveal>
+      <p class="chapter-label">Contratos</p>
+      <h2 id="contracts-title">
+        Cada contrato,<br /><span class="text-pri">seus compromissos.</span>
+      </h2>
+      <p class="chapter-lead max-w-[45ch]">
+        O atendimento começa com o que foi combinado. Os chamados estarão vinculados ao contrato do
+        cliente e à política de prazos correspondente.
+      </p>
+      <p class="mt-5 max-w-[45ch] text-sm text-ink2">
+        Uma base em comum para orientar a equipe e consultar as condições de cada serviço.
+      </p>
+    </div>
+    <figure class="contract-figure" [appReveal]="1" data-ui>
+      <div class="flex items-center gap-4 border-b border-line pb-6">
+        <span class="benefit-icon"><app-icon name="file" /></span>
+        <div>
+          <p class="text-caption text-ink2">Contrato de manutenção · exemplo</p>
+          <h3 class="mt-1 text-xl">Climatização do edifício</h3>
+        </div>
+      </div>
+      <dl class="grid gap-5 py-6 sm:grid-cols-2">
+        <div>
+          <dt class="text-caption text-ink2">Serviço</dt>
+          <dd class="mt-1 text-sm font-semibold">Manutenção de climatização</dd>
+        </div>
+        <div>
+          <dt class="text-caption text-ink2">Política de SLA</dt>
+          <dd class="mt-1 text-sm font-semibold">Conforme o contrato</dd>
+        </div>
+      </dl>
+      <div class="rounded-deadline bg-bg p-5">
+        <p class="text-caption font-semibold text-ink2">Compromissos associados</p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <span class="record-tag">Resposta</span
+          ><span class="record-tag">Atendimento em campo</span
+          ><span class="record-tag">Resolução</span>
+        </div>
+      </div>
+      <div class="mt-6 flex items-center justify-between gap-4 text-sm">
+        <span class="text-ink2">Chamado vinculado</span
+        ><strong class="text-pri-d"
+          >#1042 <app-icon name="arrow" class="align-middle [--icon-size:18px]"
+        /></strong>
+      </div>
+      <figcaption class="mt-6 text-caption text-ink3">
+        Demonstração ilustrativa · dados fictícios
+      </figcaption>
+    </figure>
+  </div>
+</section>
+<section
+  id="como-funciona"
+  class="chapter light-flow bg-navy text-on-navy"
+  tabindex="-1"
+  aria-labelledby="workflow-title"
+>
+  <div class="page-frame relative z-1">
+    <div class="flex flex-col justify-between gap-6 lg:flex-row lg:items-end" appReveal>
+      <div>
+        <p class="chapter-label text-cyan">Como funciona</p>
+        <h2 id="workflow-title" class="text-white">
+          Do contrato à solução.<br /><span class="text-cyan">Um fluxo conectado.</span>
+        </h2>
+      </div>
+      <p class="max-w-[35ch] text-sm">
+        Quatro etapas previstas para levar o compromisso até a comprovação.
+      </p>
+    </div>
+    <ol class="workflow-list">
+      @for (step of steps; track step.title; let i = $index) {
+        <li [appReveal]="i">
+          <span class="workflow-icon"
+            ><app-icon [name]="step.icon" class="[--icon-size:26px]"
+          /></span>
+          <h3 class="mt-6 text-xl text-white">{{ step.title }}</h3>
+          <p class="mt-3 max-w-[28ch] text-sm">{{ step.description }}</p>
+        </li>
+      }
+    </ol>
+  </div>
+</section>

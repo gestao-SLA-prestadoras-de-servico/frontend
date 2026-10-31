@@ -1,14 +1,15 @@
-<section class="py-section" id="faq" tabindex="-1" aria-labelledby="faq-title">
+<section class="chapter bg-bg" id="faq" tabindex="-1" aria-labelledby="faq-title">
   <div
     class="mx-auto w-[calc(100%-40px)] max-w-[1440px] sm:w-[calc(100%-64px)] xl:w-[calc(100%-112px)] grid grid-cols-1 gap-9 sm:grid-cols-[0.8fr_1.2fr] lg:gap-20"
   >
-    <div>
-      <h2 id="faq-title">Antes de começar,<br />vale saber.</h2>
+    <div appReveal>
+      <p class="chapter-label">FAQ</p>
+      <h2 id="faq-title">Dúvidas frequentes.</h2>
       <p class="text-base leading-[1.75] text-ink2 sm:text-lead mt-5 max-w-[30ch]">
         As principais dúvidas sobre a proposta da Nivelo.
       </p>
     </div>
-    <div>
+    <div [appReveal]="1">
       @for (item of questions; track item.question) {
         <details class="group/faq border-b border-line first:border-t">
           <summary

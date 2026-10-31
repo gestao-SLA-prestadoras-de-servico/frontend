@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import './app/features/landing/landing-chapters.css';
 
 @font-face {
   font-family: 'Manrope';
@@ -50,6 +51,8 @@
   --text-headline: clamp(2rem, 3.65vw, 3.5rem);
   --text-headline-mobile: clamp(1.85rem, 7.5vw, 2.5rem);
   --text-lead: 1.0625rem;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.65;
   --text-xs--line-height: 1.65;
   --text-sm--line-height: 1.65;
   --text-base--line-height: 1.65;

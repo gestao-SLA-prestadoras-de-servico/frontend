@@ -1,0 +1,37 @@
+<section
+  #scene
+  id="prazos"
+  class="deadline-scene"
+  aria-labelledby="sla-story-title"
+  data-scroll-scene="three-deadlines"
+>
+  <div class="deadline-hold">
+    <div class="page-frame">
+      <div class="max-w-[760px]" appReveal>
+        <p class="chapter-label">Três compromissos. Um atendimento.</p>
+        <h2 id="sla-story-title">Da abertura à solução,<br />cada prazo tem seu papel.</h2>
+        <p class="chapter-lead max-w-[54ch]">
+          SLA é o acordo de nível de serviço. A Nivelo prevê acompanhar três marcos, cada um com as
+          regras do seu contrato.
+        </p>
+      </div>
+      <div class="deadline-track" aria-hidden="true"><span #progress></span></div>
+      <ol class="deadline-steps">
+        @for (step of steps; track step.title; let i = $index) {
+          <li [class.current]="stage() === i" [attr.data-stage]="i" [appReveal]="i">
+            <span class="deadline-icon"
+              ><app-icon [name]="step.icon" class="[--icon-size:30px]"
+            /></span>
+            <h3>{{ step.title }}</h3>
+            <p class="mt-2 font-semibold text-pri-d">{{ step.subtitle }}</p>
+            <p class="mt-3 max-w-[32ch] text-sm text-ink2">{{ step.description }}</p>
+          </li>
+        }
+      </ol>
+      <p class="mt-10 text-caption text-ink2">
+        Os prazos são definidos por contrato. Esta apresentação não estabelece tempos de
+        atendimento.
+      </p>
+    </div>
+  </div>
+</section>

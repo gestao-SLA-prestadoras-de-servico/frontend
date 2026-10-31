@@ -1,0 +1,69 @@
+<section id="celular" class="chapter mobile-section bg-pri-bg" aria-labelledby="mobile-title">
+  <div class="page-frame grid items-center gap-12 lg:grid-cols-2 lg:gap-24">
+    <div appReveal>
+      <p class="chapter-label">Uso no celular</p>
+      <h2 id="mobile-title">
+        O contexto do serviço.<br /><span class="text-pri">Também em campo.</span>
+      </h2>
+      <p class="chapter-lead max-w-[46ch]">
+        O acesso pelo navegador do celular está previsto para aproximar as informações do lugar onde
+        o atendimento acontece.
+      </p>
+      <ul class="mt-8 grid list-none gap-5 p-0 text-sm text-ink2">
+        <li class="flex gap-3">
+          <app-icon name="check" class="text-grn [--icon-size:20px]" />Interface web responsiva, com
+          conexão à internet.
+        </li>
+        <li class="flex gap-3">
+          <app-icon name="check" class="text-grn [--icon-size:20px]" />Consulta de chamados e
+          registro de evidências previstos.
+        </li>
+      </ul>
+      <p class="mt-8 max-w-[47ch] text-caption text-ink2">
+        Não é necessário aplicativo nativo. O funcionamento offline não faz parte desta entrega.
+        Plataforma em desenvolvimento.
+      </p>
+    </div>
+    <figure class="mobile-figure" [appReveal]="1" data-ui>
+      <div class="phone-preview">
+        <div class="phone-browser">
+          <span aria-hidden="true" class="size-1.5 rounded-full bg-grn"></span>Nivelo · navegador
+        </div>
+        <div class="p-5">
+          <div class="flex items-center gap-2 text-caption font-extrabold">
+            <img src="images/nivelo-symbol.svg" alt="" width="22" height="18" />NIVELO
+          </div>
+          <p class="mt-7 text-caption text-ink2">Chamado #1042</p>
+          <h3 class="mt-2 text-lg">Manutenção de climatização</h3>
+          <span class="record-tag mt-3 inline-block">Em atendimento</span>
+          <div class="mt-6 space-y-3 text-caption">
+            <p class="flex justify-between gap-2">
+              <span>Resposta</span><strong class="text-grn">Cumprido</strong>
+            </p>
+            <p class="flex justify-between gap-2">
+              <span>Atendimento em campo</span><strong class="text-grn">Cumprido</strong>
+            </p>
+            <p class="flex justify-between gap-2">
+              <span>Resolução</span><strong class="text-pri-d">Em andamento</strong>
+            </p>
+          </div>
+          <img
+            src="images/evidencias-ilustrativas.webp"
+            class="mt-6 aspect-[2/1] w-full rounded-lg object-cover"
+            alt="Duas fotografias ilustrativas de equipamentos de climatização"
+            width="520"
+            height="200"
+            loading="lazy"
+          />
+          <p class="mt-3 flex items-center gap-2 text-caption text-ink2">
+            <app-icon name="paperclip" class="[--icon-size:16px]" />2 fotos vinculadas ·
+            ilustrativas
+          </p>
+        </div>
+      </div>
+      <figcaption class="mt-5 text-center text-caption text-ink2">
+        Demonstração ilustrativa · acesso web previsto
+      </figcaption>
+    </figure>
+  </div>
+</section>

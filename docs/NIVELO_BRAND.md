@@ -1,6 +1,8 @@
 # Identidade Nivelo
 
-A identidade atual foi aprovada com a opção **C — Faixa de luz**, em `.impeccable/mocks/nivelo-20261016/c-faixa-de-luz.png`. A fonte da verdade visual implementada é [DESIGN.md](../DESIGN.md); o briefing da landing está em [src-app-app-html.md](../.impeccable/surfaces/src-app-app-html.md).
+A identidade foi estabelecida com a opção **C — Faixa de luz**, em `.impeccable/mocks/nivelo-20261016/c-faixa-de-luz.png`. A composição atual da landing é a **A — Fluxo de luz**, aprovada em 30/10/2026, preservando essa identidade, a navbar, o vídeo e o poster existentes. A fonte da verdade visual implementada é [DESIGN.md](../DESIGN.md); o briefing da landing está em [src-app-app-html.md](../.impeccable/surfaces/src-app-app-html.md), e a composição e sua verificação estão em [LANDING_FLUXO_DE_LUZ.md](LANDING_FLUXO_DE_LUZ.md).
+
+A referência aprovada A foi arquivada sem alterações em [nivelo-opcao-a-fluxo-de-luz.png](references/nivelo-opcao-a-fluxo-de-luz.png), com origem e autorização registradas no [sidecar](references/nivelo-opcao-a-fluxo-de-luz.png.json). Ela orienta a composição, mas não é exibida no site. Números, textos e elementos de interface dessa imagem não estabelecem fatos do produto, resultados comerciais ou disponibilidade.
 
 O símbolo adotado é o **check em camadas da primeira imagem do usuário**, traçado em [nivelo-symbol.svg](../public/images/nivelo-symbol.svg). Sua proporção original é 780 × 626 e suas camadas usam turquesa `#03CBD3`, azul `#0498F4` e azul profundo `#073BD4`. Preservar o arquivo e sua geometria. O símbolo diferente da prancha de identidade não é a marca adotada.
 
@@ -23,3 +25,9 @@ O fundo atual é o vídeo fornecido pelo usuário, `Light_animation_sliding_on_s
 O original tem 240 quadros a 24 fps. A preparação combina os 36 quadros finais e os 36 iniciais com uma mistura de peso cosseno durante 1,5 s; o restante do vídeo começa no quadro 36 e termina antes dessa mistura. O resultado tem 204 quadros, 8,5 s, resolução de 1280 × 720 e cerca de 1,9 MB. A codificação usa H.264, `yuv420p`, CRF 21 e `faststart`, sem faixa de áudio. A passagem do último para o primeiro quadro foi comparada à variação normal entre quadros. O poster [nivelo-hero-poster.webp](../public/images/nivelo-hero-poster.webp) foi extraído do primeiro quadro do loop.
 
 O vídeo é decorativo, sem áudio, controles ou captura de cliques e toques. O player nativo repete o arquivo continuamente e só o carrega após a hidratação, quando a hero está visível e o movimento é permitido. Pausa fora da tela e com a aba oculta, retomando da mesma posição. Movimento reduzido, bloqueio de autoplay ou erro de mídia preservam o poster. Os recursos de reprodução são liberados ao desmontar. O gradiente escuro sobre o vídeo mantém a leitura do conteúdo.
+
+O mesmo poster fornece o fundo estático dos capítulos de fluxo e disponibilidade, com sobreposição azul-noite. O SVG da marca, o MP4 e o WebP existentes permanecem nos formatos originais da entrega; a ampliação não exige recriar esses ativos.
+
+A foto complementar [manutencao-ilustrativa.png](../public/images/manutencao-ilustrativa.png) foi gerada em 30/10/2026 com a ferramenta integrada `image_gen`. Mostra um técnico documentando uma unidade de climatização com o celular e traz a indicação visível “Imagem gerada por IA · ilustrativa”. Não representa equipe, cliente ou atendimento real. O PNG foi preservado sem conversão. O [prompt exato](references/manutencao-ilustrativa.prompt.txt) e o [sidecar da imagem](../public/images/manutencao-ilustrativa.png.json) registram sua proveniência; o prompt também está embutido no arquivo.
+
+As imagens menores de evidências já existentes continuam identificadas como ilustrativas no chamado #1042 e na demonstração de navegador do celular. Nenhuma fotografia ou demonstração deve ser apresentada como prova de operação real.

@@ -14,12 +14,17 @@ import { ActionLabel } from './components/action-label/action-label';
 import { AvailabilityDialog } from './components/availability-dialog/availability-dialog';
 import { Faq } from './components/faq/faq';
 import { HeroBackground } from './components/hero-background/hero-background';
-import { Icon, IconName } from './components/icon/icon';
+import { Icon } from './components/icon/icon';
 import { PlatformOverview } from './components/platform-overview/platform-overview';
 import { ButtonPrimary, ButtonSecondary } from '../../shared/ui/button';
-import { Card } from '../../shared/ui/card';
 import { Link } from '../../shared/ui/link';
-import { SectionHeading } from '../../shared/ui/section-heading';
+import { Benefits } from './components/benefits/benefits';
+import { DeadlineStory } from './components/deadline-story/deadline-story';
+import { ContractWorkflow } from './components/contract-workflow/contract-workflow';
+import { ServiceRecord } from './components/service-record/service-record';
+import { RolePreview } from './components/role-preview/role-preview';
+import { MobileAccess } from './components/mobile-access/mobile-access';
+import { Reveal } from './reveal.directive';
 
 @Component({
   selector: 'app-landing',
@@ -34,8 +39,13 @@ import { SectionHeading } from '../../shared/ui/section-heading';
     ButtonPrimary,
     ButtonSecondary,
     Link,
-    Card,
-    SectionHeading,
+    Benefits,
+    DeadlineStory,
+    ContractWorkflow,
+    ServiceRecord,
+    RolePreview,
+    MobileAccess,
+    Reveal,
   ],
   templateUrl: './landing.html',
   host: { class: 'block' },
@@ -48,50 +58,6 @@ export class Landing {
   private restoreMenuFocus = true;
   private readonly destroyRef = inject(DestroyRef);
   protected readonly menuOpen = signal(false);
-  protected readonly benefits: {
-    icon: IconName;
-    title: string;
-    description: string;
-  }[] = [
-    {
-      icon: 'clock',
-      title: 'Cada contrato, seus prazos.',
-      description: 'Consulte os compromissos definidos para cada cliente.',
-    },
-    {
-      icon: 'camera',
-      title: 'Evidências junto do serviço.',
-      description: 'Encontre as fotos no contexto do atendimento.',
-    },
-    {
-      icon: 'history',
-      title: 'Histórico do chamado.',
-      description: 'Consulte ações, horários e responsáveis.',
-    },
-    {
-      icon: 'users',
-      title: 'Uma visão compartilhada.',
-      description: 'Gestor, técnico e cliente com acesso conforme seu papel.',
-    },
-  ];
-  protected readonly steps = [
-    {
-      title: 'Configure contratos e prazos',
-      description: 'Defina os três compromissos de cada contrato.',
-    },
-    {
-      title: 'Abra e distribua chamados',
-      description: 'Registre a demanda e atribua o técnico responsável.',
-    },
-    {
-      title: 'Registre o atendimento',
-      description: 'Documente o serviço em campo com fotos.',
-    },
-    {
-      title: 'Valide e acompanhe',
-      description: 'O cliente valida a solução; a gestão acompanha os resultados.',
-    },
-  ];
   protected followAnchor(id: string): void {
     this.closeMenu(false);
     this.document.getElementById(id)?.focus({ preventScroll: true });

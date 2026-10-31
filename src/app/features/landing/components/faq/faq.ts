@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Icon } from '../icon/icon';
+import { Reveal } from '../../reveal.directive';
 
 @Component({
   selector: 'app-faq',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon],
+  imports: [Icon, Reveal],
   templateUrl: './faq.html',
   host: { class: 'block' },
 })
