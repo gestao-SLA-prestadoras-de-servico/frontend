@@ -1,3 +1,4 @@
+import { SectionHeading } from '../../shared/ui/section-heading';
 import { ContractTerms } from './components/contract-terms/contract-terms';
 import { Contour } from './components/contour/contour';
 import { DOCUMENT } from '@angular/common';
@@ -33,6 +34,7 @@ import { ScrollMotion } from './scroll-motion.directive';
   selector: 'app-landing',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    SectionHeading,
     ContractTerms,
     Contour,
     AvailabilityDialog,

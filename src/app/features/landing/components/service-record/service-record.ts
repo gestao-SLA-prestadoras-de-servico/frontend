@@ -1,3 +1,4 @@
+import { SectionHeading } from '../../../../shared/ui/section-heading';
 import { Contour } from '../contour/contour';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Reveal } from '../../reveal.directive';
@@ -6,7 +7,7 @@ import { ScrollMotion } from '../../scroll-motion.directive';
 @Component({
   selector: 'app-service-record',
   host: { class: 'block' },
-  imports: [Contour, ScrollMotion, Reveal],
+  imports: [SectionHeading, Contour, ScrollMotion, Reveal],
   templateUrl: './service-record.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

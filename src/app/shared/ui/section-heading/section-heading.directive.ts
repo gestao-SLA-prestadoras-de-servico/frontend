@@ -1,12 +1,14 @@
 import { Directive, HostBinding, input } from '@angular/core';
 
-type SectionHeadingVariant = 'responsive' | 'inverse' | 'prominent';
+type SectionHeadingVariant = 'responsive' | 'statement' | 'history';
+
+const sectionHeadingBaseClasses = 'leading-[1.02] font-[550] tracking-[-.035em]';
 
 const sectionHeadingClasses: Record<SectionHeadingVariant, string> = {
-  responsive:
-    'text-[1.85rem] sm:text-[clamp(2rem,5.4vw,3.375rem)] lg:text-[clamp(2rem,3.45vw,3.375rem)]',
-  inverse: 'text-white',
-  prominent: 'text-[clamp(1.875rem,3vw,2.875rem)]',
+  responsive: 'text-[clamp(2.1rem,8.5vw,3.1rem)] md:text-[clamp(2.2rem,4.5vw,4.4rem)]',
+  statement:
+    'max-w-[17ch] text-[clamp(2.4rem,10vw,3.8rem)] text-white md:text-[clamp(2.6rem,5.6vw,5.4rem)]',
+  history: 'text-[clamp(2.2rem,3.6vw,3.5rem)]',
 };
 
 @Directive({
@@ -18,6 +20,6 @@ export class SectionHeading {
 
   @HostBinding('class')
   protected get classes(): string {
-    return sectionHeadingClasses[this.appSectionHeading() || 'responsive'];
+    return `${sectionHeadingBaseClasses} ${sectionHeadingClasses[this.appSectionHeading() || 'responsive']}`;
   }
 }

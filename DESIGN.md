@@ -264,6 +264,12 @@ Disponibilidade e exemplos são avisos informativos. O chamado usa azul suave co
 
 O chamado tem fundo branco, borda, raio de superfície e padding de 24 px, reduzido para 16 px abaixo de 640 px. Sua janela externa tem cantos de 4 px. Evidências e histórico internos dividem duas colunas a partir de 640 px. A tabela de contratos relaciona contrato, chamado, compromissos, histórico e evidências; não apresenta preços. Não há campos de formulário nesta entrega.
 
+A diretiva compartilhada `appCard` reúne os padrões de apresentação da composição atual: `benefit` organiza o bloco editorial de benefícios; `feature` define a hierarquia de título e descrição das funcionalidades; `role` organiza os retratos e seus recuos responsivos. A diretiva se aplica aos elementos existentes (`div`, `p` e `figure`), mantendo sua semântica e os identificadores usados pelo movimento. As variantes usam utilitários Tailwind e não acrescentam contêineres ao DOM.
+
+### Section Headings
+
+Os 11 títulos dos capítulos usam `appSectionHeading`. A variante padrão `responsive` centraliza a escala móvel/desktop; `statement` conserva o destaque branco dos benefícios; `history` preserva a escala específica do histórico. Entrelinha, peso 550 e tracking são compartilhados. Restrições locais de medida, como a largura do título de acesso móvel, permanecem no template. Títulos do hero, diálogo e chamado têm papéis próprios e conservam seus estilos específicos.
+
 ### Role Tabs
 
 Gestor, Técnico e Cliente têm retratos ilustrativos seguidos de três abas. A seleção usa azul corporativo com texto branco; as demais opções têm fundo transparente e feedback suave no hover. Setas, Home e End mudam aba e foco. Cada painel identifica sua aba e anuncia o resultado local; simular e reiniciar não persistem dados nem enviam arquivos.

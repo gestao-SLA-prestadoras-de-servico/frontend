@@ -289,13 +289,13 @@ Revalidada em **02/11/2026**, mantendo os componentes em `features/landing/compo
 
 - [x] **3.1 (M)** Criar diretivas `shared/ui/button` com variantes (`appButton`, `appButtonPrimary`, `appButtonSecondary`) para uso em `<a>` e `<button>`; aplicar nos CTAs repetidos da landing e do diálogo de disponibilidade. As classes `.button*` já haviam sido removidas na Fase 2.
 - [x] **3.2 (M)** Criar `shared/ui/link` com variantes para navegação desktop, menu móvel e retorno ao início no rodapé; aplicar aos links de navegação que tinham estilos repetidos.
-- [x] **3.3 (M)** Criar `shared/ui/section-heading` e `shared/ui/card`; aplicar variantes tipográficas aos títulos de seção e estilos de artigo aos benefícios, funcionalidades e perfis.
+- [x] **3.3 (M)** Criar `shared/ui/section-heading` e `shared/ui/card`; aplicar variantes tipográficas aos títulos de seção e padrões de apresentação aos benefícios, funcionalidades e perfis. Revalidado em 02/11/2026: 11 títulos usam `appSectionHeading` (`responsive`, `statement`, `history`); benefícios, três funcionalidades e três perfis usam `appCard` (`benefit`, `feature`, `role`). As diretivas preservam os elementos HTML e a composição atual. Evidências e contratos em `docs/LANDING_COMPONENTS_VALIDATION.md`.
 - [x] **3.4 (M)** Confirmar que não restou nenhum `style:`/`styles:` inline; busca em componentes e templates não encontrou estilos inline nem bindings de estilo.
 - [x] **3.5 (M)** Reavaliar os focus-traps: manter o ciclo manual de Tab/Shift+Tab, pois os testes Playwright no Chromium mostraram que o foco não retorna ao outro extremo do `<dialog>` nativamente; remover `tabindex` inválido e preservar `autofocus`, Escape e retorno ao acionador.
 - [x] **3.6 (P)** Adicionar `ChangeDetectionStrategy.OnPush` aos componentes de produção. Migrar as variantes das diretivas compartilhadas para `input()`; manter signals nos estados interativos e propriedades somente leitura para conteúdo estático.
 - [x] **3.7 (P)** Remover `NgZone`/`runOutsideAngular` de `hero-background.ts`: Angular 21 usa zoneless por padrão neste app, e o signal `ready` notifica a view.
 - [x] **3.8 (P)** Remover `src/app/app.css` vazio e sua referência em `app.ts`; manter o shell mínimo com o `router-outlet` em `app.html`.
-- [x] **3.9 (P)** Validar build e os 20 testes unitários; Playwright confirmou os fluxos de teclado do menu, diálogo e skip-link em Chromium e Firefox (14 cenários).
+- [x] **3.9 (P)** Revalidado após o item 3.3: build, lint e 28 testes unitários aprovados. A suíte E2E passou em 90 cenários de Chromium/Firefox, incluindo teclado do menu, diálogo, skip-link e perfis; dois cenários do vídeo opcional ficam ignorados quando ele não é renderizado. Detalhes em `docs/LANDING_COMPONENTS_VALIDATION.md`.
 
 ### Fase 4 — Testes, qualidade e higiene
 

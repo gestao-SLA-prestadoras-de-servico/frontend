@@ -1,3 +1,4 @@
+import { SectionHeading } from '../../../../shared/ui/section-heading';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Icon } from '../icon/icon';
 import { Reveal } from '../../reveal.directive';
@@ -5,7 +6,7 @@ import { Reveal } from '../../reveal.directive';
 @Component({
   selector: 'app-faq',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, Reveal],
+  imports: [SectionHeading, Icon, Reveal],
   templateUrl: './faq.html',
   host: { class: 'block' },
 })

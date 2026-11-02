@@ -1,3 +1,4 @@
+import { SectionHeading } from '../../../../shared/ui/section-heading';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { IconName } from '../icon/icon';
 import { Reveal } from '../../reveal.directive';
@@ -6,7 +7,7 @@ import { ScrollMotion } from '../../scroll-motion.directive';
 @Component({
   selector: 'app-contract-workflow',
   host: { class: 'block' },
-  imports: [ScrollMotion, Reveal],
+  imports: [SectionHeading, ScrollMotion, Reveal],
   templateUrl: './contract-workflow.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

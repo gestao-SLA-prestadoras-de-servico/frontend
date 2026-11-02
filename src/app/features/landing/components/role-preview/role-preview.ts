@@ -1,3 +1,5 @@
+import { Card } from '../../../../shared/ui/card';
+import { SectionHeading } from '../../../../shared/ui/section-heading';
 import { Contour } from '../contour/contour';
 import {
   ChangeDetectionStrategy,
@@ -13,7 +15,7 @@ import { ButtonPrimary } from '../../../../shared/ui/button';
 @Component({
   selector: 'app-role-preview',
   host: { class: 'block' },
-  imports: [Contour, Icon, Reveal, ButtonPrimary],
+  imports: [SectionHeading, Card, Contour, Icon, Reveal, ButtonPrimary],
   templateUrl: './role-preview.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

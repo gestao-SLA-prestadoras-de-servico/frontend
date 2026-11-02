@@ -2,10 +2,7 @@
   <div class="page-frame mx-auto w-[calc(100%-40px)] max-w-[1500px] md:w-[calc(100%-8vw)]">
     <div class="flex flex-col justify-between gap-6 lg:flex-row lg:items-end" appReveal>
       <div>
-        <h2
-          class="text-[clamp(2.1rem,8.5vw,3.1rem)] md:text-[clamp(2.2rem,4.5vw,4.4rem)] leading-[1.02] font-[550] tracking-[-.035em]"
-          id="roles-title"
-        >
+        <h2 appSectionHeading id="roles-title">
           <span class="motion-line block overflow-clip pb-[.12em] -mb-[.12em]"
             ><span class="block">Um fluxo em comum.</span></span
           >
@@ -22,10 +19,7 @@
       class="profile-portraits mt-10 grid grid-cols-1 gap-12 md:mt-14 md:grid-cols-3 md:gap-[3vw] lg:gap-[5vw]"
     >
       @for (item of roles; track item.name; let i = $index) {
-        <figure
-          class="profile-portrait grid grid-cols-2 items-center gap-5 md:block md:nth-2:pt-9 md:nth-3:pt-[72px] lg:nth-2:pt-[72px] lg:nth-3:pt-[144px]"
-          data-profile
-        >
+        <figure class="profile-portrait" appCard="role" data-profile>
           <div class="profile-art relative aspect-[3/5] md:aspect-[4/5]">
             <app-contour
               class="absolute -inset-x-[8%] top-[5%] h-full md:-inset-x-[10%] md:-top-[5%] md:h-[105%]"

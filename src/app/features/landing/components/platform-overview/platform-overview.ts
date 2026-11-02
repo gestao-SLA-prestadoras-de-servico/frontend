@@ -1,3 +1,5 @@
+import { Card } from '../../../../shared/ui/card';
+import { SectionHeading } from '../../../../shared/ui/section-heading';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ProductPreview } from '../product-preview/product-preview';
 import { Reveal } from '../../reveal.directive';
@@ -6,7 +8,7 @@ import { ScrollMotion } from '../../scroll-motion.directive';
 @Component({
   selector: 'app-platform-overview',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ScrollMotion, ProductPreview, Reveal],
+  imports: [SectionHeading, Card, ScrollMotion, ProductPreview, Reveal],
   templateUrl: './platform-overview.html',
   host: { class: 'block' },
 })

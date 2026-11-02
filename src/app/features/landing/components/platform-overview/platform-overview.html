@@ -8,10 +8,7 @@
     class="page-frame grid items-center gap-12 lg:gap-12 mx-auto w-[calc(100%-40px)] max-w-[1500px] md:w-[calc(100%-8vw)] grid-cols-1 lg:grid-cols-[0.65fr_1.35fr]"
   >
     <div appReveal>
-      <h2
-        class="text-[clamp(2.1rem,8.5vw,3.1rem)] md:text-[clamp(2.2rem,4.5vw,4.4rem)] leading-[1.02] font-[550] tracking-[-.035em]"
-        id="platform-title"
-      >
+      <h2 appSectionHeading id="platform-title">
         <span class="motion-line block overflow-clip pb-[.12em] -mb-[.12em]"
           ><span class="block">Um atendimento.</span></span
         >
@@ -23,18 +20,15 @@
         Do que foi solicitado ao que foi feito. A proposta reúne o contrato, os prazos, a equipe e
         os registros em uma mesma visão.
       </p>
-      <div class="mt-8 space-y-5 text-sm text-ink2">
-        <p>
-          <strong class="block text-navy">Compromissos à vista</strong>Três prazos acompanhados
-          separadamente.
+      <div class="mt-8 space-y-5">
+        <p appCard="feature">
+          <strong>Compromissos à vista</strong>Três prazos acompanhados separadamente.
         </p>
-        <p>
-          <strong class="block text-navy">Registro no contexto</strong>Evidências e ações junto do
-          serviço.
+        <p appCard="feature">
+          <strong>Registro no contexto</strong>Evidências e ações junto do serviço.
         </p>
-        <p>
-          <strong class="block text-navy">Informação para acompanhar</strong>Notificações,
-          relatórios e histórico previstos.
+        <p appCard="feature">
+          <strong>Informação para acompanhar</strong>Notificações, relatórios e histórico previstos.
         </p>
       </div>
       <p class="mt-8 text-caption font-semibold text-pri-d">

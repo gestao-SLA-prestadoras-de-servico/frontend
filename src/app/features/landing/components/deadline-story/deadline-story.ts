@@ -1,3 +1,4 @@
+import { SectionHeading } from '../../../../shared/ui/section-heading';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Reveal } from '../../reveal.directive';
 import { ScrollMotion } from '../../scroll-motion.directive';
@@ -5,7 +6,7 @@ import { Contour } from '../contour/contour';
 @Component({
   selector: 'app-deadline-story',
   host: { class: 'block' },
-  imports: [Reveal, ScrollMotion, Contour],
+  imports: [SectionHeading, Reveal, ScrollMotion, Contour],
   templateUrl: './deadline-story.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
