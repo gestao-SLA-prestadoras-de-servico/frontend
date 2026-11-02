@@ -186,10 +186,14 @@ export class ScrollMotionDriver {
       ];
     } else if (actor.effect === 'hang') {
       const sign = actor.index % 2 ? 1 : -1;
+      const compactRecord =
+        actor.element.classList.contains('record-print') &&
+        (window.innerWidth < 760 || (window.innerWidth < 1024 && window.innerHeight <= 600));
+      const distance = compactRecord ? 24 / 70 : 1;
       frames = [
-        { transform: `translateY(-70px) rotate(${3.2 * sign}deg)` },
-        { transform: `translateY(-28px) rotate(${-1.8 * sign}deg)`, offset: 0.38 },
-        { transform: `translateY(-8px) rotate(${0.8 * sign}deg)`, offset: 0.72 },
+        { transform: `translateY(${-70 * distance}px) rotate(${3.2 * sign}deg)` },
+        { transform: `translateY(${-28 * distance}px) rotate(${-1.8 * sign}deg)`, offset: 0.38 },
+        { transform: `translateY(${-8 * distance}px) rotate(${0.8 * sign}deg)`, offset: 0.72 },
         { transform: 'translateY(0) rotate(0)' },
       ];
     } else if (actor.effect === 'dial') {
