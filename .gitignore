@@ -43,6 +43,11 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 
+#ia
+.codex
+.agents
+.impeccable
+
 # Playwright
 /test-results/
 /playwright-report/

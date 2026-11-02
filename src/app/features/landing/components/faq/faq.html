@@ -1,0 +1,28 @@
+<section class="py-section" id="faq" tabindex="-1" aria-labelledby="faq-title">
+  <div
+    class="mx-auto w-[calc(100%-40px)] max-w-[1440px] sm:w-[calc(100%-64px)] xl:w-[calc(100%-112px)] grid grid-cols-1 gap-9 sm:grid-cols-[0.8fr_1.2fr] lg:gap-20"
+  >
+    <div>
+      <h2 id="faq-title">Antes de começar,<br />vale saber.</h2>
+      <p class="text-base leading-[1.75] text-ink2 sm:text-lead mt-5 max-w-[30ch]">
+        As principais dúvidas sobre a proposta da Nivelo.
+      </p>
+    </div>
+    <div>
+      @for (item of questions; track item.question) {
+        <details class="group/faq border-b border-line first:border-t">
+          <summary
+            class="flex min-h-[72px] cursor-pointer list-none items-center justify-between gap-6 px-1 py-5 text-base leading-normal font-semibold text-navy hover:text-pri-d [&::-webkit-details-marker]:hidden"
+          >
+            {{ item.question
+            }}<app-icon
+              class="[--icon-size:18px] text-pri transition-transform duration-(--motion-state) ease-out group-open/faq:rotate-45 motion-reduce:transition-none"
+              name="plus"
+            />
+          </summary>
+          <p class="max-w-[65ch] pr-8 pb-6 pl-1 leading-[1.65] text-ink2">{{ item.answer }}</p>
+        </details>
+      }
+    </div>
+  </div>
+</section>
