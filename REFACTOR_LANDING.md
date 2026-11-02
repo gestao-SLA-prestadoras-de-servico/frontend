@@ -23,7 +23,7 @@ Objetivos da refatoração:
 
 ## 2. Diagnóstico do estado atual
 
-Evidências do diagnóstico original, com a resolução do problema 1 atualizada nesta entrega. Os demais itens não foram reavaliados nesta fase:
+Evidências do diagnóstico original, com a resolução dos problemas 1 e 10 atualizada nesta entrega. Os demais itens não foram reavaliados nesta fase:
 
 | #   | Problema                                   | Evidência                                                                                                                                                                                                                                                               |
 | --- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -36,7 +36,7 @@ Evidências do diagnóstico original, com a resolução do problema 1 atualizada
 | 7   | Estilo de componente inconsistente         | Uns usam `styleUrl`, outros têm CSS inline grande (`availability-dialog.ts:29-130`, `faq.ts:23-92`, `hero-background.ts:7-16`, `icon.ts:20`).                                                                                                                           |
 | 8   | Botão/link sem componente                  | `.button`, `.button-primary`, `.button-secondary` são classes globais (`src/styles.css:69-73`); o markup se repete em `landing.html:13-14,44-45`.                                                                                                                       |
 | 9   | Focus trap duplicado                       | `landing.ts:110-117` e `availability-dialog.ts:145-161` reimplementam o que `<dialog>` nativo já faz.                                                                                                                                                                   |
-| 10  | Higiene                                    | `playwright-report/` e `test-results/` não estão no `.gitignore`; `shaders` é dependência morta (`package.json:26`); `src/app/app.css` vazio.                                                                                                                           |
+| 10  | Resolvido: higiene e testes                | `playwright-report/` e `test-results/` estão no `.gitignore` e os resíduos foram removidos; `shaders` saiu do `package.json`; `src/app/app.css` foi removido; scripts de teste/qualidade e helpers comuns centralizados.                                                |
 
 ## 3. Causa do "dev mode dá timeout"
 
@@ -130,6 +130,8 @@ src/
   index.html
 ```
 
+> **Nota de execução**: a organização efetiva da landing segue o `docs/STRUCTURE_GUIDE.md` e usa `features/landing/components/` (não `sections/`). A extração de conteúdo para `features/landing/data/` ainda não foi realizada.
+
 Regras:
 
 - Nenhum arquivo de landing na raiz de `app/`.
@@ -150,49 +152,45 @@ Ferramentaria:
 - Ambiente DOM: **jsdom** (`jsdom ^28.0.0`).
 - Tipos globais de teste: `vitest/globals` (`tsconfig.spec.json:7-8`).
 - Configuração de teste: **não há** `vitest.config.*`; tudo vem do builder do Angular.
-- Script disponível: apenas `"test": "ng test"` (`package.json:9`).
+- Scripts disponíveis: `test`, `test:ci`, `test:coverage` e `typecheck`.
 
 Como rodar:
 
 ```sh
-npm test                 # modo watch (desenvolvimento)
-npm test -- --watch=false   # execução única (CI/validação)
+npm test                    # modo watch (desenvolvimento)
+npm run test:ci             # execução única (CI/validação)
+npm run test:coverage       # execução única com relatório de cobertura
 ```
 
 Onde estão (hoje):
 
 - `src/app/app.spec.ts` — 2 testes: cria o `App` e valida o render da landing na rota `/` (h1, figcaption, 6 `details`).
-- `src/app/landing/hero-background.spec.ts` — 6 testes: reprodução do vídeo, visibilidade, `prefers-reduced-motion`, bloqueio de autoplay, erro de mídia e liberação de recursos.
-- Total atual: **8 testes** (confirmado no `README.md:58`).
+- `src/app/features/landing/landing.spec.ts` — 6 testes: render das seções, abertura/fechamento do menu móvel, retorno de foco, navegação por âncoras e diálogo de disponibilidade.
+- `src/app/features/landing/components/hero-background/hero-background.spec.ts` — 6 testes: reprodução do vídeo, visibilidade, `prefers-reduced-motion`, bloqueio de autoplay, erro de mídia e liberação de recursos.
+- `src/app/features/landing/components/faq/faq.spec.ts` — 2 testes: render das 6 perguntas e abertura/fechamento nativo do `details`.
+- `src/app/features/landing/components/availability-dialog/availability-dialog.spec.ts` — 2 testes: abertura sob demanda e fechamento com restauração de foco.
+- `src/app/shared/ui/**/*.spec.ts` — 8 testes cobrindo as variantes das diretivas de botão, link, card e título de seção.
+- Total atual: **26 testes**. Helpers comuns ficam em `src/testing/helpers.ts`.
 
-Lacunas: não há testes para o menu móvel e foco (`landing.ts`), diálogo de disponibilidade (`availability-dialog.ts`), FAQ (`faq.ts`), visão de plataforma (`platform-overview.ts`) nem rotas.
+Lacunas: `platform-overview` e `product-preview` não têm spec dedicada; ambos são cobertos pelo teste de integração da landing.
 
 ### Sobre testes E2E
 
-Apesar de conter arquivos como `test-results/` e `playwright-report/`, nenhuma dessas dependências foi realmente instalado, o **Playwright** não está instalado no projeto.
+O **Playwright** está instalado e configurado (`playwright.config.ts`, `e2e/` e dependências). A suíte `e2e/landing.spec.ts` cobre menu, diálogo, FAQ, skip link, reduced motion e erros de mídia em Chromium e Firefox. O job de E2E roda no CI dentro do container oficial do Playwright.
 
-- **O que fazer?**
-
-Os artefatos `test-results/` e `playwright-report/` são resíduos e não fazem parte da suíte atual. O Playwright já está configurado na `develop` (`playwright.config.ts`, `e2e/` e dependências), mas não chegou a esta branch porque ela foi criada antes do merge do setup.
-
-Na sincronização da Fase 0, trazer o setup da `develop`, rodar `npx playwright install --with-deps` e ajustar `e2e/example.spec.ts` para o título real da landing. Manter o job de E2E no CI.
-
-### Organização alvo dos testes
+### Organização dos testes
 
 - Manter a co-locação: `<nome>.spec.ts` ao lado do arquivo.
-- Testes de componente em `shared/ui/**/` e `shared/layout/**/` apenas onde houver comportamento a testar (evitar testes bobos); testes de fluxo de feature em `features/<feature>/**/`.
+- Testes de componente em `shared/ui/**/` apenas onde houver comportamento a testar (evitar testes bobos); testes de fluxo de feature em `features/<feature>/**/`.
 - `app.spec.ts` continua na raiz de `app/` (teste de integração da shell/rotas).
-- Helpers comuns (ex.: criar harness, stub de `matchMedia`, stub de `IntersectionObserver`) centralizados em `src/testing/helpers.ts`.
-- Adicionar scripts em `package.json`:
-  - `"test:ci": "ng test --watch=false"`
-  - `"test:coverage": "ng test --watch=false --coverage"`
-- Adicionar os artefatos `test-results/` e `playwright-report/` no `.gitignore`.
+- Helpers comuns (harness de componente, stubs de `matchMedia`, `IntersectionObserver` e `<dialog>`) centralizados em `src/testing/helpers.ts`, com alias `@testing/*`.
+- Artefatos `test-results/` e `playwright-report/` estão no `.gitignore`; a pasta `/coverage` também é ignorada.
 
-## 6.5 Sincronização com a `develop`
+## 6.5 Sincronização com a `develop` (concluída)
 
-A `feature/landing-page` foi criada a partir da `main` em 08/10, antes de o PR do setup (`chore/frontend-setup`) ser mergeado na `develop` em 16/10. Por isso ela está 5 commits atrás e não possui CI, ESLint, Playwright nem `zod`. Não se trata de arquivos removidos: eles nunca chegaram a esta branch.
+A `feature/landing-page` foi criada a partir da `main` em 08/10, antes de o PR do setup (`chore/frontend-setup`) ser mergeado na `develop` em 16/10. A sincronização já foi executada: a branch agora possui CI, ESLint, Playwright e `zod`. Os passos abaixo ficam registrados para referência.
 
-### Passos para voltar ao fluxo ideal pela develop
+### Passos executados para voltar ao fluxo ideal pela develop
 
 **1. Feche o que está solto na branch atual**
 
@@ -246,15 +244,15 @@ Legenda de esforço: P = pequeno (≤1h), M = médio (meio dia), G = grande (1 d
 
 ### Fase 0 — Destravar o desenvolvimento
 
-- [ ] **0.0 (M)** Executar a sincronização com a `develop` descrita na seção 6.5 antes de qualquer outra tarefa.
-- [ ] **0.1 (M)** Reproduzir o timeout: rodar `npm start`, em outro terminal `curl -sv --max-time 35 http://localhost:4200/`; capturar a mensagem do terminal e conferir se há processo `esbuild` pendurado (`ps aux | grep esbuild`).
-- [ ] **0.2 (M)** Confirmar a causa (colisão de cache de `styles:` inline do `@angular/build` 21.2.x). Registrar o resultado neste arquivo, na seção 3.
-- [ ] **0.3 (M)** Aplicar a mitigação ainda na Fase 0: converter os `styles:` inline dos 4 componentes em `styleUrl`/`templateUrl` (estilos compartilhados vão para `src/styles.css`). A Fase 3 apenas confirma que não sobrou nenhum. Se o timeout persistir, registrar versão exata do `@angular/build`, log do dev server e processo pendente; só então avaliar pin em `21.2.13` ou upgrade para 22.x.
-- [ ] **0.4 (P)** Em `angular.json`, no target `serve`, adicionar `"options": { "allowedHosts": ["localhost", "127.0.0.1"] }`.
-- [ ] **0.5 (P)** Em `package.json`, adicionar `"dev": "ng serve"`.
-- [ ] **0.6 (P)** Padronizar a porta de desenvolvimento em `4200` (default do `ng serve` e do `.vscode/launch.json:10`): remover `--port 4301` das instruções do `README.md` e ajustar também a variável de porta do `serve:ssr:frontend` documentada.
-- [ ] **0.7 (P)** Remover a dependência morta `shaders` de `package.json:26` (não é importada em `src`).
-- [ ] **0.8 (P)** Validar: `ng serve` acessível sem timeout em `localhost` e `127.0.0.1`; `npm run build` e `npm test -- --watch=false` verdes.
+- [x] **0.0 (M)** Executar a sincronização com a `develop` descrita na seção 6.5 antes de qualquer outra tarefa.
+- [x] **0.1 (M)** Reproduzir o timeout: rodar `npm start`, em outro terminal `curl -sv --max-time 35 http://localhost:4200/`; capturar a mensagem do terminal e conferir se há processo `esbuild` pendurado (`ps aux | grep esbuild`).
+- [x] **0.2 (M)** Confirmar a causa (colisão de cache de `styles:` inline do `@angular/build` 21.2.x). Registrar o resultado neste arquivo, na seção 3.
+- [x] **0.3 (M)** Aplicar a mitigação ainda na Fase 0: converter os `styles:` inline dos 4 componentes em `styleUrl`/`templateUrl` (estilos compartilhados vão para `src/styles.css`). A Fase 3 apenas confirma que não sobrou nenhum. Se o timeout persistir, registrar versão exata do `@angular/build`, log do dev server e processo pendente; só então avaliar pin em `21.2.13` ou upgrade para 22.x.
+- [x] **0.4 (P)** Em `angular.json`, no target `serve`, adicionar `"options": { "allowedHosts": ["localhost", "127.0.0.1"] }`.
+- [x] **0.5 (P)** Em `package.json`, adicionar `"dev": "ng serve"`.
+- [x] **0.6 (P)** Padronizar a porta de desenvolvimento em `4200` (default do `ng serve` e do `.vscode/launch.json:10`): remover `--port 4301` das instruções do `README.md` e ajustar também a variável de porta do `serve:ssr:frontend` documentada.
+- [x] **0.7 (P)** Remover a dependência morta `shaders` de `package.json:26` (não é importada em `src`).
+- [x] **0.8 (P)** Validar: `ng serve` acessível sem timeout em `localhost` e `127.0.0.1`; `npm run build` e `npm test -- --watch=false` verdes.
 
 ### Fase 1 — Esqueleto escalável
 
@@ -299,14 +297,14 @@ Concluída mantendo a organização atual de `docs/STRUCTURE_GUIDE.md`: componen
 
 ### Fase 4 — Testes, qualidade e higiene
 
-- [ ] **4.1 (P)** Adicionar scripts `test:ci` e `test:coverage` em `package.json`.
-- [ ] **4.2 (M)** Criar `src/testing/helpers.ts` com stubs reutilizáveis (`matchMedia`, `IntersectionObserver`, harness de componente) e refatorar `hero-background.spec.ts` para usá-los.
-- [ ] **4.3 (M)** Escrever `features/landing/landing.spec.ts` (abrir/fechar menu móvel, foco ao fechar, navegação por âncoras) e specs de seção para o diálogo de disponibilidade e o FAQ.
-- [ ] **4.4 (P)** Manter/ajustar `src/app/app.spec.ts` para a nova estrutura (rota `/`, shell, componentes de layout).
-- [ ] **4.5 (P)** Restaurar da `develop` o ESLint (`eslint.config.js`, dependências e scripts `lint`/`e2e`); adicionar os scripts `format` e `typecheck` (`tsc --noEmit`).
-- [ ] **4.6 (P)** Atualizar `.gitignore` com `playwright-report/` e `test-results/`; remover os resíduos já existentes do repositório.
-- [ ] **4.7 (P)** Restaurar o workflow de CI da `develop` (`.github/workflows/ci.yml`) e corrigir o job de testes para `npm run test -- --watch=false`; o job de lint já existe.
-- [ ] **4.8 (P)** Atualizar `README.md` (estrutura, scripts de dev/teste) e este arquivo marcando as fases concluídas.
+- [x] **4.1 (P)** Adicionar scripts `test:ci` e `test:coverage` em `package.json`.
+- [x] **4.2 (M)** Criar `src/testing/helpers.ts` com stubs reutilizáveis (`matchMedia`, `IntersectionObserver`, `<dialog>` e harness de componente), alias `@testing/*` no `tsconfig`, e refatorar `hero-background.spec.ts` para usá-los.
+- [x] **4.3 (M)** Completar `features/landing/landing.spec.ts` (abrir/fechar menu móvel, foco ao fechar, navegação por âncoras) e criar specs de seção para o diálogo de disponibilidade e o FAQ em `features/landing/components/`.
+- [x] **4.4 (P)** Manter/ajustar `src/app/app.spec.ts` para a nova estrutura (rota `/`, shell, componentes de layout).
+- [x] **4.5 (P)** Restaurar da `develop` o ESLint (`eslint.config.js`, dependências e scripts `lint`/`e2e`); adicionar os scripts `format` e `typecheck` (`tsc --noEmit`).
+- [x] **4.6 (P)** Atualizar `.gitignore` com `playwright-report/` e `test-results/`; remover os resíduos já existentes do repositório.
+- [x] **4.7 (P)** Restaurar o workflow de CI da `develop` (`.github/workflows/ci.yml`), corrigir o job de testes para `npm run test:ci` e adicionar `npm run typecheck` ao job de lint.
+- [x] **4.8 (P)** Atualizar `README.md` (estrutura, scripts de dev/teste) e este arquivo marcando as fases concluídas.
 
 ## 8. Ordem de execução e dependências
 

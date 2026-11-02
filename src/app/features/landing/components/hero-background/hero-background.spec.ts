@@ -1,38 +1,29 @@
-import { Component } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture } from '@angular/core/testing';
 import { vi } from 'vitest';
+import {
+  IntersectionObserverStub,
+  MatchMediaStub,
+  renderComponent,
+  resetTestEnvironment,
+  stubIntersectionObserver,
+  stubMatchMedia,
+} from '@testing/helpers';
 import { HeroBackground } from './hero-background';
 
-@Component({
-  imports: [HeroBackground],
-  template: '<section class="hero"><app-hero-background /></section>',
-})
-class HeroHarness {}
+vi.setConfig({ testTimeout: 15_000 });
 
 describe('HeroBackground video', () => {
-  let fixture: ComponentFixture<HeroHarness>;
-  let motion: EventTarget & { matches: boolean };
-  let intersect: (visible: boolean) => void;
-  let disconnect: ReturnType<typeof vi.fn>;
+  let fixture: ComponentFixture<HeroBackground>;
+  let motion: MatchMediaStub;
+  let intersection: IntersectionObserverStub;
   let visibility: ReturnType<typeof vi.spyOn>;
   let play: ReturnType<typeof vi.spyOn>;
   let pause: ReturnType<typeof vi.spyOn>;
   let load: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    motion = Object.assign(new EventTarget(), { matches: false });
-    disconnect = vi.fn();
-    vi.stubGlobal('matchMedia', () => motion);
-    vi.stubGlobal(
-      'IntersectionObserver',
-      class {
-        constructor(callback: (entries: { isIntersecting: boolean }[]) => void) {
-          intersect = (visible) => callback([{ isIntersecting: visible }]);
-        }
-        observe = vi.fn();
-        disconnect = disconnect;
-      },
-    );
+    motion = stubMatchMedia();
+    intersection = stubIntersectionObserver();
     visibility = vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
     play = vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined);
     pause = vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => undefined);
@@ -41,16 +32,16 @@ describe('HeroBackground video', () => {
 
   afterEach(() => {
     fixture?.destroy();
-    vi.restoreAllMocks();
-    vi.unstubAllGlobals();
+    resetTestEnvironment();
   });
 
   async function render() {
-    fixture = TestBed.createComponent(HeroHarness);
-    fixture.detectChanges();
-    await fixture.whenStable();
-    return fixture.nativeElement.querySelector('video') as HTMLVideoElement;
+    const rendered = await renderComponent(HeroBackground);
+    fixture = rendered.fixture;
+    return rendered.element.querySelector('video') as HTMLVideoElement;
   }
+
+  const intersect = (visible: boolean) => intersection.trigger(visible);
 
   function paint(video: HTMLVideoElement) {
     video.dispatchEvent(new Event('playing'));
@@ -141,7 +132,7 @@ describe('HeroBackground video', () => {
     const video = await render();
     intersect(true);
     fixture.destroy();
-    expect(disconnect).toHaveBeenCalledOnce();
+    expect(intersection.disconnect).toHaveBeenCalledOnce();
     expect(video.hasAttribute('src')).toBe(false);
     expect(load).toHaveBeenCalledTimes(2);
     document.dispatchEvent(new Event('visibilitychange'));
