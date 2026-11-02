@@ -37,6 +37,8 @@ interface ScrollActor {
   animation?: Animation;
   top: number;
   height: number;
+  bandTop?: number;
+  bandHeight?: number;
   visible: boolean;
   lastTime?: number;
 }
@@ -218,13 +220,22 @@ export class ScrollMotionDriver {
         { transform: 'scale(1)', opacity: 1 },
       ];
     } else if (actor.effect === 'strata-left' || actor.effect === 'strata-right') {
-      const distance = actor.trigger.clientWidth * 0.22 * (actor.effect === 'strata-left' ? 1 : -1);
+      const compact =
+        window.innerWidth < 760 || (window.innerWidth < 1024 && window.innerHeight <= 600);
+      const direction = actor.effect === 'strata-left' ? 1 : -1;
+      // Measure the readable fallback rail before data-motion-active expands each half to 50%.
+      const rail = compact ? parseFloat(getComputedStyle(actor.element).width) : 0;
+      const distance = compact
+        ? Math.max(0, actor.trigger.clientWidth / 2 - rail)
+        : actor.trigger.clientWidth * 0.22;
+      const from = compact ? 0 : distance * direction;
+      const to = compact ? -distance * direction : 0;
       const start = Math.min(0.35, depth * 0.022);
       frames = [
-        { transform: `translateX(${distance}px)` },
-        { transform: `translateX(${distance}px)`, offset: start },
-        { transform: 'translateX(0)', offset: Math.min(1, start + 0.65) },
-        { transform: 'translateX(0)' },
+        { transform: `translateX(${from}px)` },
+        { transform: `translateX(${from}px)`, offset: start },
+        { transform: `translateX(${to}px)`, offset: Math.min(1, start + 0.65) },
+        { transform: `translateX(${to}px)` },
       ];
     } else if (actor.effect === 'color-row') {
       frames = [
@@ -260,6 +271,11 @@ export class ScrollMotionDriver {
         const rect = actor.trigger.getBoundingClientRect();
         actor.top = rect.top + scroll;
         actor.height = rect.height;
+        if (actor.effect.startsWith('strata-')) {
+          const band = actor.element.parentElement!.getBoundingClientRect();
+          actor.bandTop = band.top + scroll;
+          actor.bandHeight = band.height;
+        }
       }
       this.measure = false;
     }
@@ -286,8 +302,12 @@ export class ScrollMotionDriver {
         start = actor.top - viewport * 0.3;
         end = actor.top + actor.height - viewport * 0.7;
       } else if (actor.effect.startsWith('strata-')) {
-        start = actor.top - viewport * 0.78;
-        end = actor.top + actor.height - viewport * 0.88;
+        const compact = window.innerWidth < 760 || (window.innerWidth < 1024 && viewport <= 600);
+        // Each mobile band clears its own text before reaching the middle of the screen.
+        start = compact ? actor.bandTop! - viewport * 0.9 : actor.top - viewport * 0.78;
+        end = compact
+          ? actor.bandTop! + actor.bandHeight! - viewport * 0.5
+          : actor.top + actor.height - viewport * 0.88;
       } else if (actor.effect === 'rings') {
         start = actor.top - viewport * 0.9;
         end = actor.top - viewport * 0.15;

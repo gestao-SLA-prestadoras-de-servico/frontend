@@ -1001,6 +1001,9 @@
     }
   }
   @media (max-width: 759px), (max-width: 1023px) and (max-height: 600px) {
+    .strata-row span[data-motion-active] {
+      width: 50%;
+    }
     .record-row {
       padding-block: 64px 36px;
     }

@@ -14,8 +14,14 @@ As cordas das evidências foram reduzidas de 100 para 36 px no celular e em pais
 
 Validação: build de produção, lint, TypeScript dos E2E e 34 testes em Chromium/Firefox, cobrindo a escada, a largura da última foto, a ausência de overflow e a distância entre cordas e texto durante a entrada, com e sem redução de movimento. Inclui regressões do ponto 1 e das cenas existentes. Capturas em 320, 390, 430, 768 e 1440 px em `tmp/mobile-adapt/point-2/after/`; os testes também cobrem paisagem de 844 × 390. As capturas isoladas da seção omitem apenas a navegação fixa durante a captura, sem alteração da interface. Não houve teste em aparelho físico ou Safari.
 
-## Próximo ponto solicitado
+## 3. Fluxo: cobertura e abertura das faixas
 
-3. Fazer os retângulos do fluxo cobrirem os textos inicialmente e se afastarem até as bordas conforme a rolagem.
+No celular e em paisagem baixa (até 1023 × 600 px), cada par de retângulos passa a ocupar duas metades de 50%, encontrando-se no centro e cobrindo o texto antes da abertura. Ao descer a página, as metades deslizam para fora, deixando as faixas nas bordas. A rolagem para cima refaz a cobertura. O desktop conserva sua composição e temporização anteriores.
 
-O ponto 3 fica para a próxima etapa, após a revisão visual do ponto 2 solicitada pelo usuário.
+Cada faixa usa sua própria posição vertical para calcular a abertura: começa a se mover ao entrar nos 90% inferiores do viewport e termina até chegar à região central. Isso permite ler cada etapa sem depender da altura total da seção, inclusive em paisagem. As posições são medidas somente nas atualizações de geometria; a rolagem altera apenas o tempo de animações de transform já criadas.
+
+A largura de cobertura só é aplicada após a inicialização bem-sucedida da animação. Com movimento reduzido, JavaScript indisponível ou ausência da API de animação, as faixas ficam nas bordas e todo o conteúdo permanece visível.
+
+Validação: build de produção, lint, TypeScript dos E2E e **44 testes aprovados em Chromium e Firefox**, incluindo os pontos 1 e 2 e as cenas desktop. Os dez novos testes verificam cobertura sem vão, leitura de cada título ao chegar à região central, afastamento das faixas, reversão, mudança dinâmica para movimento reduzido e ausência de API, nas larguras de 320, 390, 430 e 844 px. Inspeção visual em 320 × 568, 390 × 844, 430 × 932, 844 × 390 e 1440 × 900, sem overflow horizontal ou erros de execução. Não houve teste em aparelho físico ou Safari. O build mantém o aviso preexistente de `HeroBackground` importado e sem uso.
+
+Evidências em `tmp/mobile-adapt/point-3/`: gravação real de descida e subida em `390-scroll.mp4` (também em WebM), capturas do início, abertura e última etapa e capturas completas com movimento reduzido. As capturas de viewport mantêm a navegação; apenas os recortes completos da seção com movimento reduzido ocultam a navbar fixa durante a captura. Nenhum tempo de animação foi forçado para a gravação ou as capturas. Script reproduzível: `tmp/mobile-adapt/capture-strata.mjs`.
