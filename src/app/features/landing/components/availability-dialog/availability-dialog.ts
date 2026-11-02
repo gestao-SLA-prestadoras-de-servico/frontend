@@ -14,7 +14,6 @@ import { ButtonPrimary } from '../../../../shared/ui/button';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [Icon, ActionLabel, ButtonPrimary],
   templateUrl: './availability-dialog.html',
-  styleUrl: './availability-dialog.css',
 })
 export class AvailabilityDialog {
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');

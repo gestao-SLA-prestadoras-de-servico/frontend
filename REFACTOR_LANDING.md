@@ -27,7 +27,7 @@ Evidências do diagnóstico original, com a resolução do problema 1 atualizada
 
 | #   | Problema                                   | Evidência                                                                                                                                                                                                                                                               |
 | --- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Resolvido: landing migrada para Tailwind 4 | `src/styles.css` define tokens em `@theme` e padrões em `@layer base` com `@apply`; templates e hosts em `features/landing/` usam utilitários, variantes de estado e breakpoints padrão. CSS local restrito aos gradientes do fundo e às transições nativas do diálogo. |
+| 1   | Resolvido: landing migrada para Tailwind 4 | Revisado em 02/11/2026 após o redesign: `src/styles.css` contém configuração, tokens e base; templates e hosts usam utilitários. Não há CSS de componente, imports de folhas da landing ou bindings de estilo. Gradientes usam tokens de tema e o diálogo usa variantes Tailwind. |
 | 2   | Sem componentes reutilizáveis              | Não existe `core`/`shared`; primitivos globais vivem em `landing/` (`icon.ts`, `action-label.ts`, `availability-dialog.ts`).                                                                                                                                            |
 | 3   | Pasta `landing/` bagunçada                 | 17 arquivos soltos misturando página, seções, primitivos e infra.                                                                                                                                                                                                       |
 | 4   | Custo cognitivo alto                       | Conteúdo hardcoded em TS (`landing.ts:24-71`, `faq.ts:95-126`, `platform-overview.ts:12-48`); 3 CSS de página com nomes genéricos (`landing.css`, `landing-sections.css`, `landing-responsive.css`).                                                                    |
@@ -274,16 +274,16 @@ Legenda de esforço: P = pequeno (≤1h), M = médio (meio dia), G = grande (1 d
 
 ### Fase 2 — Tailwind de verdade
 
-Concluída mantendo a organização atual de `docs/STRUCTURE_GUIDE.md`: componentes em `features/landing/components/`. Esta entrega resolve o problema 1; não antecipa as extrações e diretivas das outras fases. As durações `--motion-*` permanecem variáveis globais consumidas por utilitários; os demais tokens usam os namespaces de tema do Tailwind.
+Revalidada em **02/11/2026**, mantendo os componentes em `features/landing/components/`. A conclusão anterior havia ficado desatualizada: o redesign acrescentou 1.632 linhas em `landing-chapters.css` e `isoline.css`, além do CSS específico de componentes. Essas folhas foram removidas e a composição atual foi migrada para utilitários, sem antecipar outras fases. As durações `--motion-*` permanecem variáveis globais consumidas por utilitários; os demais tokens usam namespaces de tema do Tailwind. O CSS restante em `src/styles.css` é a configuração prevista em 2.1, com fonte, tokens, animação do menu e estilos base do documento.
 
 - [x] **2.1 (M)** Configurar `src/styles.css` com `@import 'tailwindcss'`, `@theme` (cores, fontes, raios, sombras, espaçamentos, tipografia e curva) e `@layer base`.
-- [x] **2.2 (G)** Migrar `features/landing/landing.*` para utilitários Tailwind em layout, grid, espaçamento, tipografia e cores; remover `landing.css`.
-- [x] **2.3 (M)** Migrar `components/hero-background` e demais componentes para o esquema híbrido, preservando gradientes e transições nativas de diálogo em CSS.
+- [x] **2.2 (G)** Migrar `features/landing/landing.*` e os capítulos atuais para utilitários Tailwind em layout, grid, espaçamento, tipografia e cores; remover `landing.css`, `landing-chapters.css` e `isoline.css`.
+- [x] **2.3 (M)** Migrar `components/hero-background` e demais componentes para utilitários. Gradientes preservados como tokens `--background-image-*`; diálogo nativo preservado com `supports-*`, `open:`, `starting:`, `backdrop:` e `transition-discrete`, sem CSS local.
 - [x] **2.4 (M)** Migrar `components/product-preview/` preservando a composição, estados e dados ilustrativos.
-- [x] **2.5 (P)** Remover CSS global morto e arquivos CSS esvaziados, seus `styleUrl` e os estilos inline dos ícones; conferir os budgets existentes.
+- [x] **2.5 (P)** Remover CSS global morto, todos os arquivos CSS locais da landing e seus `styleUrl`; não restam estilos inline ou bindings `[style]`. Cores calculadas dos SVGs usam atributos de apresentação. Budgets existentes preservados.
 - [x] **2.6 (P)** Comparar referências visuais em 320/390/768/1024/1440/1536 px, incluindo menu e diálogo, e validar build, lint e testes. Evidências em `docs/LANDING_TAILWIND_VALIDATION.md`.
 
-> **Observação**: Com relação a responsividade, deve ser utilizado as classes do próprio Tailwind para resolver isso (`sm:`,`md:`,`lg:`,`xl:`,`2xl:`), mantendo assim o padrão visual em todas as páginas.
+> **Responsividade**: usar variantes do Tailwind (`sm:`, `md:`, `lg:`, `xl:`, `2xl:` e suas variantes `max-*`). O corte móvel dos novos capítulos e do driver de rolagem foi alinhado de 760 para `md` (768 px). As exceções por altura e por largura mínima de conteúdo (360/400 px) permanecem variantes arbitrárias nos elementos, sem folhas de media queries paralelas.
 
 ### Fase 3 — Componentes e consistência
 

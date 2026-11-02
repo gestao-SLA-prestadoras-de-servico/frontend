@@ -1,47 +1,60 @@
-# Validação da migração da landing para Tailwind 4
+# Validação da landing atual — Fase 2: Tailwind de verdade
 
-Entrega: problema 1 do diagnóstico e tarefas 2.1–2.6 de `REFACTOR_LANDING.md`. A organização permanece em `features/landing/components/`, com os contratos Angular, conteúdo e ativos existentes preservados. A alteração preexistente em `package-lock.json` foi mantida.
+Revisão de 02/11/2026, após o redesign Isoline e as três correções mobile. Escopo: subpontos 2.1–2.6 de `REFACTOR_LANDING.md`, preservando a composição, conteúdo, navbar, âncoras, acessibilidade e movimento. A alteração preexistente de `package-lock.json` foi mantida.
 
-## Implementação
+## Auditoria por subponto
 
-- Tokens em `src/styles.css`, com namespaces `--color-*`, `--font-*`, `--radius-*`, `--shadow-*`, `--spacing-*`, `--text-*` e `--ease-*` em `@theme`.
-- Padrões de documento, tipografia e foco em `@layer base`; durações `--motion-*` consumidas pelas classes Tailwind.
-- Cabeçalho, menu, hero, benefícios, fluxo, plataforma, chamado, FAQ, rodapé, diálogo, ícones e rótulos animados migrados para utilitários detectáveis nos templates e hosts.
-- Removidos `landing.css`, `faq.css`, `platform-overview.css` e `product-preview.css`, com seus `styleUrl`. CSS específico restante: gradientes do fundo e transições nativas de diálogo.
-- Breakpoints padrão: `sm` para composições intermediárias, `lg` para navegação desktop e composições amplas, `xl` para recuos maiores e `2xl` para o respiro inferior do hero. Variantes específicas preservam telas baixas, horizontal e conteúdo estreito do chamado.
-- Animações de rotação e deslocamento dos botões limitadas a `motion-safe`; FAQ, menu, diálogo e vídeo respeitam movimento reduzido.
+A conclusão anterior não descrevia mais o código atual. O redesign havia introduzido 1.632 linhas em duas folhas globais da landing e mantido CSS local. Esta revisão substitui o registro de validação da composição anterior.
 
-O mapeamento segue as referências oficiais de [tokens de tema](https://tailwindcss.com/docs/theme) e [responsividade](https://tailwindcss.com/docs/responsive-design).
+| Item | Situação encontrada | Resultado desta revisão |
+| --- | --- | --- |
+| 2.1 — configuração e tokens | `@import`, `@theme` e `@layer base` já existiam | Conferido; acrescentados tokens para as sombras de impressos, fundo dos cartazes e gradientes do vídeo. Espaçamento de seção alinhado à composição atual. |
+| 2.2 — landing e layout | Não conforme: `landing-chapters.css` e `isoline.css` concentravam layout, tipografia e responsividade | Migrados para utilitários nos templates; ambas as folhas e seus imports foram removidos. |
+| 2.3 — componentes | Parcial: capítulos novos dependiam das folhas globais; vídeo e diálogo tinham CSS próprio | Capítulos, SVGs, prendedores, pseudoelementos, abas, gradientes e transições usam utilitários/variantes Tailwind. Não há CSS local. |
+| 2.4 — chamado ilustrativo | Já conforme: `product-preview` usava utilitários | Preservados composição, estados, três prazos, evidências e dados ilustrativos. Conferido nas seis larguras. |
+| 2.5 — limpeza e budgets | Não conforme: folhas e referências locais ainda presentes, inclusive um CSS vazio | Removidos cinco arquivos CSS, dois imports e dois `styleUrl`. Não há estilos inline nem bindings `[style]` em `src/app`. Budgets mantidos. |
+| 2.6 — visual e testes | Evidência anterior desatualizada para o redesign | Comparação da composição atual nas seis larguras, confirmação em telas baixas, build, lint, tipos, 28 testes unitários e 90 E2E aprovados. Dois E2E do vídeo opcional foram ignorados, conforme explicado abaixo. |
 
-## Comparação visual
+## Como os estilos estão organizados
 
-Capturas anteriores à migração comparadas com a versão final no Chrome, com viewport de 900 px de altura e movimento reduzido para manter o poster consistente. Conferidos página completa, menu nas larguras móveis e diálogo em todas as larguras. As imagens de evidência também foram carregadas na conferência final.
+- `src/styles.css` é o único CSS em `src/`: importa Tailwind, carrega Manrope, define tokens `@theme`, a animação do menu e os padrões `@layer base` de documento, foco e tipografia. Essa configuração é parte do requisito 2.1; não contém folhas de capítulos nem `@layer components`.
+- Layout, tamanho, grid, espaçamento, tipografia, cores, sombras, estados e pseudoelementos ficam em classes detectáveis nos templates e hosts Angular. Não houve substituição das folhas antigas por blocos `@apply` com classes semânticas.
+- Nomes como `record-row`, `motion-line` e `strata-stage` permanecem como identificadores dos testes e das cenas de movimento; não possuem regras CSS próprias.
+- Gradientes do vídeo usam `--background-image-*` e classes `bg-hero-shade*`. O diálogo mantém entrada e saída nativas com `supports-*`, `open:`, `starting:`, `backdrop:` e `transition-discrete`.
+- Valores contínuos dos contornos SVG usam atributos de apresentação `fill`, `fill-opacity` e `stroke`. A Web Animations API continua responsável pelo progresso de rolagem, inicialização após hidratação e limpeza. Não foi trocada por uma biblioteca ou por bindings inline de estilo.
 
-| Largura | Rolagem horizontal | Navegação  | Diálogo   |
-| ------- | ------------------ | ---------- | --------- |
-| 320 px  | Ausente            | Menu móvel | Conferido |
-| 390 px  | Ausente            | Menu móvel | Conferido |
-| 768 px  | Ausente            | Menu móvel | Conferido |
-| 1024 px | Ausente            | Desktop    | Conferido |
-| 1440 px | Ausente            | Desktop    | Conferido |
-| 1536 px | Ausente            | Desktop    | Conferido |
+Os padrões seguem as referências oficiais de [tema](https://tailwindcss.com/docs/theme), [responsividade](https://tailwindcss.com/docs/responsive-design), [variantes de estado](https://tailwindcss.com/docs/hover-focus-and-other-states) e [transições discretas](https://tailwindcss.com/docs/transition-behavior).
 
-As medidas principais de hero, benefícios, fluxo e FAQ se mantiveram. Em 1536 px, o título do hero sobe 20 px com o respiro de `2xl`, antes aplicado somente a partir de 1600 px. A migração dos breakpoints também passa as transições de 600/900/1200 px para os pontos padrão do Tailwind. Pequenas diferenças de arredondamento e altura no exemplo de chamado foram aceitas na comparação visual.
+## Responsividade e equivalência visual
 
-As capturas locais ficam em `tmp/landing-tailwind/{before,after,final}/`, ignoradas pelo Git.
+Os capítulos usam `md` (768 px), substituindo o corte anterior de 760 px. O driver de movimento foi alinhado ao mesmo valor, com regressão adicional em 767 px. A navbar mantém `lg` (1024 px), a aparência e os comportamentos existentes. Permanecem os ajustes de conteúdo em 360/400 px e as condições de altura, expressos por variantes Tailwind nos elementos; não há folhas paralelas de media queries.
 
-## Verificação funcional e build
+Capturas de página inteira, menu móvel e diálogo foram feitas antes da migração e após a correção conjunta, em Chromium com movimento reduzido. A comparação de propriedades computadas de 733 elementos por largura confirmou igualdade de tamanhos, margens, paddings e tipografia. Representações equivalentes de sombras Tailwind, alinhamento lógico e raio circular foram aceitas; não se afirma comparação pixel a pixel. As medidas e capturas da confirmação estão em `tmp/tailwind-migration/{before,after,final}/`, ignorado pelo Git. Script: `tmp/tailwind-migration/capture.mjs`.
 
-| Verificação                                       | Resultado                                                                             |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `npm run build`                                   | Passou; `/` prerenderizada                                                            |
-| `npm run lint`                                    | Passou                                                                                |
-| `npm test -- --watch=false`                       | 12 testes passaram                                                                    |
-| `npx playwright test --workers=2 --reporter=line` | 26 testes passaram em Chromium e Firefox                                              |
-| Utilitários personalizados no CSS de produção     | Conferidos cores, raios, espaçamento, sombras e curva; Manrope e durações preservadas |
-| Budget inicial                                    | 383,00 kB; abaixo do aviso de 500 kB e limite de 1 MB                                 |
-| Budget de CSS por componente                      | Sem avisos; limites de 10/12 kB mantidos                                              |
+| Largura × altura | Overflow horizontal | Navegação | Diálogo e layout |
+| --- | --- | --- | --- |
+| 320 × 900 | Ausente | Menu móvel | Conferidos |
+| 390 × 900 | Ausente | Menu móvel | Conferidos |
+| 768 × 900 | Ausente | Menu móvel | Conferidos |
+| 1024 × 900 | Ausente | Desktop | Conferidos |
+| 1440 × 900 | Ausente | Desktop | Conferidos |
+| 1536 × 900 | Ausente | Desktop | Conferidos |
 
-Os E2E cobrem as seis larguras, contenção e retorno de foco, Escape, Tab/Shift+Tab, navegação por âncora, fechamento do menu em 1024 px, FAQ por teclado, poster com movimento reduzido, fallback após erro de vídeo e ações acessíveis em 390×667, 844×390 e 1024×600. A conferência adicional no navegador verificou o feedback dos botões com movimento habilitado e sua supressão com movimento reduzido.
+Também foram confirmados 390 × 667, 844 × 390 e 1024 × 600, com ações do hero acessíveis. A confirmação visual inclui paisagem baixa com movimento habilitado e reduzido. Os E2E validam o círculo completo, a escada das evidências e a cobertura/abertura reversível das faixas do fluxo, incluindo movimento reduzido e ausência de APIs. A validação foi feita por viewports emulados, sem aparelho físico ou Safari.
 
-Os navegadores compatíveis com a versão instalada do Playwright foram instalados para executar a configuração padrão. Nenhuma dependência ou configuração de budget foi alterada.
+## Verificação final
+
+| Comando / verificação | Resultado |
+| --- | --- |
+| `npm run build` | Passou; rota `/` prerenderizada |
+| `npm run lint` | Passou |
+| `npx tsc --noEmit --project e2e/tsconfig.json` | Passou |
+| `npm test -- --watch=false` | 28 testes aprovados, 8 arquivos |
+| `PLAYWRIGHT_TEST_BASE_URL=http://localhost:4320 npx playwright test --workers=2 --reporter=line` | 90 aprovados, 2 ignorados; Chromium e Firefox |
+| CSS local, `styleUrl`, `styles:` e bindings de estilo | Nenhuma ocorrência em `src/app` |
+| Bundle inicial | 453,73 kB; transferência estimada de 107,03 kB |
+| Budgets | Sem avisos de tamanho; limites de 500 kB/1 MB e 10/12 kB por componente preservados |
+
+A composição atual mantém o vídeo opcional comentado em `landing.html`. Por isso o cenário E2E de erro de vídeo fica ignorado em cada navegador quando o componente não é renderizado; volta a executar se a janela de vídeo for utilizada. Os testes de SSR e movimento reduzido verificam a ilustração efetivamente exibida. Os seis testes unitários de `HeroBackground` continuam cobrindo reprodução, preferência de movimento, bloqueio de autoplay, erro e liberação de recursos. O build mantém o aviso preexistente `NG8113` do import sem uso de `HeroBackground`.
+
+Nenhuma dependência, API, rota, autenticação, coleta de contatos ou configuração de budget foi adicionada.

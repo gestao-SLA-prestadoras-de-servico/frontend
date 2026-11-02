@@ -13,11 +13,11 @@ import {
   selector: 'app-hero-background',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'pointer-events-none absolute inset-0 z-0 isolate overflow-hidden bg-navy',
+    class:
+      "pointer-events-none absolute inset-0 z-0 isolate overflow-hidden bg-navy after:absolute after:inset-0 after:bg-hero-shade after:content-[''] max-lg:after:bg-hero-shade-mobile max-lg:[@media(max-height:700px)]:after:bg-hero-shade-low",
     '[attr.data-video-state]': "ready() ? 'ready' : 'poster'",
   },
   templateUrl: './hero-background.html',
-  styleUrl: './hero-background.css',
 })
 export class HeroBackground {
   private readonly video = viewChild.required<ElementRef<HTMLVideoElement>>('video');

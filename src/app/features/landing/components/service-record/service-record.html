@@ -1,70 +1,118 @@
 <section
   id="historico"
-  class="chapter day-section"
+  class="chapter day-section py-[76px] md:py-section"
   aria-labelledby="history-section-title"
   data-scroll-scene="history-dial"
 >
-  <div class="page-frame day-grid">
-    <div class="day-dial"><app-contour motion="dial" trigger="#historico" /></div>
-    <div class="day-main">
-      <div appReveal>
-        <h2 id="history-section-title">
-          <span class="motion-line"><span>Cada ação</span></span
-          ><span class="motion-line"><span>tem uma história.</span></span>
+  <div
+    class="page-frame day-grid mx-auto w-[calc(100%-40px)] max-w-[1500px] md:w-[calc(100%-8vw)] grid grid-cols-1 items-start gap-6 md:grid-cols-2 md:gap-[5vw] lg:gap-[7vw]"
+  >
+    <div
+      class="day-dial sticky top-[15vh] grid h-[70vh] place-items-center lg:[@media(max-height:600px)]:top-[100px] lg:[@media(max-height:600px)]:h-[65vh] max-md:static max-lg:[@media(max-height:600px)]:static max-md:top-auto max-lg:[@media(max-height:600px)]:top-auto max-md:h-auto max-lg:[@media(max-height:600px)]:h-auto max-md:order-0 max-lg:[@media(max-height:600px)]:order-0 max-md:overflow-visible max-lg:[@media(max-height:600px)]:overflow-visible motion-reduce:static"
+    >
+      <app-contour
+        class="aspect-square w-[min(100%,70vh)] max-md:w-[min(100%,320px)] max-lg:[@media(max-height:600px)]:w-[min(100%,320px)] max-md:h-auto max-lg:[@media(max-height:600px)]:h-auto max-md:[&_svg]:h-auto max-lg:[@media(max-height:600px)]:[&_svg]:h-auto max-md:[&_svg]:aspect-square max-lg:[@media(max-height:600px)]:[&_svg]:aspect-square"
+        motion="dial"
+        trigger="#historico"
+      />
+    </div>
+    <div class="day-main max-md:contents">
+      <div class="max-md:-order-1" appReveal>
+        <h2
+          class="text-[clamp(2.2rem,3.6vw,3.5rem)] leading-[1.02] font-[550] tracking-[-.035em]"
+          id="history-section-title"
+        >
+          <span class="motion-line block overflow-clip pb-[.12em] -mb-[.12em]"
+            ><span class="block">Cada ação</span></span
+          ><span class="motion-line block overflow-clip pb-[.12em] -mb-[.12em]"
+            ><span class="block">tem uma história.</span></span
+          >
         </h2>
-        <p class="chapter-lead">
+        <p class="chapter-lead mt-6 text-base leading-[1.75] text-ink2 md:text-[17px]">
           Acompanhe o caminho do chamado sem perder os detalhes. Ações, horários e responsáveis
           compõem a memória do atendimento.
         </p>
       </div>
-      <ol class="day-list">
+      <ol class="day-list m-0 list-none p-0 md:mt-12">
         @for (event of events; track event.time; let i = $index) {
-          <li class="day-row">
-            <time>{{ event.time }}</time>
+          <li
+            class="day-row grid grid-cols-[64px_1fr] gap-3 border-t border-line2 py-7 md:grid-cols-[58px_1fr] md:py-8 lg:grid-cols-[75px_1fr] lg:gap-5"
+          >
+            <time class="text-2xl leading-[1.2] tabular-nums md:text-[25px]">{{ event.time }}</time>
             <div appReveal>
-              <span class="level-badge" [attr.data-tone]="i % 3">{{ event.role }}</span>
-              <h3>{{ event.action }}</h3>
-              <p>{{ event.description }}</p>
-              <p class="day-person">{{ event.person }} · {{ event.role }}</p>
+              <span
+                class="level-badge inline-flex items-center gap-[7px] text-xs font-semibold text-ink2 before:h-[9px] before:w-[7px] before:bg-pri before:content-[''] data-[tone=1]:before:bg-grn data-[tone=2]:before:bg-navy"
+                [attr.data-tone]="i % 3"
+                >{{ event.role }}</span
+              >
+              <h3 class="font-[550] mt-2.5 text-[23px] md:text-[26px]">{{ event.action }}</h3>
+              <p class="mt-2 text-[15px] text-ink2">{{ event.description }}</p>
+              <p class="day-person mt-4 text-[13px] text-ink2">
+                {{ event.person }} · {{ event.role }}
+              </p>
             </div>
           </li>
         }
       </ol>
-      <p class="illustrative-note">
+      <p class="illustrative-note mt-10 max-w-[85ch] text-[13px] leading-[1.6] text-ink2">
         Chamado #1042 · sequência ilustrativa · dados fictícios. Serviço iniciado e evidências
         registradas; resolução em andamento.
       </p>
     </div>
   </div>
 </section>
-<section id="evidencias" class="chapter record-section" aria-labelledby="evidence-section-title">
-  <div class="page-frame">
-    <div class="section-intro" appReveal>
-      <h2 id="evidence-section-title">
-        <span class="motion-line"><span>O serviço acontece.</span></span
-        ><span class="motion-line"><span>O registro fica.</span></span>
+<section
+  id="evidencias"
+  class="chapter record-section py-[76px] md:py-section"
+  aria-labelledby="evidence-section-title"
+>
+  <div class="page-frame mx-auto w-[calc(100%-40px)] max-w-[1500px] md:w-[calc(100%-8vw)]">
+    <div class="section-intro mb-[42px] max-w-[670px] md:mb-16" appReveal>
+      <h2
+        class="text-[clamp(2.1rem,8.5vw,3.1rem)] md:text-[clamp(2.2rem,4.5vw,4.4rem)] leading-[1.02] font-[550] tracking-[-.035em]"
+        id="evidence-section-title"
+      >
+        <span class="motion-line block overflow-clip pb-[.12em] -mb-[.12em]"
+          ><span class="block">O serviço acontece.</span></span
+        ><span class="motion-line block overflow-clip pb-[.12em] -mb-[.12em]"
+          ><span class="block">O registro fica.</span></span
+        >
       </h2>
-      <p class="chapter-lead">
+      <p class="chapter-lead mt-6 text-base leading-[1.75] text-ink2 md:text-[17px] max-w-[48ch]">
         Do pedido à comprovação. Informações e fotografias reunidas no contexto de cada chamado.
       </p>
     </div>
-    <div class="record-list">
+    <div class="record-list grid">
       @for (record of records; track record.title; let i = $index) {
-        <article class="record-row" data-record>
+        <article
+          class="record-row group/record grid grid-cols-[clamp(112px,33vw,168px)_minmax(0,1fr)] items-start gap-4 border-t border-line2 py-11 nth-2:ml-[2%] nth-3:ml-[4%] nth-4:ml-[6%] max-md:last:grid-cols-1 max-md:last:gap-5 md:grid-cols-[140px_1fr] md:gap-7 md:nth-2:ml-[7%] md:nth-3:ml-[14%] md:nth-4:ml-[21%] lg:grid-cols-[180px_1fr] lg:gap-10 lg:nth-2:ml-[12%] lg:nth-3:ml-[22%] lg:nth-4:ml-[32%] max-md:pt-16 max-lg:[@media(max-height:600px)]:pt-16 max-md:pb-9 max-lg:[@media(max-height:600px)]:pb-9 max-[360px]:grid-cols-1 max-[360px]:gap-5"
+          data-record
+        >
           <figure
-            class="record-print"
+            class="record-print relative origin-top max-[360px]:w-[min(64%,176px)] max-[360px]:group-last/record:w-full"
             appScrollMotion="hang"
             [motionIndex]="i"
             motionTrigger="[data-record]"
           >
-            <div class="print-clips" aria-hidden="true"><i></i><i></i></div>
             <div
-              class="record-photo"
+              class="print-clips pointer-events-none absolute -top-[9px] right-[8%] left-[8%] z-1 flex justify-between"
+              aria-hidden="true"
+            >
+              <i
+                class="relative block h-3 w-[9px] rounded-t-[2px] bg-navy before:absolute before:bottom-2.5 before:left-1 before:h-[100px] before:w-px before:bg-ink3 before:content-[''] max-md:before:h-9 max-lg:[@media(max-height:600px)]:before:h-9"
+              ></i
+              ><i
+                class="relative block h-3 w-[9px] rounded-t-[2px] bg-navy before:absolute before:bottom-2.5 before:left-1 before:h-[100px] before:w-px before:bg-ink3 before:content-[''] max-md:before:h-9 max-lg:[@media(max-height:600px)]:before:h-9"
+              ></i>
+            </div>
+            <div
+              class="record-photo group/photo aspect-[4/5] overflow-clip shadow-record [&.person-photo]:bg-pri-bg max-md:group-last/record:aspect-[2/1]"
               [class.person-photo]="record.person"
               appReveal
               revealEffect="wipe"
             >
               <img
+                class="size-full object-cover group-[.person-photo]/photo:object-contain group-[.person-photo]/photo:object-bottom"
                 [src]="'images/' + record.image"
                 [alt]="
                   record.person
@@ -78,15 +126,25 @@
               />
             </div>
           </figure>
-          <div class="record-body" appReveal>
-            <span class="level-badge" [attr.data-tone]="i % 3">{{ record.label }}</span>
-            <h3>{{ record.title }}</h3>
-            <p>{{ record.text }}</p>
+          <div class="record-body min-w-0 max-w-none md:max-w-[550px]" appReveal>
+            <span
+              class="level-badge inline-flex items-center gap-[7px] text-xs font-semibold text-ink2 before:h-[9px] before:w-[7px] before:bg-pri before:content-[''] data-[tone=1]:before:bg-grn data-[tone=2]:before:bg-navy"
+              [attr.data-tone]="i % 3"
+              >{{ record.label }}</span
+            >
+            <h3
+              class="font-[550] mt-3 text-[clamp(22px,5.7vw,25px)] leading-[1.05] md:text-[clamp(2rem,3.2vw,3.2rem)] max-[360px]:text-[25px]"
+            >
+              {{ record.title }}
+            </h3>
+            <p class="mt-3 text-[15px] leading-[1.6] text-ink2 md:mt-[18px] md:text-base">
+              {{ record.text }}
+            </p>
           </div>
         </article>
       }
     </div>
-    <p class="illustrative-note">
+    <p class="illustrative-note mt-10 max-w-[85ch] text-[13px] leading-[1.6] text-ink2">
       Pessoas e cena de manutenção geradas por IA · imagens ilustrativas. Não representam equipe,
       cliente ou atendimento real.
     </p>

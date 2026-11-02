@@ -118,7 +118,7 @@ test('reduced motion cancels scroll effects immediately and a narrow viewport ke
     await expect(actor).not.toHaveAttribute('data-motion-active', '');
     await expect(actor).toHaveCSS('transform', 'none');
   }
-  await expect(page.locator('app-hero-background')).toHaveAttribute('data-video-state', 'poster');
+  await expect(page.locator('.opening-person img')).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await expect(page.locator('[data-scroll-motion="phone"]')).not.toHaveAttribute(

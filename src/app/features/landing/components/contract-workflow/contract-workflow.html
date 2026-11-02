@@ -1,30 +1,63 @@
 <section
   id="como-funciona"
-  class="chapter strata-section"
+  class="chapter strata-section py-[76px] md:py-section"
   tabindex="-1"
   aria-labelledby="workflow-title"
   data-scroll-scene="strata-reveal"
 >
-  <div class="page-frame">
-    <div class="section-intro" appReveal>
-      <h2 id="workflow-title">
-        <span class="motion-line"><span>Do contrato à solução.</span></span
-        ><span class="motion-line"><span>Um fluxo conectado.</span></span>
+  <div class="page-frame mx-auto w-[calc(100%-40px)] max-w-[1500px] md:w-[calc(100%-8vw)]">
+    <div class="section-intro mb-[42px] max-w-[670px] md:mb-16" appReveal>
+      <h2
+        class="text-[clamp(2.1rem,8.5vw,3.1rem)] md:text-[clamp(2.2rem,4.5vw,4.4rem)] leading-[1.02] font-[550] tracking-[-.035em]"
+        id="workflow-title"
+      >
+        <span class="motion-line block overflow-clip pb-[.12em] -mb-[.12em]"
+          ><span class="block">Do contrato à solução.</span></span
+        ><span class="motion-line block overflow-clip pb-[.12em] -mb-[.12em]"
+          ><span class="block">Um fluxo conectado.</span></span
+        >
       </h2>
-      <p class="chapter-lead">
+      <p class="chapter-lead mt-6 text-base leading-[1.75] text-ink2 md:text-[17px] max-w-[48ch]">
         Quatro etapas previstas para levar o compromisso até a comprovação.
       </p>
     </div>
-    <div class="strata-stage">
-      <div class="strata-layers" aria-hidden="true">
+    <div class="strata-stage relative">
+      <div
+        class="strata-layers pointer-events-none absolute inset-0 z-1 grid grid-rows-12"
+        aria-hidden="true"
+      >
         @for (band of bands; track band) {
-          <div class="strata-row">
+          <div class="strata-row group/band flex justify-between overflow-clip">
             <span
+              class="h-full w-[18%] md:w-[28%] max-md:data-[motion-active]:w-1/2 max-lg:[@media(max-height:600px)]:data-[motion-active]:w-1/2"
+              [class]="
+                band >= 9
+                  ? 'bg-navy'
+                  : band >= 7
+                    ? 'bg-grn'
+                    : band >= 4
+                      ? 'bg-operational'
+                      : band % 3 === 0
+                        ? 'bg-cyan'
+                        : 'bg-pri'
+              "
               appScrollMotion="strata-left"
               [motionIndex]="band"
               motionTrigger=".strata-stage"
             ></span
             ><span
+              class="h-full w-[18%] md:w-[28%] max-md:data-[motion-active]:w-1/2 max-lg:[@media(max-height:600px)]:data-[motion-active]:w-1/2"
+              [class]="
+                band >= 9
+                  ? 'bg-navy'
+                  : band >= 7
+                    ? 'bg-grn'
+                    : band >= 4
+                      ? 'bg-operational'
+                      : band % 3 === 0
+                        ? 'bg-cyan'
+                        : 'bg-pri'
+              "
               appScrollMotion="strata-right"
               [motionIndex]="band"
               motionTrigger=".strata-stage"
@@ -32,12 +65,18 @@
           </div>
         }
       </div>
-      <ol class="strata-list">
+      <ol class="strata-list m-0 grid list-none p-0">
         @for (step of steps; track step.title; let i = $index) {
-          <li>
-            <span class="level-badge" [attr.data-tone]="i % 3">{{ labels[i] }}</span>
-            <h3>{{ step.title }}</h3>
-            <p>{{ step.description }}</p>
+          <li
+            class="grid min-h-[24vh] content-center justify-items-center gap-3 px-[22%] py-6 text-center md:px-6"
+          >
+            <span
+              class="level-badge inline-flex items-center gap-[7px] text-xs font-semibold text-ink2 before:h-[9px] before:w-[7px] before:bg-pri before:content-[''] data-[tone=1]:before:bg-grn data-[tone=2]:before:bg-navy"
+              [attr.data-tone]="i % 3"
+              >{{ labels[i] }}</span
+            >
+            <h3 class="font-[550] text-[25px] md:text-[32px]">{{ step.title }}</h3>
+            <p class="max-w-[26ch] text-[13px] text-ink2 md:text-[15px]">{{ step.description }}</p>
           </li>
         }
       </ol>

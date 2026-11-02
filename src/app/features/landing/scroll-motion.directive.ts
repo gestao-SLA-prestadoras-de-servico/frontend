@@ -190,7 +190,7 @@ export class ScrollMotionDriver {
       const sign = actor.index % 2 ? 1 : -1;
       const compactRecord =
         actor.element.classList.contains('record-print') &&
-        (window.innerWidth < 760 || (window.innerWidth < 1024 && window.innerHeight <= 600));
+        (window.innerWidth < 768 || (window.innerWidth < 1024 && window.innerHeight <= 600));
       const distance = compactRecord ? 24 / 70 : 1;
       frames = [
         { transform: `translateY(${-70 * distance}px) rotate(${3.2 * sign}deg)` },
@@ -221,7 +221,7 @@ export class ScrollMotionDriver {
       ];
     } else if (actor.effect === 'strata-left' || actor.effect === 'strata-right') {
       const compact =
-        window.innerWidth < 760 || (window.innerWidth < 1024 && window.innerHeight <= 600);
+        window.innerWidth < 768 || (window.innerWidth < 1024 && window.innerHeight <= 600);
       const direction = actor.effect === 'strata-left' ? 1 : -1;
       // Measure the readable fallback rail before data-motion-active expands each half to 50%.
       const rail = compact ? parseFloat(getComputedStyle(actor.element).width) : 0;
@@ -302,7 +302,7 @@ export class ScrollMotionDriver {
         start = actor.top - viewport * 0.3;
         end = actor.top + actor.height - viewport * 0.7;
       } else if (actor.effect.startsWith('strata-')) {
-        const compact = window.innerWidth < 760 || (window.innerWidth < 1024 && viewport <= 600);
+        const compact = window.innerWidth < 768 || (window.innerWidth < 1024 && viewport <= 600);
         // Each mobile band clears its own text before reaching the middle of the screen.
         start = compact ? actor.bandTop! - viewport * 0.9 : actor.top - viewport * 0.78;
         end = compact

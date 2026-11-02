@@ -1,16 +1,25 @@
 <section
   id="plataforma"
-  class="chapter platform-section"
+  class="chapter platform-section py-[76px] md:py-section bg-sf"
   tabindex="-1"
   aria-labelledby="platform-title"
 >
-  <div class="page-frame grid items-center gap-12 lg:grid-cols-[0.65fr_1.35fr] lg:gap-12">
+  <div
+    class="page-frame grid items-center gap-12 lg:gap-12 mx-auto w-[calc(100%-40px)] max-w-[1500px] md:w-[calc(100%-8vw)] grid-cols-1 lg:grid-cols-[0.65fr_1.35fr]"
+  >
     <div appReveal>
-      <h2 id="platform-title">
-        <span class="motion-line"><span>Um atendimento.</span></span>
-        <span class="motion-line"><span>Todo o contexto.</span></span>
+      <h2
+        class="text-[clamp(2.1rem,8.5vw,3.1rem)] md:text-[clamp(2.2rem,4.5vw,4.4rem)] leading-[1.02] font-[550] tracking-[-.035em]"
+        id="platform-title"
+      >
+        <span class="motion-line block overflow-clip pb-[.12em] -mb-[.12em]"
+          ><span class="block">Um atendimento.</span></span
+        >
+        <span class="motion-line block overflow-clip pb-[.12em] -mb-[.12em]"
+          ><span class="block">Todo o contexto.</span></span
+        >
       </h2>
-      <p class="chapter-lead">
+      <p class="chapter-lead mt-6 text-base leading-[1.75] text-ink2 md:text-[17px]">
         Do que foi solicitado ao que foi feito. A proposta reúne o contrato, os prazos, a equipe e
         os registros em uma mesma visão.
       </p>
@@ -32,9 +41,15 @@
         Funcionalidades previstas · projeto em desenvolvimento
       </p>
     </div>
-    <div class="motion-object-frame" [appReveal]="1" revealEffect="fade">
-      <div class="product-window" appScrollMotion="platform" data-ui>
-        <div class="product-window-bar">
+    <div class="motion-object-frame min-w-0" [appReveal]="1" revealEffect="fade">
+      <div
+        class="product-window min-w-0 rounded-sm bg-sf p-2 shadow-preview sm:p-3"
+        appScrollMotion="platform"
+        data-ui
+      >
+        <div
+          class="product-window-bar flex flex-wrap items-center justify-between gap-3 px-2 pt-3 pb-5 sm:px-4 sm:pt-3.5 sm:pb-6"
+        >
           <span class="inline-flex items-center gap-2 text-sm font-extrabold"
             ><img src="images/nivelo-symbol.svg" alt="" width="24" height="20" />NIVELO</span
           ><span class="text-caption text-ink2">Chamados / Visão geral</span>
@@ -46,16 +61,34 @@
 </section>
 <div class="status-bands" aria-label="Prazos do chamado ilustrativo #1042">
   @for (status of statuses; track status.title; let i = $index) {
-    <div class="status-band" appScrollMotion="color-row" motionTrigger=".status-band">
-      <div class="page-frame status-inner">
-        <span class="status-number" appScrollMotion="date" motionTrigger=".status-band">{{
-          status.mark
-        }}</span>
+    <div
+      class="status-band bg-pri-d text-white nth-2:bg-grn nth-3:bg-navy"
+      appScrollMotion="color-row"
+      motionTrigger=".status-band"
+    >
+      <div
+        class="page-frame mx-auto w-[calc(100%-40px)] max-w-[1500px] md:w-[calc(100%-8vw)] grid grid-cols-1 items-start gap-4 py-9 md:grid-cols-[120px_1fr_140px] md:gap-6 md:py-11 lg:grid-cols-[180px_1fr_200px] lg:gap-10 lg:grid-cols-[0.65fr_1.35fr]"
+      >
+        <span
+          class="status-number text-xl leading-[1.2] md:text-[25px]"
+          appScrollMotion="date"
+          motionTrigger=".status-band"
+          >{{ status.mark }}</span
+        >
         <div>
-          <h3>{{ status.title }}</h3>
-          <p>{{ status.description }}</p>
+          <h3
+            class="font-[550] text-[30px] leading-[1.05] text-white md:text-[clamp(1.6rem,2.5vw,2.5rem)]"
+          >
+            {{ status.title }}
+          </h3>
+          <p class="mt-3 text-[15px]">{{ status.description }}</p>
         </div>
-        <span class="status-state">{{ status.state }}<small>Chamado #1042 · exemplo</small></span>
+        <span class="status-state text-[15px]"
+          >{{ status.state
+          }}<small class="mt-2 ml-3 inline text-xs md:ml-0 md:block"
+            >Chamado #1042 · exemplo</small
+          ></span
+        >
       </div>
     </div>
   }

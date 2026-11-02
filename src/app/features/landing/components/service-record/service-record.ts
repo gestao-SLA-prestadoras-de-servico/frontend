@@ -5,6 +5,7 @@ import { ScrollMotion } from '../../scroll-motion.directive';
 
 @Component({
   selector: 'app-service-record',
+  host: { class: 'block' },
   imports: [Contour, ScrollMotion, Reveal],
   templateUrl: './service-record.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -104,13 +104,11 @@ test('mobile menu closes on backdrop pointer and restores focus', async ({ page 
   await expect(trigger).toBeFocused();
 });
 
-test('reduced motion keeps the poster and suppresses decorative movement', async ({ page }) => {
+test('reduced motion keeps the opening illustration and suppresses decorative movement', async ({
+  page,
+}) => {
   await page.goto('/');
-  const background = page.locator('app-hero-background');
-  await expect(background).toHaveAttribute('data-video-state', 'poster');
-  await expect(background.locator('video')).not.toHaveAttribute('src');
-  await expect(background.locator('video')).toBeHidden();
-  await expect(background.locator('img')).toBeVisible();
+  await expect(page.locator('.opening-person img')).toBeVisible();
   const action = page.locator('#inicio a[href="#plataforma"]');
   await action.hover();
   await expect(action.locator('app-action-label > span > span').first()).toHaveCSS(
@@ -129,6 +127,9 @@ test('video media errors fall back to the poster', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
   const background = page.locator('app-hero-background');
+  // The current opening uses an illustration; the optional film is commented out.
+  // HeroBackground's playback/fallback lifecycle remains covered by its unit tests.
+  test.skip((await background.count()) === 0, 'A composição atual não renderiza o vídeo opcional.');
   await expect(background.locator('video')).toHaveAttribute('src', 'videos/nivelo-hero-loop.mp4');
   await background.locator('video').evaluate((video) => video.dispatchEvent(new Event('error')));
   await expect(background).toHaveAttribute('data-video-state', 'poster');

@@ -5,6 +5,7 @@ import { ScrollMotion } from '../../scroll-motion.directive';
 
 @Component({
   selector: 'app-contract-workflow',
+  host: { class: 'block' },
   imports: [ScrollMotion, Reveal],
   templateUrl: './contract-workflow.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

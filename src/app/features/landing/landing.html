@@ -25,30 +25,10 @@
       >
     </a>
     <nav class="hidden items-center gap-[25px] lg:flex" aria-label="Navegação principal">
-      <a
-        appLink
-        href="#beneficios"
-        (click)="followAnchor('beneficios')"
-        >Benefícios</a
-      >
-      <a
-        appLink
-        href="#como-funciona"
-        (click)="followAnchor('como-funciona')"
-        >Como funciona</a
-      >
-      <a
-        appLink
-        href="#plataforma"
-        (click)="followAnchor('plataforma')"
-        >Plataforma</a
-      >
-      <a
-        appLink
-        href="#faq"
-        (click)="followAnchor('faq')"
-        >FAQ</a
-      >
+      <a appLink href="#beneficios" (click)="followAnchor('beneficios')">Benefícios</a>
+      <a appLink href="#como-funciona" (click)="followAnchor('como-funciona')">Como funciona</a>
+      <a appLink href="#plataforma" (click)="followAnchor('plataforma')">Plataforma</a>
+      <a appLink href="#faq" (click)="followAnchor('faq')">FAQ</a>
       <button
         #headerAccess
         appButtonPrimary
@@ -95,10 +75,7 @@
       <app-icon name="close" />
     </button>
   </div>
-  <nav
-    class="flex flex-col"
-    aria-label="Navegação no celular"
-  >
+  <nav class="flex flex-col" aria-label="Navegação no celular">
     <a appLink="menu" href="#beneficios" autofocus (click)="followAnchor('beneficios')"
       >Benefícios<app-icon name="arrow"
     /></a>
@@ -109,8 +86,8 @@
       >Plataforma<app-icon name="arrow"
     /></a>
     <a appLink="menu" href="#faq" (click)="followAnchor('faq')"
-      >Perguntas frequentes<app-icon name="arrow" /></a
-    >
+      >Perguntas frequentes<app-icon name="arrow"
+    /></a>
     <button
       appButtonPrimary
       class="mt-[18px] min-h-[50px] px-button-inline py-button-block"
@@ -125,23 +102,30 @@
   </nav>
   <p class="mt-5 text-xs text-ink2">Em desenvolvimento. Acesso ainda indisponível.</p>
 </dialog>
-<main id="conteudo" tabindex="-1">
+<main class="bg-bg" id="conteudo" tabindex="-1">
   <section
     id="inicio"
-    class="opening"
+    class="opening relative bg-bg"
     tabindex="-1"
     aria-labelledby="hero-title"
     data-scroll-scene="opening-fall"
   >
-    <div class="opening-stage">
+    <div
+      class="opening-stage pointer-events-none sticky top-0 h-svh min-h-0 overflow-clip md:min-h-[800px] lg:min-h-[740px] md:[@media(max-height:600px)]:min-h-[520px] lg:[@media(max-height:600px)]:min-h-[520px] motion-reduce:absolute motion-reduce:w-full"
+    >
       <app-contour
-        class="opening-contour"
+        class="opening-contour absolute -right-[22vw] -top-[7vh] h-[66vh] w-[130vw] md:-right-[30vw] md:-top-[10%] md:h-[120%] md:w-[95vw] lg:-right-[9vw] lg:w-[69vw]"
         shape="opening"
         motion="opening-band"
         trigger="#inicio"
       />
-      <div class="opening-person" appScrollMotion="opening-figure" motionTrigger="#inicio">
+      <div
+        class="opening-person absolute left-[2%] top-[10vh] h-[40vh] w-[65vw] max-w-[540px] md:top-auto md:-bottom-[7%] md:left-[53%] md:h-[76%] md:w-[40vw] lg:left-[46%] lg:w-[33vw] md:[@media(max-height:600px)]:left-[68%] lg:[@media(max-height:600px)]:left-[68%] md:[@media(max-height:600px)]:h-[65%] lg:[@media(max-height:600px)]:h-[65%] md:[@media(max-height:600px)]:w-[30vw] lg:[@media(max-height:600px)]:w-[30vw]"
+        appScrollMotion="opening-figure"
+        motionTrigger="#inicio"
+      >
         <img
+          class="size-full object-contain"
           src="images/nivelo-gestor-ilustrativo.webp"
           alt="Gestor consultando um notebook. Imagem gerada por IA, ilustrativa."
           width="1024"
@@ -152,19 +136,41 @@
       </div>
       <!-- <div class="opening-film"><app-hero-background /><span>Fluxo de luz · Nivelo</span></div> -->
     </div>
-    <div class="page-frame opening-first">
-      <div class="opening-copy" appScrollMotion="opening-copy" motionTrigger="#inicio">
-        <h1 class="hero-heading" appReveal revealEffect="lines" id="hero-title">
-          <span class="motion-line"><span>Prazos sob controle.</span></span>
-          <span class="motion-line"><span>Atendimento comprovado.</span></span>
+    <div
+      class="page-frame opening-first mx-auto w-[calc(100%-40px)] max-w-[1500px] md:w-[calc(100%-8vw)] relative motion-safe:-mt-[100svh] flex min-h-svh items-end pt-[48svh] pb-8 md:min-h-[max(100svh,800px)] md:items-center md:pt-[150px] md:pb-[72px] lg:min-h-svh md:[@media(max-height:600px)]:motion-safe:-mt-[520px] md:[@media(max-height:600px)]:min-h-svh md:[@media(max-height:600px)]:pt-[100px] md:[@media(max-height:600px)]:pb-3"
+    >
+      <div
+        class="opening-copy w-full max-w-[600px] md:w-[65%] md:max-w-[860px] lg:w-[58%]"
+        appScrollMotion="opening-copy"
+        motionTrigger="#inicio"
+      >
+        <h1
+          class="hero-heading max-w-[14em] text-[clamp(2.3rem,9.3vw,3.6rem)] leading-[1.01] font-[550] tracking-[-.04em] md:max-w-[11em] md:text-[clamp(3rem,7vw,5.6rem)] lg:text-[clamp(3.2rem,6vw,6rem)] md:[@media(max-height:600px)]:text-[36px] lg:[@media(max-height:600px)]:text-[36px]"
+          appReveal
+          revealEffect="lines"
+          id="hero-title"
+        >
+          <span class="motion-line block overflow-clip pb-[.12em] -mb-[.12em]"
+            ><span class="block">Prazos sob controle.</span></span
+          >
+          <span class="motion-line block overflow-clip pb-[.12em] -mb-[.12em]"
+            ><span class="block">Atendimento comprovado.</span></span
+          >
         </h1>
-        <p class="hero-description" [appReveal]="1">
+        <p
+          class="hero-description mt-5 max-w-[36ch] text-base leading-[1.55] text-ink2 md:mt-[30px] md:max-w-[32ch] md:text-[19px] md:[@media(max-height:600px)]:mt-3.5 md:[@media(max-height:600px)]:max-w-[48ch] md:[@media(max-height:600px)]:text-sm md:[@media(max-height:600px)]:leading-[1.45]"
+          [appReveal]="1"
+        >
           Chamados, prazos e evidências em um só lugar para prestadoras de serviços técnicos.
         </p>
-        <div class="hero-actions" [appReveal]="2" revealEffect="fade">
+        <div
+          class="hero-actions mt-6 flex flex-wrap max-lg:items-start gap-3 md:mt-9 md:flex-col md:gap-3.5 lg:flex-row md:[@media(max-height:600px)]:mt-3.5 md:[@media(max-height:600px)]:flex-row"
+          [appReveal]="2"
+          revealEffect="fade"
+        >
           <a
             appButtonPrimary
-            class="press-feedback min-h-[50px] px-5 py-button-block"
+            class="press-feedback min-h-[50px] px-5 py-button-block transition-[transform,background-color,color]! duration-[140ms]! ease-[var(--ease-out),ease,ease]! active:transform-[scale(.97)] motion-reduce:transition-none! motion-reduce:active:transform-none"
             href="#plataforma"
             (click)="followAnchor('plataforma')"
             ><app-action-label label="Conhecer a plataforma" /><app-icon name="arrow"
@@ -172,15 +178,20 @@
           <button
             #heroAccess
             appButtonSecondary
-            class="press-feedback min-h-[50px] px-5 py-button-block"
+            class="press-feedback min-h-[50px] px-5 py-button-block transition-[transform,background-color,color]! duration-[140ms]! ease-[var(--ease-out),ease,ease]! active:transform-[scale(.97)] motion-reduce:transition-none! motion-reduce:active:transform-none"
             type="button"
             (click)="access.open(heroAccess)"
           >
             <app-action-label label="Sobre a disponibilidade" />
           </button>
         </div>
-        <p class="hero-development" [appReveal]="3" revealEffect="fade">
-          <span aria-hidden="true"></span>Em desenvolvimento · Acesso ainda indisponível.
+        <p
+          class="hero-development mt-5 flex items-baseline gap-[9px] text-xs text-ink2 md:mt-6 md:text-[13px] md:[@media(max-height:600px)]:mt-3 md:[@media(max-height:600px)]:text-xs"
+          [appReveal]="3"
+          revealEffect="fade"
+        >
+          <span class="size-1.5 shrink-0 rounded-full bg-turquoise" aria-hidden="true"></span>Em
+          desenvolvimento · Acesso ainda indisponível.
         </p>
       </div>
     </div>
@@ -194,14 +205,26 @@
   <app-contract-terms />
   <app-mobile-access />
   <app-faq />
-  <section id="disponibilidade" class="chapter closing-section" aria-labelledby="closing-title">
-    <div class="page-frame closing-grid">
+  <section
+    id="disponibilidade"
+    class="chapter closing-section py-[76px] md:py-section"
+    aria-labelledby="closing-title"
+  >
+    <div
+      class="page-frame closing-grid mx-auto w-[calc(100%-40px)] max-w-[1500px] md:w-[calc(100%-8vw)] grid grid-cols-1 items-center gap-11 md:grid-cols-2 md:gap-[8vw]"
+    >
       <div appReveal>
-        <h2 id="closing-title">
-          <span class="motion-line"><span>Mais contexto hoje.</span></span
-          ><span class="motion-line"><span>Mais clareza para agir.</span></span>
+        <h2
+          class="text-[clamp(2.1rem,8.5vw,3.1rem)] md:text-[clamp(2.2rem,4.5vw,4.4rem)] leading-[1.02] font-[550] tracking-[-.035em]"
+          id="closing-title"
+        >
+          <span class="motion-line block overflow-clip pb-[.12em] -mb-[.12em]"
+            ><span class="block">Mais contexto hoje.</span></span
+          ><span class="motion-line block overflow-clip pb-[.12em] -mb-[.12em]"
+            ><span class="block">Mais clareza para agir.</span></span
+          >
         </h2>
-        <p class="chapter-lead">
+        <p class="chapter-lead mt-6 text-base leading-[1.75] text-ink2 md:text-[17px] max-w-[40ch]">
           Uma proposta para conectar os compromissos de cada contrato ao que acontece em cada
           atendimento.
         </p>
@@ -209,7 +232,7 @@
           #closingAccess
           appButtonPrimary
           type="button"
-          class="press-feedback mt-8 min-h-[50px] px-button-inline py-button-block"
+          class="press-feedback mt-8 min-h-[50px] px-button-inline py-button-block transition-[transform,background-color,color]! duration-[140ms]! ease-[var(--ease-out),ease,ease]! active:transform-[scale(.97)] motion-reduce:transition-none! motion-reduce:active:transform-none"
           (click)="access.open(closingAccess)"
         >
           <app-action-label label="Sobre a disponibilidade" /><app-icon name="arrow" />
@@ -218,33 +241,37 @@
           A Nivelo está em desenvolvimento.<br />O acesso ao sistema ainda não está disponível.
         </p>
       </div>
-      <div class="closing-art">
-        <app-contour [outline]="true" motion="rings" trigger="#disponibilidade" /><img
-          src="images/nivelo-symbol.svg"
-          alt=""
-          width="110"
-          height="88"
-        />
+      <div
+        class="closing-art relative grid aspect-[1.2] place-items-center overflow-clip max-md:max-h-[300px]"
+      >
+        <app-contour
+          class="absolute -inset-[20%]"
+          [outline]="true"
+          motion="rings"
+          trigger="#disponibilidade"
+        /><img class="relative" src="images/nivelo-symbol.svg" alt="" width="110" height="88" />
       </div>
     </div>
   </section>
 </main>
-<footer class="isoline-footer">
-  <div class="page-frame">
-    <div class="footer-top">
-      <p>Chamados, prazos e evidências.<br />Todo o atendimento no mesmo lugar.</p>
+<footer class="isoline-footer overflow-clip bg-navy pt-14 pb-7 text-white">
+  <div class="page-frame mx-auto w-[calc(100%-40px)] max-w-[1500px] md:w-[calc(100%-8vw)]">
+    <div class="footer-top flex flex-wrap justify-between gap-6 text-[13px]">
+      <p class="text-on-navy">
+        Chamados, prazos e evidências.<br />Todo o atendimento no mesmo lugar.
+      </p>
       <a appLink="footer" href="#inicio" (click)="followAnchor('inicio')"
         >Voltar ao início<app-icon name="arrow"
       /></a>
     </div>
     <a
       href="#inicio"
-      class="footer-word"
+      class="footer-word my-8 block text-[25vw] leading-none font-semibold tracking-[-.04em] no-underline md:text-[clamp(110px,26vw,420px)]"
       aria-label="Nivelo, voltar ao início"
       (click)="followAnchor('inicio')"
       >Nivelo</a
     >
-    <div class="footer-fine">
+    <div class="footer-fine flex flex-wrap justify-between gap-6 text-[13px] text-on-navy">
       <span>Projeto Integrador 2026.2</span><span>Plataforma em desenvolvimento</span>
     </div>
   </div>

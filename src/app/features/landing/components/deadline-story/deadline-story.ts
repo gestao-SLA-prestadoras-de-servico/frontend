@@ -4,6 +4,7 @@ import { ScrollMotion } from '../../scroll-motion.directive';
 import { Contour } from '../contour/contour';
 @Component({
   selector: 'app-deadline-story',
+  host: { class: 'block' },
   imports: [Reveal, ScrollMotion, Contour],
   templateUrl: './deadline-story.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

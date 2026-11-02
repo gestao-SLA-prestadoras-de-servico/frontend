@@ -5,6 +5,7 @@ import { ScrollMotion } from '../../scroll-motion.directive';
 
 @Component({
   selector: 'app-mobile-access',
+  host: { class: 'block' },
   imports: [ScrollMotion, Icon, Reveal],
   templateUrl: './mobile-access.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

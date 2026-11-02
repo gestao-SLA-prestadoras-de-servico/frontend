@@ -65,7 +65,7 @@ test('all twelve chapters are prerendered and readable without JavaScript', asyn
     await expect(chapter.locator('h1,h2').first()).toBeVisible();
   }
   await expect(page.locator('#faq details')).toHaveCount(6);
-  await expect(page.locator('app-hero-background img')).toBeVisible();
+  await expect(page.locator('.opening-person img')).toBeVisible();
   await expect(page.locator('#prazos .poster-print')).toHaveCount(3);
   await context.close();
 });

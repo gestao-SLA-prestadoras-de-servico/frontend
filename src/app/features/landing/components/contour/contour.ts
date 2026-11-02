@@ -39,18 +39,21 @@ const ROUND = [
   selector: 'app-contour',
   imports: [ScrollMotion],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'contour', 'aria-hidden': 'true' },
+  host: { class: 'contour pointer-events-none block', 'aria-hidden': 'true' },
   template: `<svg
+    class="block size-full overflow-visible"
     [attr.viewBox]="shape() === 'opening' ? '0 0 1000 1100' : '0 0 1000 1000'"
     focusable="false"
   >
     @for (path of paths(); track $index; let i = $index) {
       <path
+        class="[transform-box:view-box]"
+        [class]="shape() === 'opening' ? 'origin-[77%_36.4%]' : 'origin-center'"
         [attr.d]="path"
-        [style.fill]="fill(i)"
+        [attr.fill]="fill(i)"
         [attr.stroke]="outline() ? fill(i) : null"
         [attr.stroke-width]="outline() ? 1.5 : null"
-        [style.fill-opacity]="outline() ? 0 : 1"
+        [attr.fill-opacity]="outline() ? 0 : 1"
         [appScrollMotion]="motion()"
         [motionIndex]="i / (paths().length - 1)"
         [motionTrigger]="trigger()"

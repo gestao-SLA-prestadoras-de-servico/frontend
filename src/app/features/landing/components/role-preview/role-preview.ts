@@ -12,6 +12,7 @@ import { ButtonPrimary } from '../../../../shared/ui/button';
 
 @Component({
   selector: 'app-role-preview',
+  host: { class: 'block' },
   imports: [Contour, Icon, Reveal, ButtonPrimary],
   templateUrl: './role-preview.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

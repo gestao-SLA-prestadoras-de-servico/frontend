@@ -42,6 +42,7 @@ for (const viewport of [
   { width: 320, height: 568 },
   { width: 390, height: 844 },
   { width: 430, height: 932 },
+  { width: 767, height: 844 },
   { width: 844, height: 390 },
 ]) {
   test(`mobile strata fully cover the text, open to the edges and reverse at ${viewport.width}px`, async ({
