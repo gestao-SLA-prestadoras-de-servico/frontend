@@ -36,7 +36,7 @@ npm install
 ### Execução do modo de desenvolvimento:
 
 ```bash
-npm run start
+npm run dev
 ```
 
 ### Execução do modo de produção (build):
@@ -53,12 +53,33 @@ Agora rode com:
 npm run serve:ssr:frontend
 ```
 
+### Scripts disponíveis
+
+| Script                  | Descrição                                                        |
+| ----------------------- | ---------------------------------------------------------------- |
+| `npm run dev`           | Inicia o servidor de desenvolvimento em `http://localhost:4200`. |
+| `npm run build`         | Gera o build de produção.                                        |
+| `npm test`              | Executa os testes unitários em modo watch.                       |
+| `npm run test:ci`       | Executa os testes unitários uma vez (CI).                        |
+| `npm run test:coverage` | Executa os testes com relatório de cobertura.                    |
+| `npm run lint`          | Executa o ESLint.                                                |
+| `npm run typecheck`     | Valida os tipos da aplicação e dos testes com `tsc --noEmit`.    |
+| `npm run format`        | Formata o projeto com Prettier.                                  |
+| `npm run e2e`           | Executa os testes End-to-End com Playwright.                     |
+
 ### Como executar os testes
 
 #### Para executar testes unitários, rode
 
 ```bash
 npm run test
+```
+
+Para execução única (CI) ou com cobertura:
+
+```bash
+npm run test:ci
+npm run test:coverage
 ```
 
 #### Para executar testes E2E
@@ -82,6 +103,7 @@ npm run e2e
 ├── angular.json
 ├── e2e # Testes End-to-End (E2E)
 │   ├── example.spec.ts
+│   ├── landing.spec.ts
 │   └── tsconfig.json
 ├── eslint.config.js # Configuração das regras do ESLint
 ├── package.json
@@ -91,7 +113,25 @@ npm run e2e
 │   └── favicon.ico
 ├── README.md
 ├── src # Código-fonte da aplicação
-│   ├── app # Componentes, páginas e lógica da aplicação
+│   ├── app
+│   │   ├── core # Serviços, guards e interceptors globais
+│   │   ├── features
+│   │   │   └── landing
+│   │   │       ├── components # Componentes da landing
+│   │   │       ├── landing.html
+│   │   │       ├── landing.spec.ts
+│   │   │       └── landing.ts
+│   │   ├── shared
+│   │   │   └── ui # Diretivas visuais reutilizáveis
+│   │   ├── app.config.server.ts
+│   │   ├── app.config.ts
+│   │   ├── app.html
+│   │   ├── app.routes.server.ts
+│   │   ├── app.routes.ts
+│   │   ├── app.spec.ts
+│   │   └── app.ts
+│   ├── testing # Helpers compartilhados de teste
+│   │   └── helpers.ts
 │   ├── index.html
 │   ├── main.server.ts # Ponto de entrada da aplicação no servidor
 │   ├── main.ts # Ponto de entrada da aplicação no navegador

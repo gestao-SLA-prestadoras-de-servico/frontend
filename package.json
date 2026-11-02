@@ -7,9 +7,13 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "test:ci": "ng test --watch=false",
+    "test:coverage": "ng test --watch=false --coverage",
     "serve:ssr:frontend": "node dist/frontend/server/server.mjs",
     "e2e": "ng e2e",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.spec.json --noEmit",
+    "format": "prettier --write ."
   },
   "private": true,
   "packageManager": "npm@11.8.0",
@@ -37,6 +41,7 @@
     "@tailwindcss/postcss": "^4.1.12",
     "@types/express": "^5.0.1",
     "@types/node": "^20.17.19",
+    "@vitest/coverage-v8": "^4.1.12",
     "angular-eslint": "21.4.0",
     "eslint": "^10.3.0",
     "jsdom": "^28.0.0",

@@ -1,32 +1,27 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture } from '@angular/core/testing';
+import {
+  renderComponent,
+  resetTestEnvironment,
+  stubDialogElement,
+  stubMatchMedia,
+} from '@testing/helpers';
 import { Landing } from './landing';
 
 describe('Landing', () => {
   let fixture: ComponentFixture<Landing>;
   let page: HTMLElement;
-  const dialogPrototype = HTMLDialogElement.prototype as unknown as Record<string, unknown>;
 
   beforeEach(async () => {
-    dialogPrototype['showModal'] = function (this: HTMLDialogElement) {
-      this.setAttribute('open', '');
-    };
-    dialogPrototype['close'] = function (this: HTMLDialogElement) {
-      this.removeAttribute('open');
-      this.dispatchEvent(new Event('close'));
-    };
-
-    await TestBed.configureTestingModule({ imports: [Landing] }).compileComponents();
-
-    fixture = TestBed.createComponent(Landing);
-    fixture.detectChanges();
-    await fixture.whenStable();
-    page = fixture.nativeElement as HTMLElement;
+    stubDialogElement();
+    stubMatchMedia();
+    const rendered = await renderComponent(Landing);
+    fixture = rendered.fixture;
+    page = rendered.element;
   });
 
   afterEach(() => {
     fixture.destroy();
-    delete dialogPrototype['showModal'];
-    delete dialogPrototype['close'];
+    resetTestEnvironment();
   });
 
   it('should create the landing page', () => {
@@ -56,6 +51,31 @@ describe('Landing', () => {
     page.querySelector<HTMLButtonElement>('[aria-label="Fechar menu"]')?.click();
     fixture.detectChanges();
     expect(menu?.open).toBe(false);
+  });
+
+  it('should return focus to the menu trigger after closing the mobile menu', () => {
+    const menuButton = page.querySelector<HTMLButtonElement>('[aria-controls="mobile-menu"]');
+
+    menuButton?.click();
+    fixture.detectChanges();
+    page.querySelector<HTMLButtonElement>('[aria-label="Fechar menu"]')?.click();
+    fixture.detectChanges();
+
+    expect(document.activeElement).toBe(menuButton);
+  });
+
+  it('should close the mobile menu and focus the target section when following an anchor', () => {
+    const menu = page.querySelector<HTMLDialogElement>('#mobile-menu');
+    page.querySelector<HTMLButtonElement>('[aria-controls="mobile-menu"]')?.click();
+    fixture.detectChanges();
+
+    const link = page.querySelector<HTMLAnchorElement>('#mobile-menu a[href="#beneficios"]');
+    link?.addEventListener('click', (event) => event.preventDefault());
+    link?.click();
+    fixture.detectChanges();
+
+    expect(menu?.open).toBe(false);
+    expect(document.activeElement).toBe(page.querySelector('#beneficios'));
   });
 
   it('should open the availability dialog from the hero and restore focus on close', () => {
