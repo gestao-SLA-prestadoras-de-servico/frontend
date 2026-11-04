@@ -7,6 +7,7 @@ Esta entrega apresenta os estados de acesso da NIVELO com dados exclusivamente f
 | `/login`                | Campos obrigatórios, formato de e-mail, exibição da senha e entrada local com qualquer e-mail válido e senha preenchida. |
 | `/login?estado=saida`   | Confirmação visual de saída, com formulário vazio.                                                                   |
 | `/login?estado=expirou` | Orientação de entrada após o aviso de expiração.                                                                     |
+| `/login?estado=recuperacao` | Aviso de que a recuperação de senha ainda não está disponível na demonstração.                                    |
 | `/sessao-demo`          | Perfil fictício, menu do usuário com Sair e controle de simulação de expiração.                                      |
 | `/sessao-expirada`      | Aviso e ação Entrar novamente.                                                                                       |
 
@@ -14,8 +15,9 @@ Esta entrega apresenta os estados de acesso da NIVELO com dados exclusivamente f
 
 1. Abra `/login` e envie o formulário vazio para visualizar as mensagens obrigatórias.
 2. Informe qualquer e-mail válido e uma senha. Após a espera de 650 ms, a página abre a sessão de demonstração local.
-3. No menu de Camila Moreira, escolha **Sair** para voltar ao formulário vazio e à confirmação de saída.
-4. Use **Simular sessão expirada** na página ou no menu para visualizar o aviso. Selecione **Entrar novamente** e envie qualquer e-mail válido com uma senha preenchida.
+3. Selecione **Esqueci minha senha** para ver o aviso de que a recuperação ainda não existe nesta demonstração.
+4. No menu de Camila Moreira, escolha **Sair** para voltar ao formulário vazio e à confirmação de saída.
+5. Use **Simular sessão expirada** na página ou no menu para visualizar o aviso. Selecione **Entrar novamente** e envie qualquer e-mail válido com uma senha preenchida.
 
 O perfil de Camila Moreira e o domínio `.example` ficam apenas nos dados fictícios da sessão, em `src/app/features/access/data/access-demo.ts`; não são credenciais de entrada. Qualquer pessoa pode abrir diretamente todas as rotas.
 

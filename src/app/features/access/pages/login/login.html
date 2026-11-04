@@ -1,32 +1,39 @@
 <app-access-layout [centerBrand]="true">
   <h1
     appPageHeading
-    class="text-[28px] leading-[1.2] font-semibold tracking-[-.035em] sm:text-[32px]"
+    class="text-3xl leading-[1.2] font-semibold tracking-[-.025em] sm:text-4xl"
   >
     Bem-vindo à NIVELO
   </h1>
-  <p class="mt-3 text-base leading-[1.6] text-ink2 lg:mt-[clamp(.25rem,.8vh,.5rem)]">
+  <p class="mt-2 text-base leading-[1.6] text-ink2 lg:mt-[clamp(.25rem,.7vh,.375rem)]">
     O contexto do seu atendimento começa aqui.
   </p>
 
-  @if (returnState === 'saida') {
+  @if (returnState() === 'saida') {
     <p
       class="mt-6 rounded-[10px] bg-grn-bg px-4 py-3 text-sm text-grn-t lg:mt-[clamp(.5rem,1.2vh,.75rem)] lg:py-[clamp(.5rem,1vh,.75rem)]"
       role="status"
     >
       Você saiu da demonstração.
     </p>
-  } @else if (returnState === 'expirou') {
+  } @else if (returnState() === 'expirou') {
     <p
       class="mt-6 rounded-[10px] bg-pri-bg px-4 py-3 text-sm text-pri-d lg:mt-[clamp(.5rem,1.2vh,.75rem)] lg:py-[clamp(.5rem,1vh,.75rem)]"
       role="status"
     >
       Informe novamente seus dados para continuar.
     </p>
+  } @else if (returnState() === 'recuperacao') {
+    <p
+      class="mt-6 rounded-[10px] bg-pri-bg px-4 py-3 text-sm text-pri-d lg:mt-[clamp(.5rem,1.2vh,.75rem)] lg:py-[clamp(.5rem,1vh,.75rem)]"
+      role="status"
+    >
+      A recuperação de senha ainda não está disponível nesta demonstração.
+    </p>
   }
 
   <form
-    class="mt-8 lg:mt-[clamp(.5rem,1.3vh,.75rem)]"
+    class="mt-6 lg:mt-[clamp(.5rem,1.3vh,.75rem)]"
     [formGroup]="form"
     (ngSubmit)="submit()"
     [attr.aria-busy]="busy()"
@@ -59,7 +66,7 @@
         />
         <p
           id="email-feedback"
-          class="mt-1.5 min-h-[22px] text-sm text-danger lg:mt-[clamp(.125rem,.5vh,.25rem)]"
+          class="mt-1.5 text-sm text-danger lg:mt-[clamp(.125rem,.5vh,.25rem)]"
           aria-live="polite"
         >
           @if (fieldInvalid('email')) {
@@ -71,7 +78,7 @@
           }
         </p>
       </div>
-      <div class="mt-4 lg:mt-[clamp(.375rem,.9vh,.5rem)]">
+      <div class="mt-3 lg:mt-[clamp(.25rem,.7vh,.375rem)]">
         <label
           class="mb-2 block text-sm font-semibold lg:mb-[clamp(.25rem,.7vh,.375rem)]"
           for="login-password"
@@ -108,13 +115,20 @@
         </div>
         <p
           id="password-feedback"
-          class="mt-1.5 min-h-[22px] text-sm text-danger lg:mt-[clamp(.125rem,.5vh,.25rem)]"
+          class="mt-1.5 text-sm text-danger lg:mt-[clamp(.125rem,.5vh,.25rem)]"
           aria-live="polite"
         >
           @if (fieldInvalid('password')) {
             Informe sua senha.
           }
         </p>
+        <a
+          routerLink="/login"
+          [queryParams]="{ estado: 'recuperacao' }"
+          class="mt-1 inline-flex min-h-11 w-full items-center justify-end rounded-sm text-sm font-semibold text-pri-d underline underline-offset-4 transition-colors duration-150 hover:text-pri motion-reduce:transition-none"
+        >
+          Esqueci minha senha
+        </a>
       </div>
     </fieldset>
 

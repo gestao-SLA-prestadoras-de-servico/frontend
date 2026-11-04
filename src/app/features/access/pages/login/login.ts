@@ -8,8 +8,10 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { map } from 'rxjs';
 import {
   LucideArrowRight,
   LucideDynamicIcon,
@@ -32,6 +34,7 @@ import { ACCESS_DEMO_DELAY_MS } from '../../data/access-demo';
     Input,
     PageHeading,
     LucideDynamicIcon,
+    RouterLink,
   ],
   templateUrl: './login.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,12 +42,16 @@ import { ACCESS_DEMO_DELAY_MS } from '../../data/access-demo';
 })
 export class Login {
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly emailInput = viewChild.required<ElementRef<HTMLInputElement>>('emailInput');
   private readonly passwordInput =
     viewChild.required<ElementRef<HTMLInputElement>>('passwordInput');
   private timer?: ReturnType<typeof setTimeout>;
-  protected readonly returnState = inject(ActivatedRoute).snapshot.queryParamMap.get('estado');
+  protected readonly returnState = toSignal(
+    this.route.queryParamMap.pipe(map((params) => params.get('estado'))),
+    { initialValue: this.route.snapshot.queryParamMap.get('estado') },
+  );
   protected readonly icons = {
     arrow: LucideArrowRight,
     eye: LucideEye,
