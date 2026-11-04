@@ -1,0 +1,148 @@
+<app-access-layout [centerBrand]="true">
+  <h1
+    appPageHeading
+    class="text-[28px] leading-[1.2] font-semibold tracking-[-.035em] sm:text-[32px]"
+  >
+    Bem-vindo à NIVELO
+  </h1>
+  <p class="mt-3 text-base leading-[1.6] text-ink2 lg:mt-[clamp(.25rem,.8vh,.5rem)]">
+    O contexto do seu atendimento começa aqui.
+  </p>
+
+  @if (returnState === 'saida') {
+    <p
+      class="mt-6 rounded-[10px] bg-grn-bg px-4 py-3 text-sm text-grn-t lg:mt-[clamp(.5rem,1.2vh,.75rem)] lg:py-[clamp(.5rem,1vh,.75rem)]"
+      role="status"
+    >
+      Você saiu da demonstração.
+    </p>
+  } @else if (returnState === 'expirou') {
+    <p
+      class="mt-6 rounded-[10px] bg-pri-bg px-4 py-3 text-sm text-pri-d lg:mt-[clamp(.5rem,1.2vh,.75rem)] lg:py-[clamp(.5rem,1vh,.75rem)]"
+      role="status"
+    >
+      Informe novamente seus dados para continuar.
+    </p>
+  }
+
+  <form
+    class="mt-8 lg:mt-[clamp(.5rem,1.3vh,.75rem)]"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+    [attr.aria-busy]="busy()"
+    novalidate
+    autocomplete="off"
+  >
+    <fieldset class="m-0 min-w-0 border-0 p-0" [disabled]="busy() || !ready()">
+      <legend class="sr-only">Dados de acesso</legend>
+      <div>
+        <label
+          class="mb-2 block text-sm font-semibold lg:mb-[clamp(.25rem,.7vh,.375rem)]"
+          for="login-email"
+          >E-mail</label
+        >
+        <input
+          #emailInput
+          appInput
+          id="login-email"
+          name="email"
+          formControlName="email"
+          type="email"
+          inputmode="email"
+          autocomplete="off"
+          autocapitalize="none"
+          spellcheck="false"
+          placeholder="seuemail@empresa.com"
+          required
+          [attr.aria-invalid]="fieldInvalid('email')"
+          aria-describedby="email-feedback"
+        />
+        <p
+          id="email-feedback"
+          class="mt-1.5 min-h-[22px] text-sm text-danger lg:mt-[clamp(.125rem,.5vh,.25rem)]"
+          aria-live="polite"
+        >
+          @if (fieldInvalid('email')) {
+            {{
+              form.controls.email.hasError('required')
+                ? 'Informe seu e-mail.'
+                : 'Digite um e-mail válido.'
+            }}
+          }
+        </p>
+      </div>
+      <div class="mt-4 lg:mt-[clamp(.375rem,.9vh,.5rem)]">
+        <label
+          class="mb-2 block text-sm font-semibold lg:mb-[clamp(.25rem,.7vh,.375rem)]"
+          for="login-password"
+          >Senha</label
+        >
+        <div class="relative">
+          <input
+            #passwordInput
+            appInput
+            class="pr-14"
+            id="login-password"
+            name="password"
+            formControlName="password"
+            [type]="showPassword() ? 'text' : 'password'"
+            autocomplete="off"
+            required
+            placeholder="Sua senha"
+            [attr.aria-invalid]="fieldInvalid('password')"
+            aria-describedby="password-feedback"
+          />
+          <button
+            type="button"
+            class="absolute top-1 right-1 grid size-11 place-items-center rounded-lg text-ink2 transition-colors duration-150 enabled:hover:bg-bg disabled:cursor-wait motion-reduce:transition-none"
+            (click)="showPassword.set(!showPassword())"
+            [attr.aria-label]="showPassword() ? 'Ocultar senha' : 'Mostrar senha'"
+            [attr.aria-pressed]="showPassword()"
+          >
+            <svg
+              class="size-5"
+              [lucideIcon]="showPassword() ? icons.eyeOff : icons.eye"
+              aria-hidden="true"
+            ></svg>
+          </button>
+        </div>
+        <p
+          id="password-feedback"
+          class="mt-1.5 min-h-[22px] text-sm text-danger lg:mt-[clamp(.125rem,.5vh,.25rem)]"
+          aria-live="polite"
+        >
+          @if (fieldInvalid('password')) {
+            Informe sua senha.
+          }
+        </p>
+      </div>
+    </fieldset>
+
+    <button
+      appButtonPrimary
+      type="submit"
+      class="mt-5 min-h-[52px] w-full px-5 text-base transition-transform duration-[140ms] active:scale-[.98] disabled:cursor-wait disabled:bg-pri-d motion-reduce:transform-none motion-reduce:transition-none lg:mt-[clamp(.5rem,1.1vh,.625rem)]"
+      [disabled]="busy() || !ready()"
+    >
+      @if (busy()) {
+        <svg
+          class="size-[18px] animate-spin motion-reduce:animate-none"
+          [lucideIcon]="icons.loading"
+          aria-hidden="true"
+        ></svg
+        >Entrando…
+      } @else {
+        Entrar<svg class="size-[18px]" [lucideIcon]="icons.arrow" aria-hidden="true"></svg>
+      }
+    </button>
+    <p class="sr-only" role="status" aria-live="polite">
+      {{ busy() ? 'Preparando a demonstração. Aguarde.' : '' }}
+    </p>
+  </form>
+
+  @if (!ready()) {
+    <p class="mt-5 text-sm text-ink2 lg:mt-[clamp(.5rem,1vh,.625rem)]">
+      Ative o JavaScript para interagir com esta demonstração visual.
+    </p>
+  }
+</app-access-layout>

@@ -1,0 +1,27 @@
+<app-access-layout>
+  <svg
+    class="mb-7 size-10 text-pri"
+    [lucideIcon]="icons.clock"
+    [strokeWidth]="1.5"
+    aria-hidden="true"
+  ></svg>
+  <h1
+    appPageHeading
+    class="text-[28px] leading-[1.2] font-semibold tracking-[-.035em] sm:text-[32px]"
+  >
+    Sessão expirada
+  </h1>
+  <p class="mt-4 text-base leading-[1.7] text-ink2">
+    Entre novamente para retomar seu acesso à plataforma.
+  </p>
+  <a
+    appButtonPrimary
+    routerLink="/login"
+    [queryParams]="{ estado: 'expirou' }"
+    class="mt-8 min-h-[52px] w-full px-5 text-base no-underline"
+    >Entrar novamente<svg class="size-[18px]" [lucideIcon]="icons.arrow" aria-hidden="true"></svg
+  ></a>
+  <p class="mt-6 text-sm leading-[1.7] text-ink2">
+    Este aviso faz parte da demonstração visual. Nenhuma sessão real foi encerrada.
+  </p>
+</app-access-layout>

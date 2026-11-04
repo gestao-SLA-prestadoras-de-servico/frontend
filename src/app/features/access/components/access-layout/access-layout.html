@@ -1,0 +1,52 @@
+<div class="fixed inset-0 h-dvh w-full overflow-hidden bg-bg p-[clamp(.5rem,1.25vw,1rem)]">
+  <div
+    class="grid h-full min-h-0 w-full overflow-hidden rounded-[20px] bg-bg lg:grid-cols-2"
+  >
+    <aside
+      class="relative hidden h-full min-h-0 min-w-0 overflow-hidden lg:block"
+      aria-label="Imagem corporativa ilustrativa"
+    >
+      <img
+        class="absolute inset-0 size-full object-cover object-center"
+        src="/images/manutencao-ilustrativa.png"
+        alt="Imagem ilustrativa de um técnico inspecionando equipamentos em um ambiente corporativo."
+        width="1536"
+        height="1024"
+        fetchpriority="high"
+      />
+    </aside>
+    <div class="relative flex h-full min-h-0 min-w-0 flex-col overflow-hidden bg-sf">
+      <header class="pointer-events-none absolute inset-0 z-20">
+        @if (!centerBrand()) {
+          <app-brand
+            class="pointer-events-auto absolute top-[clamp(1rem,2.5vh,1.5rem)] left-[clamp(1.25rem,3vw,2rem)] lg:hidden"
+          />
+        }
+        <a
+          routerLink="/"
+          class="pointer-events-auto absolute top-[clamp(1rem,2.5vh,1.5rem)] right-[clamp(1.25rem,3vw,2rem)] inline-flex min-h-11 items-center gap-2 rounded-sm text-sm font-medium text-ink2 no-underline transition-colors duration-150 hover:text-pri-d motion-reduce:transition-none"
+        >
+          <svg class="size-4" [lucideIcon]="arrowLeft" aria-hidden="true"></svg>Voltar ao site
+        </a>
+      </header>
+      <main
+        class="flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto overscroll-contain px-[clamp(1.5rem,4vw,2.5rem)] py-[clamp(3.5rem,8vh,4.5rem)] lg:py-[clamp(1.5rem,4.5vh,2.25rem)] [@media(max-height:649px)]:justify-start [@media(max-width:1023px)_and_(max-height:720px)]:justify-start"
+      >
+        <div class="w-full max-w-[400px] shrink-0">
+          @if (centerBrand()) {
+            <div class="mb-[clamp(.75rem,2vh,1rem)] flex justify-center">
+              <app-brand />
+            </div>
+          }
+          <ng-content />
+        </div>
+      </main>
+      <footer
+        class="pointer-events-none shrink-0 px-5 pb-[clamp(.5rem,1vh,.75rem)] text-center text-xs text-ink3 sm:px-10"
+      >
+        Interface de demonstração · Dados fictícios
+        <span class="mt-1 block lg:hidden">Projeto Integrador 2026.2</span>
+      </footer>
+    </div>
+  </div>
+</div>

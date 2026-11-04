@@ -28,6 +28,8 @@
   --color-grn: #087a69;
   --color-grn-bg: #e5f6f0;
   --color-grn-t: #066c5b;
+  --color-danger: #b42318;
+  --color-danger-bg: #fef3f2;
   --font-sans: 'Manrope', Arial, sans-serif;
   --font-mono: 'Manrope', Arial, sans-serif;
   --radius-surface: 16px;
@@ -114,6 +116,10 @@
   }
   body {
     @apply m-0 bg-sf font-sans text-base leading-[1.65] font-normal text-ink;
+  }
+  html:has(app-access-layout),
+  body:has(app-access-layout) {
+    @apply h-dvh overflow-hidden;
   }
   body:has(dialog[open]) {
     @apply overflow-hidden;
