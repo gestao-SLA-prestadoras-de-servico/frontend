@@ -146,10 +146,7 @@ test('access routes fit small, medium, desktop and short screens', async ({ page
   }
 });
 
-test('all access routes contain prerendered content without JavaScript', async ({
-  browser,
-  baseURL,
-}) => {
+test('all access routes contain prerendered content without JavaScript', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   for (const [route, heading] of [
@@ -157,7 +154,7 @@ test('all access routes contain prerendered content without JavaScript', async (
     ['/sessao-demo', 'Sessão de demonstração'],
     ['/sessao-expirada', 'Sessão expirada'],
   ]) {
-    await page.goto(`${baseURL}${route}`);
+    await page.goto(route);
     await expect(page.getByRole('heading', { name: heading, exact: true })).toBeVisible();
     if (route === '/login') {
       await expect(page.getByRole('button', { name: 'Entrar', exact: true })).toBeDisabled();

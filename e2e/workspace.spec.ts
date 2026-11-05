@@ -190,11 +190,11 @@ test('not-found pages preserve the profile and offer a working return path', asy
   await expect(page).toHaveURL(/\/$/);
 });
 
-test('profile pages render their content without JavaScript', async ({ browser, baseURL }) => {
+test('profile pages render their content without JavaScript', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   for (const profile of profiles) {
-    await page.goto(`${baseURL}/app/${profile.key}`);
+    await page.goto(`/app/${profile.key}`);
     await expect(page.getByRole('heading', { name: profile.heading, exact: true })).toBeVisible();
     await expect(
       page.getByRole('navigation', { name: `Navegação da área de ${profile.label}` }),
