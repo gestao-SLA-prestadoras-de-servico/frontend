@@ -1,0 +1,110 @@
+@if (page(); as current) {
+  <div class="flex flex-wrap items-start justify-between gap-5">
+    <div class="max-w-[65ch]">
+      <h1
+        appPageHeading
+        class="text-[26px] leading-[1.25] font-semibold tracking-[-.03em] sm:text-[28px]"
+      >
+        {{ current.title }}
+      </h1>
+      <p class="mt-2 text-sm leading-[1.7] text-ink2">{{ current.description }}</p>
+    </div>
+    @if (current.kind === 'overview') {
+      <a routerLink="/app/gestor/chamados" appButtonPrimary class="min-h-11 px-4 py-2.5"
+        >Ver fila de chamados<svg class="size-4" [lucideIcon]="icons.arrow" aria-hidden="true"></svg
+      ></a>
+    } @else if (current.kind === 'tickets' && profile().key === 'cliente') {
+      <a routerLink="/app/cliente/novo-chamado" appButtonPrimary class="min-h-11 px-4 py-2.5"
+        ><svg class="size-4" [lucideIcon]="icons.add" aria-hidden="true"></svg>Ver área de
+        abertura</a
+      >
+    } @else if (current.kind === 'tickets' && profile().key === 'tecnico') {
+      <a routerLink="/app/tecnico/atendimento" appButtonPrimary class="min-h-11 px-4 py-2.5"
+        >Ver atendimento atual<svg
+          class="size-4"
+          [lucideIcon]="icons.arrow"
+          aria-hidden="true"
+        ></svg
+      ></a>
+    }
+  </div>
+  <p class="mt-5 flex items-start gap-2 text-xs leading-[1.7] text-ink3">
+    <svg class="mt-0.5 size-4 shrink-0" [lucideIcon]="icons.info" aria-hidden="true"></svg
+    >Demonstração com dados fictícios. Nenhuma operação real é executada.
+  </p>
+
+  @if (current.kind === 'overview') {
+    <!-- The three equal columns share a single grid; gaps and edges match the full-width list below. -->
+    <dl class="mt-8 grid grid-cols-3 gap-3 rounded-deadline bg-bg px-4 py-5 sm:px-6">
+      <div>
+        <dt class="text-xs text-ink2 sm:text-sm">Na fila</dt>
+        <dd class="m-0 mt-2 text-[28px] leading-none font-medium tabular-nums">
+          {{ tickets().length }}
+        </dd>
+      </div>
+      <div>
+        <dt class="text-xs text-ink2 sm:text-sm">Em triagem</dt>
+        <dd class="m-0 mt-2 text-[28px] leading-none font-medium tabular-nums">{{ open() }}</dd>
+      </div>
+      <div>
+        <dt class="text-xs text-ink2 sm:text-sm">Em campo</dt>
+        <dd class="m-0 mt-2 text-[28px] leading-none font-medium tabular-nums">{{ field() }}</dd>
+      </div>
+    </dl>
+    <div
+      class="mt-7 flex flex-col justify-between gap-4 rounded-deadline bg-danger-bg p-5 sm:flex-row sm:items-center"
+    >
+      <div>
+        <h2 class="text-sm leading-[1.5] font-semibold tracking-normal text-danger">
+          Uma resposta exige atenção
+        </h2>
+        <p class="mt-1 text-sm text-danger">
+          #1043 · Instabilidade no ponto de rede. Violação ilustrativa do prazo de resposta.
+        </p>
+      </div>
+      <a
+        routerLink="/app/gestor/chamados"
+        class="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-sm text-sm font-semibold text-danger underline"
+        >Consultar fila<svg class="size-4" [lucideIcon]="icons.arrow" aria-hidden="true"></svg
+      ></a>
+    </div>
+    <app-ticket-list
+      class="mt-9"
+      [tickets]="tickets()"
+      [profile]="profile().key"
+      heading="Visão da fila"
+    />
+  } @else if (current.kind === 'tickets') {
+    <app-ticket-list class="mt-8" [tickets]="tickets()" [profile]="profile().key" />
+    <p class="mt-5 text-xs text-ink3">
+      Cenário fixo de novembro de 2026. Os prazos exibidos não são calculados nesta demonstração.
+    </p>
+  } @else if (current.preview; as preview) {
+    <section
+      class="mt-8 rounded-deadline bg-bg p-5 sm:p-7"
+      aria-labelledby="workspace-preview-heading"
+    >
+      <h2
+        id="workspace-preview-heading"
+        class="text-lg leading-[1.4] font-semibold tracking-[-.02em]"
+      >
+        {{ preview.title }}
+      </h2>
+      <p class="mt-3 max-w-[70ch] text-sm leading-[1.75] text-ink2">{{ preview.description }}</p>
+      <dl class="mt-7 grid gap-6 lg:grid-cols-3">
+        @for (fact of preview.facts; track fact.label) {
+          <div>
+            <dt class="text-xs text-ink3">{{ fact.label }}</dt>
+            <dd class="m-0 mt-1.5 text-sm font-medium">{{ fact.value }}</dd>
+          </div>
+        }
+      </dl>
+    </section>
+    <a [routerLink]="profile().home" appButtonSecondary class="mt-7 min-h-11 px-4 py-2.5"
+      ><svg class="size-4" [lucideIcon]="icons.back" aria-hidden="true"></svg
+      >{{ profile().key === 'gestor' ? 'Voltar ao painel' : 'Voltar aos meus chamados' }}</a
+    >
+  }
+} @else {
+  <app-missing-page [home]="profile().home" label="Voltar ao início da área" />
+}

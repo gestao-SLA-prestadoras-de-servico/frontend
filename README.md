@@ -39,6 +39,8 @@ npm install
 npm run dev
 ```
 
+Para explorar o shell NIVELO com dados fictícios, abra `/app/gestor`, `/app/tecnico` ou `/app/cliente`. O seletor de perfil muda a navegação local. Escopo e roteiro: [FRONTEND 04 — Layout dos três perfis](docs/FRONTEND_04_LAYOUT.md).
+
 ### Execução do modo de produção (build):
 
 Primeiro construa a aplicação:

@@ -53,3 +53,7 @@ Thumbs.db
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+#docs
+
+/docs/tasks/tasks_frontend.md
