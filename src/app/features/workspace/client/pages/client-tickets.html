@@ -1,0 +1,239 @@
+<div class="flex flex-wrap items-start justify-between gap-4">
+  <div>
+    <h1 appPageHeading class="client-title">Meus chamados</h1>
+    <p class="mt-2 text-sm text-ink2">Acompanhe os atendimentos do Edifício Aurora.</p>
+  </div>
+  <a routerLink="/app/cliente/novo-chamado" appButtonPrimary class="min-h-11 px-4 py-2.5"
+    ><svg class="size-4" [lucideIcon]="icons.add" aria-hidden="true"></svg>Abrir chamado</a
+  >
+</div>
+<app-client-notice class="mt-4" />
+<!-- Three peers share the full canvas: (available width - 2 × 16px) / 3. On phones each becomes a compact row. -->
+<dl class="mt-5 grid grid-cols-3 gap-2 sm:mt-7 sm:gap-4" aria-label="Resumo de todos os chamados">
+  @for (item of summary; track item.label) {
+    <div
+      class="flex flex-col justify-between gap-3 rounded-deadline border border-line px-3 py-3 sm:px-5 sm:py-4"
+    >
+      <dt class="text-xs text-ink2 sm:text-sm">{{ item.label }}</dt>
+      <dd class="m-0 text-[26px] leading-none font-medium tabular-nums sm:text-[28px]">
+        {{ item.count }}
+      </dd>
+    </div>
+  }
+</dl>
+@if (awaiting; as ticket) {
+  <section
+    class="mt-5 flex flex-wrap items-center justify-between gap-x-5 gap-y-1 rounded-deadline bg-pri-bg px-5 py-4"
+    aria-labelledby="validation-notice"
+  >
+    <div>
+      <h2
+        id="validation-notice"
+        class="text-sm font-semibold leading-normal tracking-normal text-pri-d"
+      >
+        Um atendimento aguarda sua revisão
+      </h2>
+      <p class="mt-1 text-sm text-pri-d">
+        #{{ ticket.id }} · Valide até
+        {{ ticket.validationDueAt | date: 'dd/MM/yyyy, HH:mm' : '-0300' }}.
+      </p>
+    </div>
+    <a [routerLink]="['/app/cliente/chamados', ticket.id]" class="client-link"
+      >Revisar atendimento<svg class="size-4" [lucideIcon]="icons.arrow" aria-hidden="true"></svg
+    ></a>
+  </section>
+}
+<section
+  class="mt-8"
+  aria-labelledby="client-list-heading"
+  [attr.aria-busy]="scene() === 'loading'"
+>
+  <div class="flex flex-wrap items-baseline justify-between gap-2">
+    <h2 id="client-list-heading" class="client-heading">Seus atendimentos</h2>
+    <p class="text-xs text-ink3" role="status">
+      @if (scene() === 'loading') {
+        Carregando demonstração…
+      } @else {
+        {{ filtered().length }} de {{ tickets.length }} chamados
+      }
+    </p>
+  </div>
+  <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-[minmax(0,1fr)_190px_140px]">
+    <div class="col-span-2 sm:col-span-1">
+      <label class="client-label" for="client-search">Buscar chamado</label
+      ><input
+        id="client-search"
+        class="client-control"
+        type="search"
+        placeholder="Número, título ou local"
+        [value]="query()"
+        (input)="query.set(value($event))"
+      />
+    </div>
+    <div>
+      <label class="client-label" for="client-status">Estado</label
+      ><select
+        id="client-status"
+        class="client-control"
+        [value]="status()"
+        (change)="status.set(value($event))"
+      >
+        <option value="">Todos os estados</option>
+        @for (option of statuses; track option[0]) {
+          <option [value]="option[0]">{{ option[1] }}</option>
+        }
+      </select>
+    </div>
+    <div>
+      <label class="client-label" for="client-priority">Prioridade</label
+      ><select
+        id="client-priority"
+        class="client-control"
+        [value]="priority()"
+        (change)="priority.set(value($event))"
+      >
+        <option value="">Todas</option>
+        @for (option of priorities; track option) {
+          <option [value]="option">{{ option }}</option>
+        }
+      </select>
+    </div>
+  </div>
+  @if (scene() === 'loading') {
+    <div class="mt-6 space-y-5" aria-hidden="true">
+      @for (row of [1, 2, 3, 4]; track row) {
+        <div class="grid grid-cols-3 gap-5 border-t border-line py-5">
+          <div class="h-5 rounded bg-line/60"></div>
+          <div class="h-5 rounded bg-line/40"></div>
+          <div class="h-5 rounded bg-line/40"></div>
+        </div>
+      }
+    </div>
+  } @else if (filtered().length === 0) {
+    <div class="mt-6 rounded-deadline bg-bg p-7">
+      <h3 class="text-base font-semibold tracking-normal">
+        {{ scene() === 'empty' ? 'Nenhum chamado neste exemplo' : 'Nenhum chamado encontrado' }}
+      </h3>
+      <p class="mt-2 text-sm text-ink2">
+        {{
+          scene() === 'empty'
+            ? 'Quando houver uma solicitação, você poderá acompanhar o atendimento aqui.'
+            : 'Tente outro número, título ou local, ou limpe os filtros.'
+        }}
+      </p>
+      <button class="client-link mt-3" type="button" (click)="reset()">
+        {{ scene() === 'empty' ? 'Voltar aos dados de exemplo' : 'Limpar busca e filtros' }}
+      </button>
+    </div>
+  } @else {
+    <div class="mt-6 hidden md:block">
+      <table class="ticket-table">
+        <caption class="sr-only">
+          Chamados do Edifício Aurora. Datas e prazos fictícios em horário de Brasília.
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col" class="w-[32%]">Chamado</th>
+            <th scope="col" class="w-[20%]">Estado</th>
+            <th scope="col" class="w-[12%]">Prioridade</th>
+            <th scope="col" class="w-[15%]">Aberto em</th>
+            <th scope="col" class="w-[21%]">Prazos</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ticket of filtered(); track ticket.id) {
+            <tr>
+              <td>
+                <a class="ticket-name" [routerLink]="['/app/cliente/chamados', ticket.id]"
+                  >#{{ ticket.id }} · {{ ticket.title }}</a
+                >
+                <p class="mt-1 text-xs text-ink3">{{ ticket.location }}</p>
+              </td>
+              <td><app-client-status [status]="ticket.status" /></td>
+              <td>{{ ticket.priority }}</td>
+              <td class="tabular-nums">
+                <time [attr.datetime]="ticket.openedAt"
+                  >{{ ticket.openedAt | date: 'dd/MM/yyyy' : '-0300'
+                  }}<span class="block text-xs text-ink3">{{
+                    ticket.openedAt | date: 'HH:mm' : '-0300'
+                  }}</span></time
+                >
+              </td>
+              <td>
+                @if (ticket.validationDueAt) {
+                  <p class="font-medium text-pri-d">Validação</p>
+                  <time class="tabular-nums" [attr.datetime]="ticket.validationDueAt"
+                    >Até {{ ticket.validationDueAt | date: 'dd/MM, HH:mm' : '-0300' }}</time
+                  >
+                } @else if (nextDeadline(ticket); as deadline) {
+                  <p class="font-medium">{{ deadline.label }}</p>
+                  <time class="tabular-nums text-ink2" [attr.datetime]="deadline.target"
+                    >Até {{ deadline.target | date: 'dd/MM, HH:mm' : '-0300' }}</time
+                  >
+                } @else {
+                  <p class="text-grn-t">Prazos cumpridos</p>
+                  <p class="text-xs text-ink3">Atendimento encerrado</p>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <ul class="mt-5 list-none space-y-3 p-0 md:hidden">
+      @for (ticket of filtered(); track ticket.id) {
+        <li class="rounded-deadline border border-line p-4">
+          <a
+            [routerLink]="['/app/cliente/chamados', ticket.id]"
+            class="client-link min-h-11 text-ink"
+            >#{{ ticket.id }} · {{ ticket.title }}</a
+          >
+          <p class="mt-1 text-sm text-ink2">{{ ticket.location }}</p>
+          <div class="mt-3"><app-client-status [status]="ticket.status" /></div>
+          <dl class="mt-3 grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <dt class="text-xs text-ink3">Prioridade</dt>
+              <dd class="m-0 mt-1">{{ ticket.priority }}</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-ink3">Aberto em</dt>
+              <dd class="m-0 mt-1 tabular-nums">
+                {{ ticket.openedAt | date: 'dd/MM/yyyy, HH:mm' : '-0300' }}
+              </dd>
+            </div>
+            <div class="col-span-2">
+              <dt class="text-xs text-ink3">Prazos</dt>
+              <dd class="m-0 mt-1">
+                @if (ticket.validationDueAt) {
+                  Validação até {{ ticket.validationDueAt | date: 'dd/MM, HH:mm' : '-0300' }}
+                } @else if (nextDeadline(ticket); as deadline) {
+                  {{ deadline.label }} até {{ deadline.target | date: 'dd/MM, HH:mm' : '-0300' }}
+                } @else {
+                  Prazos cumpridos · Atendimento encerrado
+                }
+              </dd>
+            </div>
+          </dl>
+        </li>
+      }
+    </ul>
+  }
+</section>
+<details class="mt-6 text-xs text-ink3">
+  <summary class="inline-flex min-h-11 cursor-pointer items-center rounded-sm underline">
+    Estados de demonstração
+  </summary>
+  <div class="mt-2 max-w-xs">
+    <label for="client-scene" class="client-label">Cenário da listagem</label
+    ><select
+      id="client-scene"
+      class="client-control"
+      [value]="scene()"
+      (change)="scene.set(value($event))"
+    >
+      <option value="normal">Dados de exemplo</option>
+      <option value="loading">Carregamento</option>
+      <option value="empty">Lista vazia</option>
+    </select>
+  </div>
+</details>

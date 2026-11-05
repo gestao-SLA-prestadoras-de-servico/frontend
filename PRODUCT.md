@@ -26,6 +26,8 @@ A entrega FRONTEND 05 acrescenta as rotas `/login`, `/sessao-demo` e `/sessao-ex
 
 A entrega FRONTEND 04 acrescenta um shell de demonstração para Gestor, Técnico e Cliente em `/app`, com navegação lateral, cabeçalho, breadcrumbs, seletor de perfil fictício, menu móvel e páginas não encontradas. As páginas apresentam exemplos locais e prévias das áreas futuras, sem operações de negócio, APIs ou autorização real. Os dados e limites estão em `docs/FRONTEND_04_LAYOUT.md`.
 
+A entrega FRONTEND 10–12 estende o shell com o portal Cliente: listagem com busca e filtros locais, formulário de abertura, detalhe por ID, três prazos, histórico, evidência ilustrativa e diálogos de validação e reabertura. Os quatro chamados e dois contratos são fictícios, em um cenário fixo de 05/11/2026. As confirmações não criam registros nem alteram estados; não há API ou persistência. Gestor e Técnico mantêm suas telas existentes. O briefing próprio usa o modo Operate, sem alterar o sistema visual global. Os cenários e limites estão em `docs/FRONTEND_10_12_CLIENTE.md`.
+
 ## Brand Commitments
 
 Nome Nivelo, em substituição a FlowSLA na apresentação atual. Português brasileiro, linguagem direta e concreta. Preservar a identidade estabelecida na opção C — Faixa de luz: Manrope, azul-noite, azul corporativo, verde operacional, turquesa do símbolo e superfícies claras. A referência Isoline substitui a composição da landing, preservando essa identidade, o símbolo original e os links, a aparência e o comportamento da navbar. O vídeo de luz e seu poster continuam em uma pequena janela da abertura. `DESIGN.md` é a fonte da verdade visual implementada, com valores extraídos do código; `docs/NIVELO_BRAND.md` registra a relação entre os ativos e a prancha.

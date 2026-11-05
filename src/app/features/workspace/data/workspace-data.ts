@@ -252,23 +252,10 @@ export const WORKSPACE_PROFILES: readonly WorkspaceProfile[] = [
         key: 'novo-chamado',
         path: '/app/cliente/novo-chamado',
         title: 'Abrir chamado',
-        description: 'O espaço para solicitar um atendimento à prestadora.',
+        description: 'Descreva o problema e consulte os prazos do contrato de exemplo.',
         icon: 'add',
         group: 'Seus atendimentos',
         kind: 'preview',
-        preview: {
-          title: 'Contexto de uma solicitação',
-          description:
-            'Esta prévia apresenta o contexto de uma solicitação. O formulário de abertura não está disponível na demonstração.',
-          facts: [
-            { label: 'Empresa fictícia', value: 'Edifício Aurora' },
-            { label: 'Exemplo de local', value: 'Sala técnica · 4º andar' },
-            {
-              label: 'Informações previstas',
-              value: 'Contrato, título, descrição, local e prioridade sugerida',
-            },
-          ],
-        },
       },
     ],
   },

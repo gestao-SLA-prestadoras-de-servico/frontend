@@ -1,0 +1,117 @@
+@if (ticket(); as current) {
+  <a routerLink="/app/cliente" class="client-link mb-4"
+    ><svg class="size-4" [lucideIcon]="icons.back" aria-hidden="true"></svg>Meus chamados</a
+  >
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="max-w-[70ch]">
+      <h1 appPageHeading class="client-title">#{{ current.id }} · {{ current.title }}</h1>
+      <p class="mt-3 text-sm text-ink2">{{ current.company }} · {{ current.location }}</p>
+    </div>
+    <app-client-status [status]="current.status" />
+  </div>
+  <app-client-notice class="mt-4" />
+  <dl
+    class="mt-6 grid grid-cols-2 gap-x-5 gap-y-4 border-y border-line py-5 text-sm lg:grid-cols-4"
+  >
+    <div>
+      <dt class="text-xs text-ink3">Aberto em</dt>
+      <dd class="m-0 mt-1 tabular-nums">
+        {{ current.openedAt | date: 'dd/MM/yyyy, HH:mm' : '-0300' }}
+      </dd>
+    </div>
+    <div>
+      <dt class="text-xs text-ink3">Prioridade</dt>
+      <dd class="m-0 mt-1">{{ current.priority }}</dd>
+    </div>
+    <div>
+      <dt class="text-xs text-ink3">Técnico responsável</dt>
+      <dd class="m-0 mt-1">{{ current.technician ?? 'Aguardando atribuição' }}</dd>
+    </div>
+    <div>
+      <dt class="text-xs text-ink3">Contrato</dt>
+      <dd class="m-0 mt-1 tabular-nums">{{ current.contractId }}</dd>
+    </div>
+  </dl>
+  <app-client-review class="mt-6" [ticket]="current" />
+  <section class="mt-7" aria-labelledby="ticket-deadlines-title">
+    <h2 id="ticket-deadlines-title" class="client-heading">Três compromissos de prazo</h2>
+    <app-client-deadlines class="mt-4" [deadlines]="current.deadlines" />
+  </section>
+  <div class="mt-7 grid items-start gap-7 xl:grid-cols-[minmax(0,1.45fr)_minmax(300px,1fr)]">
+    <div class="grid gap-6">
+      <section class="client-panel" aria-labelledby="ticket-description-title">
+        <h2 id="ticket-description-title" class="client-heading">Solicitação original</h2>
+        <p class="mt-3 max-w-[70ch] whitespace-pre-line text-sm text-ink2">
+          {{ current.description }}
+        </p>
+      </section>
+      @if (current.resolution) {
+        <section class="client-panel" aria-labelledby="ticket-resolution-title">
+          <h2 id="ticket-resolution-title" class="client-heading">Relato do atendimento</h2>
+          <p class="mt-3 max-w-[70ch] text-sm text-ink2">{{ current.resolution }}</p>
+          <p class="mt-4 text-xs text-ink3">
+            Registrado por {{ current.technician }} · Conteúdo fictício.
+          </p>
+        </section>
+      }
+      <section class="client-panel" aria-labelledby="ticket-evidence-title">
+        <h2 id="ticket-evidence-title" class="client-heading">Evidências do atendimento</h2>
+        @for (evidence of current.evidences; track evidence.title) {
+          <figure class="mt-4">
+            <img
+              class="aspect-[16/9] w-full rounded-sm object-cover"
+              [src]="evidence.image"
+              [alt]="evidence.alt"
+              width="1536"
+              height="864"
+              loading="lazy"
+            />
+            <figcaption class="mt-3 text-sm">
+              <p class="font-medium">{{ evidence.title }}</p>
+              <p class="mt-1 text-ink2">{{ evidence.description }}</p>
+              <p class="mt-2 text-xs text-ink3">
+                Imagem ilustrativa gerada por IA. Não representa o atendimento. Registro fictício:
+                <time [attr.datetime]="evidence.at">{{
+                  evidence.at | date: 'dd/MM/yyyy, HH:mm' : '-0300'
+                }}</time
+                >.
+              </p>
+            </figcaption>
+          </figure>
+        } @empty {
+          <p class="mt-3 text-sm text-ink2">
+            Nenhuma evidência disponível para este chamado no cenário de demonstração.
+          </p>
+        }
+      </section>
+    </div>
+    <section class="client-panel" aria-labelledby="ticket-history-title">
+      <h2 id="ticket-history-title" class="client-heading">Histórico do chamado</h2>
+      <p class="mt-2 text-xs text-ink3">Eventos fictícios · Horário de Brasília.</p>
+      <ol class="mt-6 list-none p-0">
+        @for (event of current.events; track event.at; let last = $last) {
+          <li
+            class="relative ml-1 border-l border-line pl-6"
+            [class.pb-7]="!last"
+            [class.border-transparent]="last"
+          >
+            <span
+              class="absolute top-1 -left-[5px] size-[9px] rounded-full bg-line2"
+              aria-hidden="true"
+            ></span
+            ><time class="text-xs text-ink3 tabular-nums" [attr.datetime]="event.at">{{
+              event.at | date: 'dd/MM/yyyy, HH:mm' : '-0300'
+            }}</time>
+            <h3 class="mt-1 text-sm font-semibold leading-normal tracking-normal">
+              {{ event.title }}
+            </h3>
+            <p class="mt-1 text-xs text-ink3">{{ event.author }}</p>
+            <p class="mt-2 text-sm text-ink2">{{ event.description }}</p>
+          </li>
+        }
+      </ol>
+    </section>
+  </div>
+} @else {
+  <app-missing-page home="/app/cliente" label="Voltar aos meus chamados" />
+}
