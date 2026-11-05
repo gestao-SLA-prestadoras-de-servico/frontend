@@ -25,30 +25,10 @@
       >
     </a>
     <nav class="hidden items-center gap-[25px] lg:flex" aria-label="Navegação principal">
-      <a
-        appLink
-        href="#beneficios"
-        (click)="followAnchor('beneficios')"
-        >Benefícios</a
-      >
-      <a
-        appLink
-        href="#como-funciona"
-        (click)="followAnchor('como-funciona')"
-        >Como funciona</a
-      >
-      <a
-        appLink
-        href="#plataforma"
-        (click)="followAnchor('plataforma')"
-        >Plataforma</a
-      >
-      <a
-        appLink
-        href="#faq"
-        (click)="followAnchor('faq')"
-        >FAQ</a
-      >
+      <a appLink href="#beneficios" (click)="followAnchor('beneficios')">Benefícios</a>
+      <a appLink href="#como-funciona" (click)="followAnchor('como-funciona')">Como funciona</a>
+      <a appLink href="#plataforma" (click)="followAnchor('plataforma')">Plataforma</a>
+      <a appLink href="#faq" (click)="followAnchor('faq')">FAQ</a>
       <button
         #headerAccess
         appButtonPrimary
@@ -95,10 +75,7 @@
       <app-icon name="close" />
     </button>
   </div>
-  <nav
-    class="flex flex-col"
-    aria-label="Navegação no celular"
-  >
+  <nav class="flex flex-col" aria-label="Navegação no celular">
     <a appLink="menu" href="#beneficios" autofocus (click)="followAnchor('beneficios')"
       >Benefícios<app-icon name="arrow"
     /></a>
@@ -109,8 +86,8 @@
       >Plataforma<app-icon name="arrow"
     /></a>
     <a appLink="menu" href="#faq" (click)="followAnchor('faq')"
-      >Perguntas frequentes<app-icon name="arrow" /></a
-    >
+      >Perguntas frequentes<app-icon name="arrow"
+    /></a>
     <button
       appButtonPrimary
       class="mt-[18px] min-h-[50px] px-button-inline py-button-block"
@@ -125,232 +102,174 @@
   </nav>
   <p class="mt-5 text-xs text-ink2">Em desenvolvimento. Acesso ainda indisponível.</p>
 </dialog>
-<main id="conteudo" tabindex="-1">
+<main class="bg-bg" id="conteudo" tabindex="-1">
   <section
-    class="relative flex min-h-svh items-end bg-navy pt-[clamp(144px,28svh,240px)] pb-8 sm:min-h-[min(100svh,1000px)] sm:pt-[180px] sm:pb-9 lg:min-h-[min(clamp(680px,50.85vw,980px),100svh)] lg:pb-8 2xl:pb-[52px] [@media(max-height:700px)]:pt-32 [@media(max-height:700px)]:pb-6 [&_:focus-visible]:outline-cyan"
     id="inicio"
+    class="opening relative bg-bg"
     tabindex="-1"
     aria-labelledby="hero-title"
+    data-scroll-scene="opening-fall"
   >
-    <app-hero-background />
     <div
-      class="mx-auto w-[calc(100%-40px)] max-w-[1440px] sm:w-[calc(100%-64px)] xl:w-[calc(100%-112px)] relative z-1 grid grid-cols-1 items-end gap-6 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)] lg:gap-7 xl:grid-cols-[minmax(0,2.25fr)_minmax(0,1fr)] xl:gap-8 [@media(max-height:700px)]:gap-[18px] [@media(640px<=width<1024px)_and_(max-height:500px)]:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] [@media(640px<=width<1024px)_and_(max-height:500px)]:gap-6"
+      class="opening-stage pointer-events-none sticky top-0 h-svh min-h-0 overflow-clip md:min-h-[800px] lg:min-h-[740px] md:[@media(max-height:600px)]:min-h-[520px] lg:[@media(max-height:600px)]:min-h-[520px] motion-reduce:absolute motion-reduce:w-full"
     >
-      <div>
+      <app-contour
+        class="opening-contour absolute -right-[22vw] -top-[7vh] h-[66vh] w-[130vw] md:-right-[30vw] md:-top-[10%] md:h-[120%] md:w-[95vw] lg:-right-[9vw] lg:w-[69vw]"
+        shape="opening"
+        motion="opening-band"
+        trigger="#inicio"
+      />
+      <div
+        class="opening-person absolute left-[2%] top-[10vh] h-[40vh] w-[65vw] max-w-[540px] md:top-auto md:-bottom-[7%] md:left-[53%] md:h-[76%] md:w-[40vw] lg:left-[46%] lg:w-[33vw] md:[@media(max-height:600px)]:left-[68%] lg:[@media(max-height:600px)]:left-[68%] md:[@media(max-height:600px)]:h-[65%] lg:[@media(max-height:600px)]:h-[65%] md:[@media(max-height:600px)]:w-[30vw] lg:[@media(max-height:600px)]:w-[30vw]"
+        appScrollMotion="opening-figure"
+        motionTrigger="#inicio"
+      >
+        <img
+          class="size-full object-contain"
+          src="images/nivelo-gestor-ilustrativo.webp"
+          alt="Gestor consultando um notebook. Imagem gerada por IA, ilustrativa."
+          width="1024"
+          height="1536"
+          fetchpriority="high"
+        />
+        <!-- <span class="opening-image-note">Imagem gerada por IA · ilustrativa</span>/ -->
+      </div>
+      <!-- <div class="opening-film"><app-hero-background /><span>Fluxo de luz · Nivelo</span></div> -->
+    </div>
+    <div
+      class="page-frame opening-first mx-auto w-[calc(100%-40px)] max-w-[1500px] md:w-[calc(100%-8vw)] relative motion-safe:-mt-[100svh] flex min-h-svh items-end pt-[48svh] pb-8 md:min-h-[max(100svh,800px)] md:items-center md:pt-[150px] md:pb-[72px] lg:min-h-svh md:[@media(max-height:600px)]:motion-safe:-mt-[520px] md:[@media(max-height:600px)]:min-h-svh md:[@media(max-height:600px)]:pt-[100px] md:[@media(max-height:600px)]:pb-3"
+    >
+      <div
+        class="opening-copy w-full max-w-[600px] md:w-[65%] md:max-w-[860px] lg:w-[58%]"
+        appScrollMotion="opening-copy"
+        motionTrigger="#inicio"
+      >
         <h1
-          class="text-display-mobile leading-[1.12] text-white text-wrap sm:text-display-stacked sm:leading-[1.06] lg:text-[4.7vw] xl:text-display [@media(640px<=width<1024px)_and_(max-height:500px)]:text-[clamp(2rem,4.8vw,2.5rem)]"
+          class="hero-heading max-w-[14em] text-[clamp(2.3rem,9.3vw,3.6rem)] leading-[1.01] font-[550] tracking-[-.04em] md:max-w-[11em] md:text-[clamp(3rem,7vw,5.6rem)] lg:text-[clamp(3.2rem,6vw,6rem)] md:[@media(max-height:600px)]:text-[36px] lg:[@media(max-height:600px)]:text-[36px]"
+          appReveal
+          revealEffect="lines"
           id="hero-title"
         >
-          Prazos sob controle.<br /><span class="text-cyan lg:whitespace-nowrap"
-            >Atendimento comprovado.</span
+          <span class="motion-line block overflow-clip pb-[.12em] -mb-[.12em]"
+            ><span class="block">Prazos sob controle.</span></span
+          >
+          <span class="motion-line block overflow-clip pb-[.12em] -mb-[.12em]"
+            ><span class="block">Atendimento comprovado.</span></span
           >
         </h1>
         <p
-          class="mt-[18px] flex items-baseline gap-2 text-xs leading-[1.65] text-[#d0e0f0] sm:items-center lg:mt-[26px] [@media(max-height:700px)]:mt-3"
-        >
-          <span class="size-[7px] shrink-0 rounded-full bg-turquoise" aria-hidden="true"></span>Em
-          desenvolvimento · Acesso ainda indisponível.
-        </p>
-      </div>
-      <div class="max-w-[560px] self-end lg:max-w-none lg:pb-4 xl:pb-[23px]">
-        <p
-          class="max-w-[50ch] text-base leading-[1.65] text-[#f2f6fc] sm:leading-normal lg:max-w-[43ch] lg:text-[clamp(1rem,1.25vw,1.1875rem)] [@media(max-height:700px)]:leading-normal [@media(640px<=width<1024px)_and_(max-height:500px)]:text-sm"
+          class="hero-description mt-5 max-w-[36ch] text-base leading-[1.55] text-ink2 md:mt-[30px] md:max-w-[32ch] md:text-[19px] md:[@media(max-height:600px)]:mt-3.5 md:[@media(max-height:600px)]:max-w-[48ch] md:[@media(max-height:600px)]:text-sm md:[@media(max-height:600px)]:leading-[1.45]"
+          [appReveal]="1"
         >
           Chamados, prazos e evidências em um só lugar para prestadoras de serviços técnicos.
         </p>
         <div
-          class="mt-[22px] flex flex-col flex-wrap gap-2.5 min-[361px]:flex-row sm:mt-6 lg:gap-2 xl:gap-2.5 [@media(max-height:700px)]:mt-[18px] [@media(640px<=width<1024px)_and_(max-height:500px)]:gap-2"
+          class="hero-actions mt-6 flex flex-wrap max-lg:items-start gap-3 md:mt-9 md:flex-col md:gap-3.5 lg:flex-row md:[@media(max-height:600px)]:mt-3.5 md:[@media(max-height:600px)]:flex-row"
+          [appReveal]="2"
+          revealEffect="fade"
         >
           <a
             appButtonPrimary
-            class="min-h-12 px-4 py-button-block whitespace-nowrap sm:min-h-[46px] sm:px-[17px] xl:min-h-[50px]"
+            class="press-feedback min-h-[50px] px-5 py-button-block transition-[transform,background-color,color]! duration-[140ms]! ease-[var(--ease-out),ease,ease]! active:transform-[scale(.97)] motion-reduce:transition-none! motion-reduce:active:transform-none"
             href="#plataforma"
             (click)="followAnchor('plataforma')"
-            ><app-action-label label="Conhecer a plataforma" /><app-icon
-              class="[--icon-size:19px] transition-transform duration-(--motion-label) ease-out motion-safe:group-hover/action:rotate-45 motion-safe:group-focus-visible/action:rotate-45 motion-reduce:transition-none"
-              name="arrow"
+            ><app-action-label label="Conhecer a plataforma" /><app-icon name="arrow"
           /></a>
           <button
             #heroAccess
-            appButtonSecondary="inverse"
-            class="min-h-12 px-4 py-button-block whitespace-nowrap sm:min-h-[46px] sm:px-[17px] xl:min-h-[50px]"
+            appButtonSecondary
+            class="press-feedback min-h-[50px] px-5 py-button-block transition-[transform,background-color,color]! duration-[140ms]! ease-[var(--ease-out),ease,ease]! active:transform-[scale(.97)] motion-reduce:transition-none! motion-reduce:active:transform-none"
             type="button"
             (click)="access.open(heroAccess)"
           >
             <app-action-label label="Sobre a disponibilidade" />
           </button>
         </div>
-      </div>
-    </div>
-  </section>
-  <section
-    id="beneficios"
-    class="bg-bg pt-[clamp(48px,4.5vw,72px)] pb-section"
-    tabindex="-1"
-    aria-labelledby="benefits-title"
-  >
-    <div
-      class="mx-auto w-[calc(100%-40px)] max-w-[1440px] sm:w-[calc(100%-64px)] xl:w-[calc(100%-112px)]"
-    >
-      <div class="grid grid-cols-1 items-center gap-9 lg:grid-cols-2 lg:gap-7 xl:gap-12">
-        <h2 appSectionHeading="responsive" id="benefits-title">
-          Menos conferência manual.<br /><span class="text-pri">Mais clareza para agir.</span>
-        </h2>
-        <div class="max-w-[640px] lg:max-w-none lg:border-l lg:border-line2 lg:pl-6 xl:pl-10">
-          <p class="text-xs text-ink2">Três compromissos. Um atendimento.</p>
-          <ol
-            class="mt-[18px] mb-3 grid list-none grid-cols-[0.85fr_1.25fr_0.85fr] gap-2 p-0 sm:grid-cols-[0.8fr_1.3fr_0.8fr] sm:gap-3 [&>li]:relative [&>li]:flex [&>li]:min-w-0 [&>li]:flex-col [&>li]:items-start [&>li]:gap-2 [&>li]:text-xs [&>li]:leading-normal [&>li]:text-ink2 [&>li:not(:last-child)]:after:absolute [&>li:not(:last-child)]:after:top-[23px] [&>li:not(:last-child)]:after:right-0 [&>li:not(:last-child)]:after:left-[50px] [&>li:not(:last-child)]:after:h-px [&>li:not(:last-child)]:after:bg-line2 sm:[&>li:not(:last-child)]:after:left-[58px] [&_strong]:text-[0.8125rem] [&_strong]:font-bold [&_strong]:text-navy"
-          >
-            <li>
-              <span class="grid size-[46px] place-items-center rounded-full bg-[#dbe8fc] text-pri"
-                ><app-icon name="file" /></span
-              ><strong>Resposta</strong><span>Primeiro retorno</span>
-            </li>
-            <li>
-              <span
-                class="grid size-[46px] place-items-center rounded-full bg-[#b7f0ed] text-[#08666e]"
-                ><app-icon name="truck" /></span
-              ><strong>Atendimento em campo</strong><span>Início do serviço</span>
-            </li>
-            <li>
-              <span class="grid size-[46px] place-items-center rounded-full bg-[#d3f2e5] text-grn-t"
-                ><app-icon name="check" /></span
-              ><strong>Resolução</strong><span>Solução apresentada</span>
-            </li>
-          </ol>
-          <p class="text-xs text-ink2">Prazos definidos pela política de cada contrato.</p>
-        </div>
-      </div>
-      <div
-        class="mt-14 grid grid-cols-1 items-start gap-9 lg:mt-[88px] lg:grid-cols-[0.8fr_2fr] lg:gap-11 xl:gap-[72px]"
-      >
-        <p class="max-w-[60ch] text-base leading-[1.75] text-ink2 lg:max-w-[29ch]">
-          Do contrato à evidência, a informação acompanha o chamado.
-        </p>
-        <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-x-12 sm:gap-y-11">
-          @for (benefit of benefits; track benefit.title) {
-            <article appCard="benefit">
-              <app-icon
-                class="mb-[18px] [--icon-size:26px] text-pri sm:mb-[25px]"
-                [name]="benefit.icon"
-              />
-              <h3 class="mb-3 text-[1.1875rem]">{{ benefit.title }}</h3>
-              <p class="max-w-[60ch] text-sm text-ink2 sm:max-w-[40ch]">
-                {{ benefit.description }}
-              </p>
-            </article>
-          }
-        </div>
-      </div>
-    </div>
-  </section>
-  <section
-    id="como-funciona"
-    class="bg-navy py-section text-on-navy"
-    tabindex="-1"
-    aria-labelledby="workflow-title"
-  >
-    <div
-      class="mx-auto w-[calc(100%-40px)] max-w-[1440px] sm:w-[calc(100%-64px)] xl:w-[calc(100%-112px)]"
-    >
-      <div
-        class="flex flex-col items-start gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10"
-      >
-        <h2 appSectionHeading="inverse" id="workflow-title">
-          Do contrato à solução,<br /><span class="text-cyan">cada etapa conectada.</span>
-        </h2>
-        <p class="max-w-[50ch] text-[0.9375rem] lg:max-w-[33ch]">
-          Um fluxo previsto para gestores, técnicos e clientes.
+        <p
+          class="hero-development mt-5 flex items-baseline gap-[9px] text-xs text-ink2 md:mt-6 md:text-[13px] md:[@media(max-height:600px)]:mt-3 md:[@media(max-height:600px)]:text-xs"
+          [appReveal]="3"
+          revealEffect="fade"
+        >
+          <span class="size-1.5 shrink-0 rounded-full bg-turquoise" aria-hidden="true"></span>Em
+          desenvolvimento · Acesso ainda indisponível.
         </p>
       </div>
-      <ol
-        class="mt-12 ml-5 grid list-none grid-cols-1 gap-9 border-l border-[#436078] p-0 sm:mt-[72px] sm:ml-0 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-14 sm:border-l-0 lg:grid-cols-4"
-      >
-        @for (step of steps; track step.title; let index = $index) {
-          <li class="relative pl-10 sm:border-t sm:border-[#436078] sm:pt-[22px] sm:pl-0">
-            <span
-              class="absolute top-0 -left-[21px] m-0 grid size-[42px] place-items-center rounded-full border border-[#436078] bg-navy text-[0.8125rem] font-semibold text-cyan tabular-nums sm:static sm:mt-[-44px] sm:mb-8"
-              aria-hidden="true"
-              >0{{ index + 1 }}</span
-            >
-            <h3 class="mb-3.5 text-lg text-white sm:max-w-[20ch]">{{ step.title }}</h3>
-            <p class="text-sm leading-[1.8]">{{ step.description }}</p>
-          </li>
-        }
-      </ol>
     </div>
+    <app-benefits />
   </section>
+  <app-deadline-story />
+  <app-service-record />
+  <app-contract-workflow />
+  <app-role-preview />
   <app-platform-overview />
-  <section class="bg-bg py-section" aria-labelledby="closing-title">
+  <app-contract-terms />
+  <app-mobile-access />
+  <app-faq />
+  <section
+    id="disponibilidade"
+    class="chapter closing-section py-[76px] md:py-section"
+    aria-labelledby="closing-title"
+  >
     <div
-      class="mx-auto w-[calc(100%-40px)] max-w-[1440px] sm:w-[calc(100%-64px)] xl:w-[calc(100%-112px)] flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-14"
+      class="page-frame closing-grid mx-auto w-[calc(100%-40px)] max-w-[1500px] md:w-[calc(100%-8vw)] grid grid-cols-1 items-center gap-11 md:grid-cols-2 md:gap-[8vw]"
     >
-      <div>
-        <h2 appSectionHeading="prominent" class="max-w-[32ch]" id="closing-title">
-          Mais controle sobre os prazos.<br /><span class="text-pri"
-            >Mais contexto em cada atendimento.</span
+      <div appReveal>
+        <h2 appSectionHeading id="closing-title">
+          <span class="motion-line block overflow-clip pb-[.12em] -mb-[.12em]"
+            ><span class="block">Mais contexto hoje.</span></span
+          ><span class="motion-line block overflow-clip pb-[.12em] -mb-[.12em]"
+            ><span class="block">Mais clareza para agir.</span></span
           >
         </h2>
-        <p class="text-base leading-[1.75] text-ink2 sm:text-lead mt-6 max-w-[65ch]">
-          Consulte as dúvidas sobre uso e disponibilidade.
+        <p class="chapter-lead mt-6 text-base leading-[1.75] text-ink2 md:text-[17px] max-w-[40ch]">
+          Uma proposta para conectar os compromissos de cada contrato ao que acontece em cada
+          atendimento.
+        </p>
+        <button
+          #closingAccess
+          appButtonPrimary
+          type="button"
+          class="press-feedback mt-8 min-h-[50px] px-button-inline py-button-block transition-[transform,background-color,color]! duration-[140ms]! ease-[var(--ease-out),ease,ease]! active:transform-[scale(.97)] motion-reduce:transition-none! motion-reduce:active:transform-none"
+          (click)="access.open(closingAccess)"
+        >
+          <app-action-label label="Sobre a disponibilidade" /><app-icon name="arrow" />
+        </button>
+        <p class="mt-6 text-sm text-ink2">
+          A Nivelo está em desenvolvimento.<br />O acesso ao sistema ainda não está disponível.
         </p>
       </div>
-      <div class="shrink-0 text-left lg:text-right">
-        <a
-          appButtonPrimary
-          class="min-h-[50px] px-button-inline py-button-block"
-          href="#faq"
-          (click)="followAnchor('faq')"
-          ><app-action-label label="Consultar dúvidas" /><app-icon
-            class="[--icon-size:19px] transition-transform duration-(--motion-label) ease-out motion-safe:group-hover/action:rotate-45 motion-safe:group-focus-visible/action:rotate-45 motion-reduce:transition-none"
-            name="arrow"
-        /></a>
-        <p class="mt-[18px] text-xs text-ink2">
-          Projeto em desenvolvimento.<br />Acesso ainda indisponível.
-        </p>
+      <div
+        class="closing-art relative grid aspect-[1.2] place-items-center overflow-clip max-md:max-h-[300px]"
+      >
+        <app-contour
+          class="absolute -inset-[20%]"
+          [outline]="true"
+          motion="rings"
+          trigger="#disponibilidade"
+        /><img class="relative" src="images/nivelo-symbol.svg" alt="" width="110" height="88" />
       </div>
     </div>
   </section>
-  <app-faq />
 </main>
-<footer class="bg-navy pt-14 pb-6 text-on-navy">
-  <div
-    class="mx-auto w-[calc(100%-40px)] max-w-[1440px] sm:w-[calc(100%-64px)] xl:w-[calc(100%-112px)]"
-  >
-    <div class="grid grid-cols-1 items-center gap-7 sm:grid-cols-[1fr_1fr_auto] sm:gap-8">
-      <a
-        class="inline-flex items-center gap-2.5 whitespace-nowrap text-white no-underline"
-        href="#inicio"
-        aria-label="Nivelo, voltar ao início"
-        (click)="followAnchor('inicio')"
-        ><img
-          class="h-10 w-[50px]"
-          src="images/nivelo-symbol.svg"
-          alt=""
-          width="50"
-          height="40"
-        /><span
-          class="flex flex-col text-[1.875rem] leading-[1.05] font-extrabold tracking-[-0.035em]"
-          >NIVELO<small class="mt-[5px] text-[0.45rem] leading-none font-semibold tracking-[0.3em]"
-            >GESTÃO DE SLA</small
-          ></span
-        ></a
-      >
-      <p class="text-[0.8125rem]">
+<footer class="isoline-footer overflow-clip bg-navy pt-14 pb-7 text-white">
+  <div class="page-frame mx-auto w-[calc(100%-40px)] max-w-[1500px] md:w-[calc(100%-8vw)]">
+    <div class="footer-top flex flex-wrap justify-between gap-6 text-[13px]">
+      <p class="text-on-navy">
         Chamados, prazos e evidências.<br />Todo o atendimento no mesmo lugar.
       </p>
-      <a
-        appLink="footer"
-        href="#inicio"
-        (click)="followAnchor('inicio')"
+      <a appLink="footer" href="#inicio" (click)="followAnchor('inicio')"
         >Voltar ao início<app-icon name="arrow"
       /></a>
     </div>
-    <div
-      class="mt-12 flex flex-col gap-2 border-t border-[#334b62] pt-[22px] sm:flex-row sm:justify-between sm:gap-6"
+    <a
+      href="#inicio"
+      class="footer-word my-8 block text-[25vw] leading-none font-semibold tracking-[-.04em] no-underline md:text-[clamp(110px,26vw,420px)]"
+      aria-label="Nivelo, voltar ao início"
+      (click)="followAnchor('inicio')"
+      >Nivelo</a
     >
-      <p class="text-[0.8125rem]">Projeto Integrador 2026.2</p>
-      <p class="text-[0.8125rem]">Plataforma em desenvolvimento</p>
+    <div class="footer-fine flex flex-wrap justify-between gap-6 text-[13px] text-on-navy">
+      <span>Projeto Integrador 2026.2</span><span>Plataforma em desenvolvimento</span>
     </div>
   </div>
 </footer>

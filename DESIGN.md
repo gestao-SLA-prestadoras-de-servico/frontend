@@ -23,32 +23,38 @@ colors:
 typography:
   display:
     fontFamily: 'Manrope, Arial, sans-serif'
-    fontSize: 'clamp(2.5rem, 5.1vw, 5rem)'
-    fontWeight: 700
-    lineHeight: 1.06
+    fontSize: 'clamp(3.2rem, 6vw, 6rem)'
+    fontWeight: 550
+    lineHeight: 1.01
     letterSpacing: '-0.04em'
   display-stacked:
     fontFamily: 'Manrope, Arial, sans-serif'
-    fontSize: 'clamp(2.5rem, 6.7vw, 4.5rem)'
-    fontWeight: 700
-    lineHeight: 1.06
+    fontSize: 'clamp(3rem, 7vw, 5.6rem)'
+    fontWeight: 550
+    lineHeight: 1.01
     letterSpacing: '-0.04em'
   display-mobile:
     fontFamily: 'Manrope, Arial, sans-serif'
-    fontSize: 'clamp(2rem, 8.7vw, 3.25rem)'
-    fontWeight: 700
-    lineHeight: 1.12
+    fontSize: 'clamp(2.3rem, 9.3vw, 3.6rem)'
+    fontWeight: 550
+    lineHeight: 1.01
     letterSpacing: '-0.04em'
   headline:
     fontFamily: 'Manrope, Arial, sans-serif'
-    fontSize: 'clamp(2rem, 3.65vw, 3.5rem)'
-    fontWeight: 700
-    lineHeight: 1.12
-    letterSpacing: '-0.04em'
+    fontSize: 'clamp(2.2rem, 4.5vw, 4.4rem)'
+    fontWeight: 550
+    lineHeight: 1.02
+    letterSpacing: '-0.035em'
+  headline-mobile:
+    fontFamily: 'Manrope, Arial, sans-serif'
+    fontSize: 'clamp(2.1rem, 8.5vw, 3.1rem)'
+    fontWeight: 550
+    lineHeight: 1.02
+    letterSpacing: '-0.035em'
   title:
     fontFamily: 'Manrope, Arial, sans-serif'
     fontSize: '1.25rem'
-    fontWeight: 700
+    fontWeight: 550
     lineHeight: 1.35
     letterSpacing: '-0.025em'
   body:
@@ -71,6 +77,11 @@ typography:
     fontSize: '0.75rem'
     fontWeight: 600
     lineHeight: 1.5
+  caption:
+    fontFamily: 'Manrope, Arial, sans-serif'
+    fontSize: '0.8125rem'
+    fontWeight: 400
+    lineHeight: 1.65
   preview-body:
     fontFamily: 'Manrope, Arial, sans-serif'
     fontSize: '0.875rem'
@@ -83,8 +94,8 @@ typography:
     lineHeight: 1.6
   role-action:
     fontFamily: 'Manrope, Arial, sans-serif'
-    fontSize: '1.375rem'
-    fontWeight: 700
+    fontSize: 'clamp(1.6rem, 2.8vw, 2.25rem)'
+    fontWeight: 550
     lineHeight: 1.35
     letterSpacing: '-0.025em'
   brand:
@@ -94,6 +105,7 @@ typography:
     lineHeight: 1.05
     letterSpacing: '-0.035em'
 rounded:
+  media: '4px'
   surface: '16px'
   control: '99px'
   deadline-list: '12px'
@@ -101,6 +113,7 @@ rounded:
   menu-top: '24px'
 spacing:
   section: 'clamp(72px, 8vw, 128px)'
+  landing-section: 'clamp(80px, 8vw, 128px)'
   button-block: '13px'
   button-inline: '23px'
   sheet: '24px'
@@ -125,8 +138,8 @@ components:
   button-secondary-hover:
     backgroundColor: '{colors.pri-bg}'
   development-label:
-    textColor: '{colors.pri-d}'
-    typography: '{typography.label}'
+    textColor: '{colors.ink2}'
+    typography: '{typography.caption}'
   ticket-status:
     backgroundColor: '{colors.pri-bg}'
     textColor: '{colors.pri-d}'
@@ -150,41 +163,41 @@ components:
 
 **Creative North Star: "Clareza para agir"**
 
-A Nivelo conecta prazos, atendimento e comprovação por uma linguagem clara e precisa. Manrope dá unidade aos títulos, à leitura e aos controles; o azul-noite estabelece estrutura, o azul corporativo sinaliza ações e a luz turquesa traz a assinatura óptica da marca. A identidade segue a escolha C — Faixa de luz, aprovada pelo usuário, com a composição da landing registrada no briefing da superfície.
+A Nivelo conecta prazos, atendimento e comprovação por uma linguagem clara e precisa. Manrope dá unidade aos títulos, à leitura e aos controles; o azul-noite estabelece estrutura, o azul corporativo sinaliza ações e o turquesa mantém a assinatura da marca. A identidade estabelecida na escolha C — Faixa de luz permanece. Em 31/10/2026, o usuário substituiu a composição A — Fluxo de luz pela referência Isoline, da 8B, com sua gravação como autoridade de movimento. A composição dessa landing pertence ao briefing da superfície; não determina o arranjo das futuras telas operacionais.
 
-Superfícies claras acolhem a informação mais densa. Divisórias, alinhamentos e texto explícito explicam a relação entre etapas e estados. Refração e movimento criam atmosfera sem carregar o conteúdo: títulos, ações e avisos continuam em HTML, legíveis sobre o fundo estático.
+Superfícies claras acolhem a informação densa. Contornos em camadas, figuras recortadas e faixas coloridas dão profundidade à apresentação; divisórias, alinhamentos e texto explícito explicam etapas e estados. Títulos, ações e avisos continuam em HTML. O movimento acompanha a rolagem nativa e tem apresentação estática equivalente.
 
-Este arquivo é a fonte da verdade visual da landing implementada. Os tokens estão em `@theme` de `src/styles.css`; os primitivos reutilizáveis ficam em `src/app/shared/ui/`, e os componentes específicos da landing em `src/app/features/landing/components/`. Templates e hosts usam utilitários Tailwind 4; somente gradientes do fundo e transições nativas do diálogo permanecem em CSS específico. O documento histórico `docs/DESIGN_SYSTEM.md` descreve a proposta de telas internas ainda não implementadas; ele não substitui estes tokens. A prancha de identidade fixa também o slate de marca, enquanto os textos de apoio atuais usam as variantes legíveis extraídas acima.
+Este arquivo registra o sistema da landing implementada. A paleta e os primitivos globais estão em `src/styles.css`; `landing-chapters.css` mantém a base compartilhada e `isoline.css`, importado depois, define a composição e as substituições atuais de tipo, largura e forma. Os componentes reutilizáveis ficam em `src/app/shared/ui/` e os capítulos em `src/app/features/landing/components/`. O documento `docs/DESIGN_SYSTEM.md` descreve o protótipo histórico das telas internas ainda não implementadas. A referência atual, suas atribuições e evidências estão em `docs/ISOLINE_REFERENCE.md`; os registros de Fluxo de luz e do refinamento anterior de movimento permanecem como histórico.
 
 **Key Characteristics:**
 
 - Manrope local em todos os papéis, com algarismos tabulares para prazos e identificadores.
-- Azul-noite estrutural, azul de ação e turquesa luminoso associado ao símbolo.
-- Controles em cápsula, superfícies arredondadas e grupos abertos separados por linhas.
+- Azul-noite estrutural, azul de ação, turquesa e verde operacional em camadas.
+- Controles em cápsula, mídia com cantos discretos e grupos abertos separados por linhas.
 - Informação operacional acompanhada de rótulos, contexto e identificação dos exemplos.
-- Movimento discreto, opcional e substituível pela composição estática.
+- Movimento reversível de rolagem, opcional e substituível pela composição estática.
 
 ## Colors
 
-A paleta combina a profundidade do azul-noite com azuis claros de apoio e verde operacional. Os nomes abaixo correspondem às chaves normativas do frontmatter e às variáveis Tailwind `--color-*`: por exemplo, `pri` corresponde a `--color-pri`, consumido por `bg-pri`, `text-pri` e `border-pri`.
+A paleta preserva os tons da identidade Nivelo. As chaves do frontmatter correspondem às variáveis Tailwind `--color-*`; por exemplo, `pri` é consumido por `bg-pri`, `text-pri` e `border-pri`.
 
 ### Primary
 
-- **Azul corporativo (`pri`)**: ações principais, ícones, destaques de títulos e indicadores ativos. `pri-d` é a variante de hover e de texto sobre `pri-bg`.
-- **Azul informativo (`pri-bg`)**: estado amigável do chamado, prazo em andamento e feedback suave do botão secundário.
+- **Azul corporativo (`pri`)**: ações principais, seleção de perfil e camadas dos contornos. `pri-d` atende ao hover, ao texto sobre azul suave e ao painel amplo de benefícios.
+- **Azul informativo (`pri-bg`)**: estados do chamado, fundo da simulação local e apoio dos recortes de pessoas.
 
 ### Secondary
 
-- **Turquesa do símbolo (`turquoise`)**: ponto de disponibilidade e luz da composição. O ciano luminoso (`cyan`) destaca títulos sobre azul-noite e o foco no hero.
-- **Verde operacional (`operational`)**: cor da identidade. Os componentes de prazo cumprido usam o verde mais escuro (`grn`), o fundo (`grn-bg`) e o texto (`grn-t`) para manter leitura em tamanho pequeno.
+- **Turquesa do símbolo (`turquoise`) e ciano luminoso (`cyan`)**: assinatura da marca e camadas claras dos contornos.
+- **Verde operacional (`operational`)**: camadas de arte. Prazos cumpridos usam o verde escuro (`grn`), seu fundo (`grn-bg`) e texto (`grn-t`) para leitura pequena; faixas amplas também usam o verde escuro.
 
 ### Neutral
 
-- **Azul-noite (`navy` / `ink`)**: estrutura escura, títulos e texto principal.
-- **Branco (`sf`) e off-white (`bg`)**: superfícies de leitura e alternância entre seções.
-- **Apoio (`ink2`) e metadados (`ink3`)**: descrições, contexto, horários e legendas.
-- **Divisórias (`line`) e bordas de controle (`line2`)**: delimitam grupos sem elevar cada item a um cartão.
-- **Apoio sobre azul-noite (`on-navy`)**: descrições do fluxo e informações do rodapé.
+- **Azul-noite (`navy` / `ink`)**: títulos, texto principal, camadas profundas e rodapé.
+- **Branco (`sf`) e off-white (`bg`)**: superfícies e alternância de capítulos. O campo dos cartazes tem um tom local de apoio, sem ampliar a paleta normativa da marca.
+- **Apoio (`ink2`) e metadados (`ink3`)**: descrições, horários, ressalvas e identificação das imagens.
+- **Divisórias (`line`) e bordas (`line2`)**: grupos de informação, tabela contratual e controles.
+- **Apoio sobre azul-noite (`on-navy`)**: informação secundária do rodapé.
 
 **The Estado Legível Rule.** Todo estado tem rótulo textual. O turquesa luminoso e o verde da prancha não substituem as variantes escuras de texto em superfícies claras.
 
@@ -193,72 +206,85 @@ A paleta combina a profundidade do azul-noite com azuis claros de apoio e verde 
 **Display Font:** Manrope, com Arial e sans-serif de fallback.
 **Body Font:** Manrope, na mesma pilha.
 
-O arquivo variável local oferece pesos de 400 a 800, com `font-display: swap`. Não há chamada externa de fonte em runtime. Números e identificadores mantêm Manrope com `tabular-nums` e `font-semibold`; a antiga classe `mono` foi removida. `--font-sans` e `--font-mono` preservam a mesma pilha da marca.
+A fonte variável local oferece pesos de 400 a 800, com `font-display: swap`, sem chamada externa em runtime. A referência atual usa peso intermediário (550) nos títulos amplos, conservando os controles em semibold. Números e identificadores usam algarismos tabulares; `--font-sans` e `--font-mono` mantêm a mesma família.
 
-- **Display**: título principal amplo e compacto. Usa `display-mobile` como base, `display-stacked` a partir de `sm` (640 px), `4.7vw` a partir de `lg` (1024 px) e `display` em `xl` (1280 px).
-- **Headline**: títulos de seção com variações próprias em benefícios, perfis e encerramento. Abaixo de `sm`, o título genérico usa `clamp(1.85rem, 7.5vw, 2.5rem)`.
-- **Title**: títulos de grupo; benefícios e capacidades usam a variação de `1.1875rem`.
-- **Body / lead**: leitura principal e aberturas; o lead genérico limita a linha a 65 caracteres, com `1rem` como base e `1.0625rem` a partir de `sm`.
-- **Action / label**: controles e informação de desenvolvimento. As ações da hero usam 14 px; avisos de desenvolvimento, legendas dos três prazos e metadados da barra do exemplo usam pelo menos 12 px, inclusive no celular. O mínimo de toque permanece separado do tamanho da letra.
-- **Preview body / meta**: conteúdo e metadados do exemplo de chamado, mantidos legíveis quando as colunas empilham.
+- **Display / display-stacked / display-mobile**: os três valores do frontmatter descrevem a abertura atual em desktop, tablet e abaixo de 768 px. A entrelinha compacta e o tracking negativo aproximam a composição da referência. Em telas de até 600 px de altura e largura a partir de 768 px, o título usa 36 px.
+- **Headline / headline-mobile**: base dos títulos dentro de `main`, com mudança em 768 px. Benefícios, histórico e outros capítulos têm ajustes locais de escala conforme o papel da composição; não são novos padrões globais.
+- **Title / role-action**: títulos de grupo e título da simulação de perfil. Os títulos de cartaz e de registro usam escalas locais maiores.
+- **Body / lead**: leitura principal e abertura dos capítulos. O lead mantém entrelinha de 1,75 e passa de 17 para 16 px abaixo de 768 px. A descrição da abertura usa 19 px com entrelinha de 1,55, reduzida para 16 px no celular.
+- **Action / label / caption**: controles, rótulos informativos e legendas. O aviso da abertura usa 13 px, ou 12 px no celular; os rótulos dos recortes e da pequena janela de vídeo são específicos desses ativos, sem criar uma escala geral menor.
+- **Preview body / meta**: leitura e metadados do exemplo ilustrativo. O chamado usa `caption` nos metadados e mantém os estados acompanhados de texto.
+- **Brand**: NIVELO e seu descritor no cabeçalho preservado. A palavra ampla do rodapé é uma composição local, não uma nova marca gráfica.
 
 **The Uma Família Rule.** Usar Manrope para manter a identidade. Não restaurar IBM Plex a partir do protótipo histórico.
 
 ## Layout
 
-A largura de conteúdo tem máximo de 1440 px e recuos de 20 px por lado como base, 32 px a partir de `sm` (640 px) e 56 px a partir de `xl` (1280 px). A separação principal entre seções usa `--spacing-section`, com utilitários como `py-section` e `mt-section`.
+A largura atual dos capítulos é `calc(100% - 8vw)`, limitada a 1500 px, com centralização automática. Abaixo de 768 px, o recuo é de 20 px por lado. O espaçamento vertical da landing usa `landing-section`; abaixo de 768 px, os capítulos usam 76 px. A base compartilhada anterior permanece no CSS, mas as regras posteriores de `isoline.css` determinam esses valores atuais.
 
-Grupos abertos e divisórias organizam benefícios, capacidades e perfis. A demonstração de chamado concentra a densidade dentro de uma superfície própria; textos de contexto permanecem próximos dela. A hierarquia não depende de cartões repetidos em toda a página.
+A abertura combina texto à esquerda, figura recortada e contornos à direita. A arte tem uma moldura sticky de `100svh`, com mínimo de 740 px no desktop e 800 px no tablet. No celular, a figura ocupa a parte superior e o conteúdo fica abaixo; a abertura cresce conforme a leitura exigir. Telas de até 600 px de altura têm composição própria, com ações lado a lado. A navbar e o menu conservam a implementação anterior, com navegação desktop a partir de 1024 px.
 
-A navegação desktop e as composições amplas entram em `lg` (1024 px). O fluxo usa uma coluna como base, duas em `sm` e quatro em `lg`. Benefícios, capacidades, perfis e FAQ usam uma coluna abaixo de `sm`. Abaixo de 400 px, as linhas de prazo do exemplo empilham o estado sob a descrição. Até 360 px, as ações do hero se empilham. Em `2xl` (1536 px), o respiro inferior do hero passa de 32 para 52 px. A composição específica do primeiro viewport e a referência aprovada estão em `.impeccable/surfaces/src-app-app-html.md`.
+Cartazes, retratos e fotografias usam deslocamentos graduais entre itens no desktop. Os cartazes passam a uma coluna abaixo de 768 px, alternando a posição lateral; os retratos viram linhas de arte e texto. As evidências mantêm a escada no celular, com fotografias maiores e recuos de 2%, 4% e 6%; a última fotografia usa toda a largura do degrau em formato 2:1. Abaixo de 360 px, foto e texto empilham para preservar a leitura. As cordas das evidências usam 36 px, espaço próprio acima das fotos e subida de entrada limitada a 24 px no celular e em paisagem baixa. O histórico combina mostrador sticky e lista no desktop. Abaixo de 768 px, ou até 1023 px em telas de até 600 px de altura, o mostrador fica no fluxo normal da seção, sem sticky: uma área quadrada de até 320 px, limitada à largura disponível, mantém o círculo inteiro e sem recorte. A tabela contratual mantém três colunas em telas amplas e empilha as células no celular. A plataforma passa a uma coluna abaixo de 1024 px. As três abas de perfil continuam visíveis; seu painel empilha abaixo de 768 px. O chamado conserva ajustes próprios em 640 e 400 px.
 
-A altura mínima da hero considera também `100svh`, sem limitar o crescimento necessário ao conteúdo. Em telas de até 700 px de altura, os recuos verticais e os intervalos diminuem para manter título, descrição e ações visíveis. Entre `sm` e `lg`, com até 500 px de altura, título e apoio ficam lado a lado. Esses tratamentos usam variantes arbitrárias de mídia nos templates. A ordem das seções permanece a mesma; benefícios, fluxo e capacidades usam descrições concisas, sem repetir os problemas em uma segunda legenda.
+Na seção do fluxo, abaixo de 768 px ou em paisagem até 1023 × 600 px, as faixas animadas se encontram em duas metades de 50% e cobrem os textos inicialmente. Cada par se afasta para as bordas conforme sua própria posição no viewport, revelando a etapa antes de chegar à região central; a subida reverte o movimento. Sem a camada animada ou com movimento reduzido, as faixas permanecem nas bordas e o texto fica visível. A composição desktop mantém o comportamento anterior.
+
+O movimento expande os contornos da abertura, recua figura e texto, faz os cartazes descerem e oscilarem, muda as camadas e cores do mostrador, abre doze faixas do fluxo e altera as faixas de prazos. As entradas usam 800 ms para partes, 900 ms para títulos, 1100 ms para máscaras de imagem e defasagem de 70 ms, limitada a 280 ms. A rolagem contínua é reversível e não captura a roda do mouse. O driver compartilha observação, listener passivo e lote por frame fora da atualização Angular; a geometria vem de molduras estáveis. A inicialização após hidratação, a limpeza e os fallbacks preservam o HTML legível. Foco encerra entradas pendentes e movimento reduzido apresenta a arte estática. Valores e limites de verificação estão em `docs/ISOLINE_REFERENCE.md`.
 
 ## Elevation & Depth
 
-A página usa principalmente contraste tonal e bordas finas. A cápsula de navegação recebe sombra suave; diálogo e menu móvel usam a sombra de overlay. O exemplo de chamado permanece plano, com borda. O token CSS `shadow-preview` existe, mas não é aplicado à superfície atual.
+A profundidade vem principalmente dos contornos SVG sobrepostos, recortes de pessoas e campos tonais. As geometrias de Isoline foram adaptadas sob licença MIT, com atribuição preservada. São arte da apresentação, separada do símbolo obrigatório da Nivelo.
 
-A hero usa o vídeo fornecido pelo usuário como fundo decorativo em um player HTML nativo. O MP4 de 1280 × 720, 24 fps e 8,5 s tem uma mistura suave de 1,5 s entre o final e o início para repetir sem corte. O vídeo fica sem áudio, preenche a área com `object-fit: cover` e mantém o gradiente escuro para leitura, reforçado na região do texto no celular e em telas baixas. O poster WebP corresponde ao primeiro quadro e permanece visível até a reprodução começar, com movimento reduzido ou quando o vídeo não puder tocar. A reprodução inicia após a hidratação, pausa fora da tela e em aba oculta e libera os recursos ao desmontar. A entrada do vídeo usa uma transição de opacidade de 0,6 s.
+A navegação conserva `shadow-header`; diálogo e menu usam `shadow-dialog`. A janela do chamado e a moldura do navegador de celular usam `shadow-preview`. Cartazes e fotografias têm sombras locais discretas para sugerir impressos suspensos: respectivamente `0 14px 24px -16px rgb(16 36 58 / 38%)` e `0 16px 24px -18px rgb(16 36 58 / 40%)`. Esses recortes não transformam todos os grupos em cartões elevados.
+
+O vídeo de luz existente ocupa agora uma pequena janela na abertura, com poster e fallbacks preservados. Não é mais o fundo amplo da página. Continua decorativo, sem áudio, com reprodução após hidratação, pausa fora da tela ou em aba oculta e liberação ao desmontar. Pessoas geradas por IA e a cena de manutenção permanecem identificadas como ilustrativas, sem representar equipe, clientes ou atendimentos reais.
 
 ## Shapes
 
-Controles principais e navegação têm contorno de cápsula. O exemplo de chamado e o diálogo usam o raio de superfície. O menu móvel tem apenas os cantos superiores arredondados e se apoia na borda inferior da tela. Indicadores circulares conectam etapas; divisórias finas fazem a estrutura aparecer sem contornos pesados.
+A navegação e os controles principais preservam a cápsula. A janela externa da plataforma, a simulação de perfil e a janela de vídeo usam cantos discretos (`media`); o chamado e o diálogo mantêm `surface`. As abas de perfil são retas e delimitadas por uma linha inferior. A moldura do celular usa raio de 24 px e borda de 5 px. Cartazes e fotografias são retangulares, com pequenos prendedores; contornos fechados e contornos em linha formam a assinatura visual desta composição.
 
-O símbolo obrigatório é o check em camadas fornecido na primeira imagem do usuário, vetorizado em `public/images/nivelo-symbol.svg`. Preservar geometria, proporção e suas três cores. O símbolo diferente que aparece na prancha de identidade não é a marca adotada. O logotipo combina este SVG com o nome NIVELO em texto e o descritor GESTÃO DE SLA.
+O símbolo obrigatório é o check em camadas da primeira imagem do usuário, vetorizado em `public/images/nivelo-symbol.svg`. Preservar geometria, proporção e suas três cores. O símbolo diferente da prancha não é a marca adotada. O logotipo combina o SVG com NIVELO em texto e o descritor GESTÃO DE SLA.
 
 ## Components
 
 ### Buttons
 
-Botões nativos `<a>` e `<button>` usam as diretivas `appButton`, `appButtonPrimary` e `appButtonSecondary` de `src/app/shared/ui/button/`. A base concentra alinhamento, espaçamento interno entre conteúdo, forma em cápsula, tipografia e transição de cor; classes Tailwind locais ajustam altura, padding e largura para cada contexto. A altura mínima padrão é 50 px, a do cabeçalho é 44 px e a ação do hero começa em 48 px.
+As diretivas `appButton`, `appButtonPrimary` e `appButtonSecondary` mantêm cápsula, alinhamento, peso e transição de cor. A altura mínima das ações principais é 50 px; no cabeçalho, 44 px. Padding é ajustado por contexto. A variante primária usa azul corporativo e branco; a secundária usa texto azul-noite e borda `line2`, com azul suave no hover. A variante inversa continua disponível no primitivo, mas a abertura clara usa a padrão.
 
-A variante primária usa o azul corporativo e branco. A secundária usa fundo transparente, texto azul-noite e borda `line2`, com fundo azul-claro no hover. No hero escuro, `appButtonSecondary="inverse"` usa texto branco, borda clara e hover branco translúcido.
-
-Hover e foco deslizam uma cópia visual do rótulo e giram a seta em 45 graus durante 450 ms, preservando uma única identificação acessível. O modo de movimento reduzido elimina esses deslocamentos. O foco global usa contorno de 3 px com offset de 5 px; sobre o hero ele usa ciano.
+Hover e foco deslizam uma cópia decorativa do rótulo e giram a seta em 45 graus durante 450 ms, mantendo uma única identificação acessível. A resposta de pressão usa escala de 0,97 por 140 ms. Movimento reduzido elimina esses deslocamentos. O foco global tem contorno de 3 px e offset de 5 px.
 
 ### Navigation
 
-Os links de navegação da landing usam a diretiva `appLink` de `src/app/shared/ui/link/`: a variante padrão atende à navegação desktop, `appLink="menu"` às âncoras do menu móvel e `appLink="footer"` ao retorno ao início no rodapé. A navegação desktop vive na cápsula branca fixa e usa âncoras com área mínima de 44 px. No celular, um botão identificado abre um `dialog` nativo em formato de folha inferior, com links de pelo menos 56 px, fechamento, Escape, foco contido e retorno ao acionador. Selecionar uma seção fecha o menu e leva o foco ao destino.
-
-### Section Headings
-
-As diretivas `appSectionHeading="responsive"`, `appSectionHeading="inverse"` e `appSectionHeading="prominent"` aplicam as variantes tipográficas diretamente em `<h2>`, mantendo o nível do título e o identificador usado por `aria-labelledby`.
+A cápsula branca fixa preserva símbolo, texto e âncoras. Links desktop têm área mínima de 44 px. Abaixo de 1024 px, o botão abre um `dialog` nativo como folha inferior, com links de pelo menos 56 px, Escape, foco contido e retorno ao acionador. Selecionar uma âncora fecha o menu e leva o foco ao destino.
 
 ### Labels and Status
 
-O aviso de desenvolvimento é informativo e tem ponto acompanhado de texto. O estado do chamado usa azul suave com texto azul escuro. Prazos cumpridos recebem o par verde de fundo e texto; o prazo em andamento usa o par azul. Esses estados descrevem dados fictícios, não uma operação em tempo real.
+Disponibilidade e exemplos são avisos informativos. O chamado usa azul suave com texto escuro; prazos cumpridos usam o par verde e o prazo em andamento usa azul. As faixas amplas da plataforma reiteram os três prazos com rótulos e estados. Cor nunca substitui o texto. Rótulos pontuais da composição não criam um padrão obrigatório de sobrancelha decorativa para futuras superfícies.
 
 ### Cards and Containers
 
-Os grupos abertos de benefícios, funcionalidades e perfis usam a diretiva `appCard` em seus `<article>`, com as variantes `benefit`, `feature` e `role` preservando as bordas e os espaçamentos próprios de cada grupo. O chamado ilustrativo usa fundo branco, borda, raio de superfície e padding de 24 px, reduzido para 16 px abaixo de `sm`. Evidências e histórico dividem a área em duas colunas a partir de `sm`. Não há campos de formulário nesta entrega.
+O chamado tem fundo branco, borda, raio de superfície e padding de 24 px, reduzido para 16 px abaixo de 640 px. Sua janela externa tem cantos de 4 px. Evidências e histórico internos dividem duas colunas a partir de 640 px. A tabela de contratos relaciona contrato, chamado, compromissos, histórico e evidências; não apresenta preços. Não há campos de formulário nesta entrega.
+
+A diretiva compartilhada `appCard` reúne os padrões de apresentação da composição atual: `benefit` organiza o bloco editorial de benefícios; `feature` define a hierarquia de título e descrição das funcionalidades; `role` organiza os retratos e seus recuos responsivos. A diretiva se aplica aos elementos existentes (`div`, `p` e `figure`), mantendo sua semântica e os identificadores usados pelo movimento. As variantes usam utilitários Tailwind e não acrescentam contêineres ao DOM.
+
+### Section Headings
+
+Os 11 títulos dos capítulos usam `appSectionHeading`. A variante padrão `responsive` centraliza a escala móvel/desktop; `statement` conserva o destaque branco dos benefícios; `history` preserva a escala específica do histórico. Entrelinha, peso 550 e tracking são compartilhados. Restrições locais de medida, como a largura do título de acesso móvel, permanecem no template. Títulos do hero, diálogo e chamado têm papéis próprios e conservam seus estilos específicos.
+
+### Role Tabs
+
+Gestor, Técnico e Cliente têm retratos ilustrativos seguidos de três abas. A seleção usa azul corporativo com texto branco; as demais opções têm fundo transparente e feedback suave no hover. Setas, Home e End mudam aba e foco. Cada painel identifica sua aba e anuncia o resultado local; simular e reiniciar não persistem dados nem enviam arquivos.
+
+### Contours and Suspended Prints
+
+Contornos SVG decorativos, sem captura de ponteiro, aparecem na abertura, no mostrador, nos recortes de perfis e no encerramento. Cartazes de resposta, atendimento em campo e resolução mostram todos os compromissos em HTML e acompanham a rolagem com queda e balanço. A antiga cena de linha de progresso de `180svh` foi substituída. Movimento reduzido e ausência das APIs mantêm cartazes e textos disponíveis.
 
 ### Availability Dialog
 
-Um `dialog` nativo, centralizado, com largura máxima de 460 px e recuo lateral mínimo de 20 px. Recebe foco no botão Entendi, contém Tab, fecha por botão ou Escape e devolve o foco ao acionador. Explica a indisponibilidade atual; não realiza autenticação nem coleta dados.
+Um `dialog` nativo centralizado, com largura máxima de 460 px e recuo lateral mínimo de 20 px. Recebe foco no botão Entendi, contém Tab, fecha por botão ou Escape e devolve o foco ao acionador. Explica a indisponibilidade atual, sem autenticação ou coleta de dados.
 
 ### FAQ
 
-Seis disclosures nativos em `details` e `summary`, com separadores, área mínima de 72 px e símbolo de mais que gira quando aberto. Permanecem operáveis por teclado; a rotação não é animada com movimento reduzido.
+Seis disclosures nativos em `details` e `summary`, com separadores, área mínima de 72 px e símbolo de mais que gira quando aberto. Permanecem operáveis por teclado; movimento reduzido elimina a rotação animada.
 
 ## Do's and Don'ts
 

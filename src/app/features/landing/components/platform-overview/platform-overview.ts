@@ -1,47 +1,36 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ProductPreview } from '../product-preview/product-preview';
-import { Icon, IconName } from '../icon/icon';
 import { Card } from '../../../../shared/ui/card';
 import { SectionHeading } from '../../../../shared/ui/section-heading';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ProductPreview } from '../product-preview/product-preview';
+import { Reveal } from '../../reveal.directive';
+import { ScrollMotion } from '../../scroll-motion.directive';
 
 @Component({
   selector: 'app-platform-overview',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ProductPreview, Icon, Card, SectionHeading],
+  imports: [SectionHeading, Card, ScrollMotion, ProductPreview, Reveal],
   templateUrl: './platform-overview.html',
   host: { class: 'block' },
 })
 export class PlatformOverview {
-  protected readonly featureIcons: IconName[] = ['file', 'camera', 'history'];
-  protected readonly features = [
+  protected readonly statuses = [
     {
-      title: 'Contratos e chamados',
-      description: 'Demandas vinculadas ao contrato, com prazos e responsáveis definidos.',
+      mark: 'Resposta',
+      title: 'O primeiro retorno.',
+      description: 'Primeiro posicionamento da prestadora ao cliente.',
+      state: 'Cumprido',
     },
     {
-      title: 'Prazos e evidências',
-      description: 'Três prazos acompanhados separadamente, com fotos do serviço no chamado.',
+      mark: 'Em campo',
+      title: 'O serviço começa.',
+      description: 'Início do atendimento técnico no local.',
+      state: 'Cumprido',
     },
     {
-      title: 'Notificações, relatórios e histórico',
-      description: 'Avisos dos chamados, relatórios e ações registradas com data e responsável.',
-    },
-  ];
-  protected readonly roles = [
-    {
-      name: 'Gestor',
-      action: 'Organiza e acompanha.',
-      description: 'Define contratos, distribui demandas e consulta prazos e resultados.',
-    },
-    {
-      name: 'Técnico',
-      action: 'Executa e comprova.',
-      description: 'Atende chamados atribuídos e registra o serviço com fotos.',
-    },
-    {
-      name: 'Cliente',
-      action: 'Solicita e valida.',
-      description: 'Abre chamados, acompanha o andamento e valida a solução.',
+      mark: 'Resolução',
+      title: 'A solução em contexto.',
+      description: 'A solução será apresentada com os registros do serviço.',
+      state: 'Em andamento',
     },
   ];
 }

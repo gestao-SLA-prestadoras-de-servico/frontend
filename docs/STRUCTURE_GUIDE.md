@@ -241,14 +241,12 @@ features/
     │   ├── action-label/
     │   │   └── action-label.ts
     │   ├── availability-dialog/
-    │   │   ├── availability-dialog.css
     │   │   ├── availability-dialog.html
     │   │   └── availability-dialog.ts
     │   ├── faq/
     │   │   ├── faq.html
     │   │   └── faq.ts
     │   ├── hero-background/
-    │   │   ├── hero-background.css
     │   │   ├── hero-background.html
     │   │   ├── hero-background.spec.ts
     │   │   └── hero-background.ts
@@ -267,7 +265,7 @@ features/
 
 Os componentes utilizados pela landing ficam agrupados em `components/`, mantendo os arquivos da página no nível principal da feature.
 
-Na landing, `src/styles.css` expõe os tokens Tailwind 4 em `@theme` e os padrões de documento em `@layer base`. Layout, responsividade, estados e tipografia ficam nos utilitários dos templates e hosts. Apenas `hero-background.css` (gradientes) e `availability-dialog.css` (transições nativas de abertura/fechamento) permanecem como estilos específicos; não é necessário criar CSS para cada componente. Navegação desktop e composições amplas usam `lg` (1024 px), em conjunto com os breakpoints padrão do Tailwind.
+Na landing, `src/styles.css` expõe os tokens Tailwind 4 em `@theme` e os padrões de documento em `@layer base`. Layout, responsividade, estados, pseudoelementos e tipografia ficam nos utilitários dos templates e hosts. Não há arquivos CSS de componente. Os gradientes do vídeo são tokens `--background-image-*` e as transições nativas do diálogo usam variantes Tailwind. Os capítulos usam `md` (768 px); navegação desktop e composições amplas usam `lg` (1024 px). Variantes de altura e de largura de conteúdo tratam os casos estreitos sem folhas de media queries paralelas.
 
 ### 3.1 O que pertence a uma feature?
 

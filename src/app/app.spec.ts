@@ -23,7 +23,9 @@ describe('App', () => {
     const page = fixture.nativeElement as HTMLElement;
     expect(page.querySelector('h1')?.textContent).toContain('Prazos sob controle.');
     expect(page.querySelector('h1')?.textContent).toContain('Atendimento comprovado.');
-    expect(page.querySelector('figcaption')?.textContent).toContain('Demonstração ilustrativa');
+    expect(page.querySelector('app-product-preview')?.textContent).toContain(
+      'Demonstração ilustrativa',
+    );
     expect(page.querySelectorAll('details')).toHaveLength(6);
   });
 });

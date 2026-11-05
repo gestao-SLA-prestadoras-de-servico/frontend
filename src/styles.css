@@ -24,6 +24,7 @@
   --color-line: #dce4ee;
   --color-line2: #c5d1e0;
   --color-on-navy: #bbccdf;
+  --color-poster: #e4ebf3;
   --color-grn: #087a69;
   --color-grn-bg: #e5f6f0;
   --color-grn-t: #066c5b;
@@ -37,7 +38,28 @@
   --shadow-header: 0 8px 28px rgb(4 16 38 / 8%);
   --shadow-preview: 0 24px 64px rgb(16 36 58 / 9%);
   --shadow-dialog: 0 24px 80px rgb(4 16 38 / 26%);
-  --spacing-section: clamp(72px, 8vw, 128px);
+  --shadow-poster: 0 14px 24px -16px rgb(16 36 58 / 38%);
+  --shadow-record: 0 16px 24px -18px rgb(16 36 58 / 40%);
+  --background-image-hero-shade: linear-gradient(
+    180deg,
+    rgb(4 16 38 / 3%) 22%,
+    rgb(4 16 38 / 46%) 48%,
+    #06162de8 100%
+  );
+  --background-image-hero-shade-mobile: linear-gradient(
+    180deg,
+    rgb(4 16 38 / 3%) 12%,
+    rgb(4 16 38 / 65%) 48%,
+    #06162de8 100%
+  );
+  --background-image-hero-shade-low: linear-gradient(
+    180deg,
+    rgb(4 16 38 / 12%),
+    rgb(4 16 38 / 65%) 22%,
+    rgb(4 16 38 / 78%) 65%,
+    #06162de8 100%
+  );
+  --spacing-section: clamp(80px, 8vw, 128px);
   --spacing-button-block: 13px;
   --spacing-button-inline: 23px;
   --spacing-sheet: 24px;
@@ -50,6 +72,8 @@
   --text-headline: clamp(2rem, 3.65vw, 3.5rem);
   --text-headline-mobile: clamp(1.85rem, 7.5vw, 2.5rem);
   --text-lead: 1.0625rem;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.65;
   --text-xs--line-height: 1.65;
   --text-sm--line-height: 1.65;
   --text-base--line-height: 1.65;
@@ -76,6 +100,11 @@
     --motion-overlay-out: 160ms;
     --motion-label: 450ms;
     --motion-video: 600ms;
+    --motion-reveal: 800ms;
+    --motion-line: 900ms;
+    --motion-image: 1100ms;
+    --motion-stagger: 70ms;
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
     color-scheme: light;
   }
 
