@@ -52,6 +52,102 @@ test('client list fits phone, tablet and desktop', async ({ page }) => {
   }
 });
 
+test('all client states and priorities have distinct WCAG AA badge colors', async ({ page }) => {
+  await gotoAndWaitForHydration(page, '/app/cliente');
+  const statusTones = await page
+    .locator('app-client-status .client-badge')
+    .first()
+    .evaluate((reference) => {
+      const samples = [
+        ['Aberto', 'client-status--open'],
+        ['Atribuído', 'client-status--assigned'],
+        ['Em atendimento', 'client-status--progress'],
+        ['Aguardando validação', 'client-status--validation'],
+        ['Encerrado', 'client-status--closed'],
+      ] as const;
+      const parent = reference.parentElement!;
+      const luminance = (value: string) => {
+        const channels = value
+          .match(/[\d.]+/g)!
+          .slice(0, 3)
+          .map(Number)
+          .map((channel) => {
+            const srgb = channel / 255;
+            return srgb <= 0.04045 ? srgb / 12.92 : ((srgb + 0.055) / 1.055) ** 2.4;
+          });
+        return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+      };
+      return samples.map(([label, tone]) => {
+        const sample = reference.cloneNode(true) as HTMLElement;
+        sample.className = `client-badge ${tone}`;
+        sample.textContent = label;
+        parent.append(sample);
+        const styles = getComputedStyle(sample);
+        const background = luminance(styles.backgroundColor);
+        const foreground = luminance(styles.color);
+        const contrast =
+          (Math.max(background, foreground) + 0.05) / (Math.min(background, foreground) + 0.05);
+        const result = { label, background: styles.backgroundColor, contrast };
+        sample.remove();
+        return result;
+      });
+    });
+  const priorityTones = await page
+    .locator('app-client-priority .client-badge')
+    .first()
+    .evaluate((reference) => {
+      const samples = [
+        ['Baixa', 'client-priority--low'],
+        ['Normal', 'client-priority--normal'],
+        ['Alta', 'client-priority--high'],
+        ['Crítica', 'client-priority--critical'],
+      ] as const;
+      const parent = reference.parentElement!;
+      const luminance = (value: string) => {
+        const channels = value
+          .match(/[\d.]+/g)!
+          .slice(0, 3)
+          .map(Number)
+          .map((channel) => {
+            const srgb = channel / 255;
+            return srgb <= 0.04045 ? srgb / 12.92 : ((srgb + 0.055) / 1.055) ** 2.4;
+          });
+        return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+      };
+      return samples.map(([label, tone]) => {
+        const sample = reference.cloneNode(true) as HTMLElement;
+        sample.className = `client-badge ${tone}`;
+        sample.textContent = label;
+        parent.append(sample);
+        const styles = getComputedStyle(sample);
+        const background = luminance(styles.backgroundColor);
+        const foreground = luminance(styles.color);
+        const contrast =
+          (Math.max(background, foreground) + 0.05) / (Math.min(background, foreground) + 0.05);
+        const result = { label, background: styles.backgroundColor, contrast };
+        sample.remove();
+        return result;
+      });
+    });
+  expect(statusTones.map((tone) => tone.label)).toEqual([
+    'Aberto',
+    'Atribuído',
+    'Em atendimento',
+    'Aguardando validação',
+    'Encerrado',
+  ]);
+  expect(new Set(statusTones.map((tone) => tone.background)).size).toBe(5);
+  expect(statusTones.every((tone) => tone.contrast >= 4.5)).toBe(true);
+  expect(priorityTones.map((tone) => tone.label)).toEqual(['Baixa', 'Normal', 'Alta', 'Crítica']);
+  expect(new Set(priorityTones.map((tone) => tone.background)).size).toBe(4);
+  expect(priorityTones.every((tone) => tone.contrast >= 4.5)).toBe(true);
+
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.screenshot({ path: `tmp/client-review/list-colors-${width}.png`, fullPage: true });
+  }
+});
+
 test('opening a ticket validates fields and blocks unavailable contracts', async ({ page }) => {
   await gotoAndWaitForHydration(page, '/app/cliente/novo-chamado');
   await page.getByRole('button', { name: 'Enviar solicitação' }).click();

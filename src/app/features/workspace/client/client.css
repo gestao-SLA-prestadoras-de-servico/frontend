@@ -1,6 +1,24 @@
 :host {
   display: block;
   min-width: 0;
+  --client-status-open-bg: #edf1f5;
+  --client-status-open-ink: #405368;
+  --client-status-assigned-bg: var(--color-pri-bg);
+  --client-status-assigned-ink: var(--color-pri-d);
+  --client-status-progress-bg: #d8f1f2;
+  --client-status-progress-ink: #005b63;
+  --client-status-validation-bg: #fff1d6;
+  --client-status-validation-ink: #754500;
+  --client-status-closed-bg: var(--color-grn-bg);
+  --client-status-closed-ink: var(--color-grn-t);
+  --client-priority-low-bg: #e7f3eb;
+  --client-priority-low-ink: #315a3e;
+  --client-priority-normal-bg: #eef1f5;
+  --client-priority-normal-ink: #46576b;
+  --client-priority-high-bg: #fff0d6;
+  --client-priority-high-ink: #754400;
+  --client-priority-critical-bg: var(--color-danger-bg);
+  --client-priority-critical-ink: var(--color-danger);
 }
 .client-title {
   font-size: 1.75rem;
@@ -134,6 +152,53 @@
 }
 .client-success:focus {
   outline: none;
+}
+/* Badge styles cross the tiny status and priority components, scoped to Client pages. */
+:host ::ng-deep .client-badge {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  border-radius: var(--radius-status);
+  padding: 3px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+:host ::ng-deep .client-status--open {
+  background: var(--client-status-open-bg);
+  color: var(--client-status-open-ink);
+}
+:host ::ng-deep .client-status--assigned {
+  background: var(--client-status-assigned-bg);
+  color: var(--client-status-assigned-ink);
+}
+:host ::ng-deep .client-status--progress {
+  background: var(--client-status-progress-bg);
+  color: var(--client-status-progress-ink);
+}
+:host ::ng-deep .client-status--validation {
+  background: var(--client-status-validation-bg);
+  color: var(--client-status-validation-ink);
+}
+:host ::ng-deep .client-status--closed {
+  background: var(--client-status-closed-bg);
+  color: var(--client-status-closed-ink);
+}
+:host ::ng-deep .client-priority--low {
+  background: var(--client-priority-low-bg);
+  color: var(--client-priority-low-ink);
+}
+:host ::ng-deep .client-priority--normal {
+  background: var(--client-priority-normal-bg);
+  color: var(--client-priority-normal-ink);
+}
+:host ::ng-deep .client-priority--high {
+  background: var(--client-priority-high-bg);
+  color: var(--client-priority-high-ink);
+}
+:host ::ng-deep .client-priority--critical {
+  background: var(--client-priority-critical-bg);
+  color: var(--client-priority-critical-ink);
 }
 @media (max-width: 639px) {
   .client-title {

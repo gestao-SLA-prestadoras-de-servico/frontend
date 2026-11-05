@@ -7,6 +7,7 @@ import { PageHeading } from '@app/shared/ui/page-heading/page-heading.directive'
 import { WORKSPACE_ICONS } from '../../data/workspace-icons';
 import { ClientNotice } from '../components/client-notice';
 import { ClientStatusBadge } from '../components/client-status';
+import { ClientPriorityBadge } from '../components/client-priority';
 import {
   CLIENT_PRIORITIES,
   CLIENT_STATUS_LABELS,
@@ -24,6 +25,7 @@ import {
     LucideDynamicIcon,
     ClientNotice,
     ClientStatusBadge,
+    ClientPriorityBadge,
   ],
   templateUrl: './client-tickets.html',
   styleUrl: '../client.css',

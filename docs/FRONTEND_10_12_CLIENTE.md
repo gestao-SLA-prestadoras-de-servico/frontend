@@ -34,6 +34,7 @@ Busca, filtros e formulários operam somente na memória da tela. Não há API, 
 - Campos têm labels, indicação de obrigatoriedade, limites e erros associados por `aria-describedby`. O primeiro campo inválido recebe foco.
 - Diálogos nativos contêm o foco, fecham por Escape e devolvem o foco ao acionador ao cancelar. Resultados recebem foco após a atualização da tela.
 - Não há animação de entrada. Foco, botões, fonte, paleta e controles seguem a Nivelo. Tabela se converte em cards no celular; nenhum campo da linha é descartado.
+- As cinco situações têm tons distintos: cinza para aberto, azul para atribuído, turquesa para atendimento em curso, âmbar para validação e verde para encerrado. Prioridades usam verde suave, cinza azulado, âmbar e vermelho. O rótulo acompanha sempre a cor; os nove pares ultrapassam 4,5:1.
 - Conteúdo é renderizado no servidor. Ações de envio e revisão aguardam a hidratação e ficam desabilitadas sem JavaScript.
 
 ## Verificação
@@ -42,7 +43,7 @@ Resultado final: lint e typecheck aprovados; 39 testes unitários aprovados; 40 
 
 Comandos: `npm run lint`, `npm run typecheck`, `npm run test:ci`, `npm run build` e `PLAYWRIGHT_TEST_BASE_URL=http://127.0.0.1:4317 npx playwright test e2e/client.spec.ts e2e/workspace.spec.ts --project=chromium --project=firefox --workers=1 --reporter=line` (variável de ambiente definida conforme o shell).
 
-A suíte `e2e/client.spec.ts` cobre listagem, filtros combinados, busca sem acentos, estados demonstrativos, formulário inválido, espaços em branco, contrato vencido, confirmação, IDs inválidos, indisponibilidade por estado, validação, reabertura, foco e responsividade. Verifica também carregamento da evidência, ausência de chamadas de escrita e armazenamento vazio.
+A suíte `e2e/client.spec.ts` cobre listagem, filtros combinados, busca sem acentos, estados demonstrativos, formulário inválido, espaços em branco, contrato vencido, confirmação, IDs inválidos, indisponibilidade por estado, validação, reabertura, foco e responsividade. Verifica também carregamento da evidência, ausência de chamadas de escrita e armazenamento vazio. A inspeção dos cinco estados e quatro prioridades confere cores distintas e contraste WCAG AA.
 
 A suíte existente `e2e/workspace.spec.ts` mantém os testes de navegação, menu, perfis, teclado, notificações, sessão e renderização sem JavaScript. Somente a contagem esperada do Cliente passa de três para quatro chamados, devido ao exemplo encerrado.
 
@@ -55,3 +56,5 @@ No Firefox, o evento `close` do diálogo pode ocorrer depois da renderização d
 O detector de design sinalizou `broken-image` no binding Angular `[src]="evidence.image"`. É um falso positivo: a fixture aponta para um ativo existente e o E2E exige `naturalWidth > 0`. A exceção foi persistida somente para essa regra no arquivo `client-ticket-detail.html`; nenhuma regra global foi desabilitada.
 
 O briefing de superfície em `.impeccable/surfaces/src-app-features-workspace-client.md` registra o modo Operate. `DESIGN.md`, `src/styles.css` e `.impeccable/design.json` permanecem preservados. O sidecar de design já estava desatualizado; sua atualização fica separada desta entrega.
+
+Atualização da colorização: o E2E focado nas nove combinações de estado e prioridade passou no Chromium, incluindo contraste mínimo de 4,5:1. O mesmo teste no Firefox não chegou a abrir a página por um erro do Playwright (`browserContext.newPage`, `_page`). `npm run build` também não concluiu neste sandbox: o resolver do Angular recebeu acesso negado ao diretório `../../..`; `npm run lint` e `npx tsc -p tsconfig.app.json --noEmit` passaram.

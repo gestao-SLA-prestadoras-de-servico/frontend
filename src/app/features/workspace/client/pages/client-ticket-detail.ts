@@ -10,6 +10,7 @@ import { ClientDeadlines } from '../components/client-deadlines';
 import { ClientNotice } from '../components/client-notice';
 import { ClientReview } from '../components/client-review';
 import { ClientStatusBadge } from '../components/client-status';
+import { ClientPriorityBadge } from '../components/client-priority';
 import { clientTicketById } from '../data/client-data';
 
 @Component({
@@ -21,6 +22,7 @@ import { clientTicketById } from '../data/client-data';
     LucideDynamicIcon,
     ClientNotice,
     ClientStatusBadge,
+    ClientPriorityBadge,
     ClientDeadlines,
     ClientReview,
     MissingPage,

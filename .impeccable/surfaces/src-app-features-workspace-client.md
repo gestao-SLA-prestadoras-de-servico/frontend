@@ -15,7 +15,7 @@ Direction contract: extensão do shell existente, implementada em código confor
 
 THESIS: deixar claro o que está em atendimento, o que exige revisão e quais são os três compromissos de prazo.
 
-OWN-WORLD: Manrope local; tokens de `src/styles.css`; azul corporativo nas ações, azul-noite no texto, verde escuro para compromissos cumpridos; superfícies claras, bordas discretas, cartões de 12 px e controles de ação em cápsula. Primitivos de botão e foco da Nivelo, ícones Lucide. Nada da identidade FlowSLA é reproduzido.
+OWN-WORLD: Manrope local; tokens de `src/styles.css`; azul corporativo nas ações, azul-noite no texto, verde escuro para prazos cumpridos; estados usam cinza aberto, azul atribuído, turquesa em atendimento, âmbar aguardando validação e verde encerrado. Prioridades usam verde suave (baixa), cinza azulado (normal), âmbar (alta) e vermelho Nivelo (crítica). Todas conservam rótulo textual e contraste AA. Superfícies claras, bordas discretas, cartões de 12 px e controles de ação em cápsula. Primitivos de botão e foco da Nivelo, ícones Lucide. Nada da identidade FlowSLA é reproduzido.
 
 STORY: Meus chamados → Abrir chamado → Detalhe, validação e reabertura. Resumos calculados sobre o conjunto completo de fixtures; filtros e busca alteram apenas a listagem. Na abertura, contrato e dados do problema precedem a confirmação demonstrativa. No detalhe, contexto e revisão precedem os prazos, relato, evidência e linha do tempo.
 
