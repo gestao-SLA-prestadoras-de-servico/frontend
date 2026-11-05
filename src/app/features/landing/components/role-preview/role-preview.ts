@@ -11,6 +11,7 @@ import {
 import { Icon, IconName } from '../icon/icon';
 import { Reveal } from '../../reveal.directive';
 import { ButtonPrimary } from '../../../../shared/ui/button';
+import { preventDefaultUnlessReplayed } from '../../../../shared/utils/event-replay';
 
 @Component({
   selector: 'app-role-preview',
@@ -114,7 +115,7 @@ export class RolePreview {
       default:
         return;
     }
-    event.preventDefault();
+    preventDefaultUnlessReplayed(event);
     this.select(next);
     this.tabs()[next].nativeElement.focus();
   }

@@ -13,6 +13,7 @@ import {
   viewChildren,
 } from '@angular/core';
 import { LucideChevronDown, LucideClock3, LucideDynamicIcon, LucideLogOut } from '@lucide/angular';
+import { preventDefaultUnlessReplayed } from '../../utils/event-replay';
 
 @Component({
   selector: 'app-user-menu',
@@ -46,14 +47,14 @@ export class UserMenu {
 
   protected onTriggerKeydown(event: KeyboardEvent): void {
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-      event.preventDefault();
+      preventDefaultUnlessReplayed(event);
       this.openAt(event.key === 'ArrowDown' ? 0 : 1);
     } else if (event.key === 'Escape') this.close(true);
   }
 
   protected onMenuKeydown(event: KeyboardEvent): void {
     if (event.key === 'Escape') {
-      event.preventDefault();
+      preventDefaultUnlessReplayed(event);
       event.stopPropagation();
       this.close(true);
       return;
@@ -82,7 +83,7 @@ export class UserMenu {
       default:
         return;
     }
-    event.preventDefault();
+    preventDefaultUnlessReplayed(event);
     elements[next]?.focus();
   }
 

@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { gotoAndWaitForHydration, waitForHydration } from './helpers/hydration';
 
 const profiles = [
   {
@@ -37,7 +38,7 @@ const profiles = [
 for (const profile of profiles) {
   test(`${profile.label} has a complete shell and navigable example areas`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto(`/app/${profile.key}`);
+    await gotoAndWaitForHydration(page, `/app/${profile.key}`);
     await expect(page.getByRole('heading', { name: profile.heading, exact: true })).toBeFocused();
     await expect(page.getByLabel('Perfil de demonstração')).toHaveValue(profile.key);
     await expect(page.getByRole('button', { name: `Menu de ${profile.name}` })).toBeVisible();
@@ -74,7 +75,7 @@ test('profile selection navigates directly between fictional contexts without au
     if (request.method() !== 'GET' || ['fetch', 'xhr'].includes(request.resourceType()))
       requests.push(request.url());
   });
-  await page.goto('/app/gestor');
+  await gotoAndWaitForHydration(page, '/app/gestor');
   for (const profile of [profiles[1], profiles[2], profiles[0]]) {
     await page.getByLabel('Perfil de demonstração').selectOption(profile.key);
     await expect(page).toHaveURL(new RegExp(`/app/${profile.key}$`));
@@ -90,7 +91,7 @@ for (const width of [320, 390, 768]) {
     page,
   }) => {
     await page.setViewportSize({ width, height: 844 });
-    await page.goto('/app/gestor');
+    await gotoAndWaitForHydration(page, '/app/gestor');
     const trigger = page.getByRole('button', { name: 'Abrir navegação' });
     await trigger.click();
     const menu = page.getByRole('dialog', { name: 'Área de Gestor' });
@@ -135,7 +136,7 @@ test('all profiles fit desktop, tablet, phone and short viewports', async ({ pag
   ]) {
     await page.setViewportSize(size);
     for (const profile of profiles) {
-      await page.goto(`/app/${profile.key}`);
+      await gotoAndWaitForHydration(page, `/app/${profile.key}`);
       await expect(page.locator('main h1')).toBeFocused();
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth),
@@ -151,7 +152,7 @@ test('all profiles fit desktop, tablet, phone and short viewports', async ({ pag
 test('notifications, keyboard skip link, user menu and expired session work locally', async ({
   page,
 }) => {
-  await page.goto('/app/gestor');
+  await gotoAndWaitForHydration(page, '/app/gestor');
   const bell = page.getByRole('button', { name: /^Notificações de demonstração/ });
   await bell.click();
   await expect(page.getByRole('region', { name: 'Notificações de demonstração' })).toBeVisible();
@@ -163,7 +164,7 @@ test('notifications, keyboard skip link, user menu and expired session work loca
   await page.getByRole('button', { name: 'Menu de Camila Moreira' }).click();
   await page.getByRole('menuitem', { name: 'Sair', exact: true }).click();
   await expect(page).toHaveURL(/\/login\?estado=saida$/);
-  await page.goto('/app/tecnico');
+  await gotoAndWaitForHydration(page, '/app/tecnico');
   await page.getByRole('button', { name: 'Menu de Rafael Costa' }).click();
   await page.getByRole('menuitem', { name: 'Simular sessão expirada' }).click();
   await expect(page).toHaveURL(/\/sessao-expirada$/);
@@ -172,6 +173,7 @@ test('notifications, keyboard skip link, user menu and expired session work loca
 test('not-found pages preserve the profile and offer a working return path', async ({ page }) => {
   for (const profile of profiles) {
     const response = await page.goto(`/app/${profile.key}/pagina-inexistente`);
+    await waitForHydration(page);
     expect(response?.status()).toBe(404);
     await expect(
       page.getByRole('heading', { name: 'Página não encontrada', exact: true }),
@@ -180,7 +182,7 @@ test('not-found pages preserve the profile and offer a working return path', asy
     await page.getByRole('link', { name: 'Voltar ao início da área' }).click();
     await expect(page).toHaveURL(new RegExp(`/app/${profile.key}$`));
   }
-  await page.goto('/pagina-inexistente');
+  await gotoAndWaitForHydration(page, '/pagina-inexistente');
   await expect(
     page.getByRole('heading', { name: 'Página não encontrada', exact: true }),
   ).toBeVisible();

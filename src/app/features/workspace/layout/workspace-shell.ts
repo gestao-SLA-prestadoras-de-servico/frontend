@@ -19,6 +19,7 @@ import { UserMenu } from '@app/shared/ui/user-menu/user-menu';
 import { WorkspaceNavigation } from '../components/workspace-navigation/workspace-navigation';
 import { profileByKey, WORKSPACE_PROFILES } from '../data/workspace-data';
 import { WORKSPACE_ICONS } from '../data/workspace-icons';
+import { preventDefaultUnlessReplayed } from '../../../shared/utils/event-replay';
 
 @Component({
   selector: 'app-workspace-shell',
@@ -52,7 +53,7 @@ export class WorkspaceShell {
   }
 
   protected skipToContent(event: MouseEvent): void {
-    event.preventDefault();
+    preventDefaultUnlessReplayed(event);
     const content = this.content()?.nativeElement;
     content?.focus({ preventScroll: true });
     content?.scrollIntoView({ block: 'start', behavior: 'instant' });
@@ -130,7 +131,7 @@ export class WorkspaceShell {
       (event.shiftKey && document.activeElement === first) ||
       (!event.shiftKey && document.activeElement === last)
     ) {
-      event.preventDefault();
+      preventDefaultUnlessReplayed(event);
       (event.shiftKey ? last : first)?.focus();
     }
   }
