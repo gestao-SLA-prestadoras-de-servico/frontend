@@ -109,7 +109,7 @@ test('expired session and re-entry remain demonstrative and usable with reduced 
 });
 
 test('access routes fit small, medium, desktop and short screens', async ({ page }) => {
-  for (const size of [
+  const sizes = [
     { width: 320, height: 568 },
     { width: 390, height: 844 },
     { width: 768, height: 1024 },
@@ -117,14 +117,17 @@ test('access routes fit small, medium, desktop and short screens', async ({ page
     { width: 1366, height: 768 },
     { width: 1440, height: 900 },
     { width: 1024, height: 600 },
-  ]) {
-    await page.setViewportSize(size);
-    for (const route of ['/login', '/sessao-demo', '/sessao-expirada']) {
-      await gotoAndWaitForHydration(page, route);
+  ];
+
+  for (const route of ['/login', '/sessao-demo', '/sessao-expirada']) {
+    await gotoAndWaitForHydration(page, route);
+    if (route === '/login') await page.evaluate(() => document.fonts.ready);
+
+    for (const size of sizes) {
+      await page.setViewportSize(size);
       await expect(page.locator('h1')).toBeVisible();
       if (route === '/login') {
         await expect(page.getByRole('button', { name: 'Entrar', exact: true })).toBeEnabled();
-        await page.evaluate(() => document.fonts.ready);
         if (size.width >= 1024 && size.height >= 720) {
           expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBe(
             size.height,
@@ -141,6 +144,7 @@ test('access routes fit small, medium, desktop and short screens', async ({ page
         const box = await page.getByRole('menu').boundingBox();
         expect(box?.x).toBeGreaterThanOrEqual(0);
         expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(size.width);
+        await page.getByRole('button', { name: 'Menu de Camila Moreira' }).click();
       }
     }
   }

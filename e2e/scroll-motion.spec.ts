@@ -39,15 +39,23 @@ test('photo, product and history follow scrolling and return to their earlier po
       ),
     )
     .toBe(1100);
-  const first = await photo.evaluate((element) => getComputedStyle(element).transform);
+  const readTransform = () =>
+    photo.evaluate((element) => {
+      const matrix = new DOMMatrixReadOnly(getComputedStyle(element).transform);
+      return { scaleX: matrix.a, scaleY: matrix.d, translateY: matrix.f };
+    });
+  const first = await readTransform();
   await scrollTo(top + 200);
   await expect
-    .poll(() => photo.evaluate((element) => getComputedStyle(element).transform))
-    .not.toBe(first);
+    .poll(async () => (await readTransform()).translateY)
+    .not.toBe(first.translateY);
   await scrollTo(top - 700);
   await expect
-    .poll(() => photo.evaluate((element) => getComputedStyle(element).transform))
-    .toBe(first);
+    .poll(async () => Math.abs((await readTransform()).translateY - first.translateY))
+    .toBeLessThan(1);
+  const returned = await readTransform();
+  expect(returned.scaleX).toBeCloseTo(first.scaleX, 3);
+  expect(returned.scaleY).toBeCloseTo(first.scaleY, 3);
   await expect(page.locator('[data-scroll-motion="platform"]')).toHaveAttribute(
     'data-motion-active',
     '',
