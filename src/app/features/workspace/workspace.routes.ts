@@ -2,9 +2,17 @@ import { inject, RESPONSE_INIT } from '@angular/core';
 import { CanMatchFn, Routes } from '@angular/router';
 import { WORKSPACE_PROFILES } from './data/workspace-data';
 import { clientTicketById } from './client/data/client-data';
+import { technicianTicketById } from './technician/technician-data';
 
 const clientTicketExists: CanMatchFn = (_route, segments) => {
   const exists = !!clientTicketById(segments[1]?.path ?? null);
+  const response = inject(RESPONSE_INIT, { optional: true });
+  if (!exists && response) response.status = 404;
+  return exists;
+};
+
+const technicianTicketExists: CanMatchFn = (_route, segments) => {
+  const exists = !!technicianTicketById(Number(segments[1]?.path));
   const response = inject(RESPONSE_INIT, { optional: true });
   if (!exists && response) response.status = 404;
   return exists;
@@ -30,7 +38,17 @@ export const WORKSPACE_ROUTES: Routes = [
                 ? () => import('./client/pages/client-tickets').then((m) => m.ClientTickets)
                 : profile.key === 'cliente' && page.key === 'novo-chamado'
                   ? () => import('./client/pages/client-new-ticket').then((m) => m.ClientNewTicket)
-                  : () => import('./pages/workspace-page').then((m) => m.WorkspacePage),
+                  : profile.key === 'tecnico' && page.key === 'chamados'
+                    ? () =>
+                        import('./technician/pages/technician-tickets').then(
+                          (m) => m.TechnicianTickets,
+                        )
+                    : profile.key === 'tecnico' && page.key === 'atendimento'
+                      ? () =>
+                          import('./technician/pages/technician-ticket').then(
+                            (m) => m.TechnicianTicketPage,
+                          )
+                      : () => import('./pages/workspace-page').then((m) => m.WorkspacePage),
           })),
           ...(profile.key === 'cliente'
             ? [
@@ -45,6 +63,24 @@ export const WORKSPACE_ROUTES: Routes = [
                   canMatch: [clientTicketExists],
                   loadComponent: () =>
                     import('./client/pages/client-ticket-detail').then((m) => m.ClientTicketDetail),
+                },
+              ]
+            : []),
+          ...(profile.key === 'tecnico'
+            ? [
+                {
+                  path: 'chamados/:id',
+                  title: 'Atendimento do chamado | Técnico | NIVELO',
+                  data: {
+                    profile: 'tecnico',
+                    page: 'atendimento',
+                    breadcrumb: 'Atendimento do chamado',
+                  },
+                  canMatch: [technicianTicketExists],
+                  loadComponent: () =>
+                    import('./technician/pages/technician-ticket').then(
+                      (m) => m.TechnicianTicketPage,
+                    ),
                 },
               ]
             : []),

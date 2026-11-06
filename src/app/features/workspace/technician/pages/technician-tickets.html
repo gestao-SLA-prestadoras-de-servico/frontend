@@ -1,0 +1,110 @@
+<div class="flex flex-wrap items-start justify-between gap-5">
+  <div class="max-w-[65ch]">
+    <h1
+      appPageHeading
+      class="text-[26px] leading-[1.25] font-semibold tracking-[-.03em] sm:text-[28px]"
+    >
+      Meus chamados
+    </h1>
+    <p class="mt-2 text-sm leading-[1.7] text-ink2">
+      Atendimentos atribuídos a Rafael Costa neste cenário.
+    </p>
+  </div>
+</div>
+
+<p class="mt-4 text-xs leading-[1.7] text-ink3">
+  Demonstração com dados fictícios. As ações atualizam somente esta sessão e nenhum arquivo é
+  enviado.
+</p>
+
+<dl class="mt-6 grid grid-cols-2 gap-3 sm:max-w-[560px]">
+  <div class="rounded-deadline border border-line bg-sf px-4 py-4 sm:px-5">
+    <dt class="text-xs text-ink2">Para iniciar</dt>
+    <dd class="m-0 mt-2 text-[28px] leading-none font-semibold tabular-nums text-ink">
+      {{ assignedCount() }}
+    </dd>
+  </div>
+  <div class="rounded-deadline border border-line bg-sf px-4 py-4 sm:px-5">
+    <dt class="text-xs text-ink2">Em atendimento</dt>
+    <dd class="m-0 mt-2 text-[28px] leading-none font-semibold tabular-nums text-ink">
+      {{ activeCount() }}
+    </dd>
+  </div>
+</dl>
+
+<section class="mt-8" aria-labelledby="technician-tickets-heading">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h2
+        id="technician-tickets-heading"
+        class="text-lg leading-[1.4] font-semibold tracking-[-.02em]"
+      >
+        Atendimentos atribuídos
+      </h2>
+      <p class="mt-1 text-sm text-ink3">
+        {{ visibleTickets().length }} {{ visibleTickets().length === 1 ? 'chamado' : 'chamados' }}
+      </p>
+    </div>
+    <div class="grid w-full gap-3 sm:w-auto sm:grid-cols-2">
+      <label for="technician-status-filter" class="block text-xs font-medium text-ink2">
+        Estado
+        <select
+          id="technician-status-filter"
+          aria-label="Filtrar por estado"
+          class="mt-1.5 block min-h-11 w-full min-w-0 rounded-lg border border-line2 bg-sf px-3 text-sm text-ink focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri sm:min-w-48"
+          [value]="statusFilter()"
+          (change)="setStatus($event)"
+        >
+          @for (status of statuses; track status.value) {
+            <option [value]="status.value">{{ status.label }}</option>
+          }
+        </select>
+      </label>
+      <label for="technician-priority-filter" class="block text-xs font-medium text-ink2">
+        Prioridade
+        <select
+          id="technician-priority-filter"
+          aria-label="Filtrar por prioridade"
+          class="mt-1.5 block min-h-11 w-full min-w-0 rounded-lg border border-line2 bg-sf px-3 text-sm text-ink focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri sm:min-w-48"
+          [value]="priorityFilter()"
+          (change)="setPriority($event)"
+        >
+          @for (priority of priorities; track priority.value) {
+            <option [value]="priority.value">{{ priority.label }}</option>
+          }
+        </select>
+      </label>
+    </div>
+  </div>
+
+  @if (visibleTickets().length) {
+    <ul class="mt-5 grid list-none grid-cols-1 gap-4 p-0 lg:grid-cols-2 xl:grid-cols-3">
+      @for (ticket of visibleTickets(); track ticket.id) {
+        <li class="min-w-0"><app-technician-ticket-card [ticket]="ticket" /></li>
+      }
+    </ul>
+  } @else {
+    <div
+      class="mt-5 rounded-deadline border border-dashed border-line2 bg-bg px-5 py-8 text-center"
+    >
+      @if (filtersActive()) {
+        <h3 class="text-base font-semibold">Nenhum chamado encontrado</h3>
+        <p class="mt-2 text-sm text-ink2">
+          Altere ou limpe os filtros para ver outros atendimentos.
+        </p>
+        <button
+          type="button"
+          class="mt-4 inline-flex min-h-11 items-center rounded-sm px-2 text-sm font-semibold text-pri-d underline underline-offset-4 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+          (click)="clearFilters()"
+        >
+          Limpar filtros
+        </button>
+      } @else {
+        <h3 class="text-base font-semibold">Nenhum chamado atribuído</h3>
+        <p class="mt-2 text-sm text-ink2">
+          Novos atendimentos aparecerão aqui quando forem atribuídos a você.
+        </p>
+      }
+    </div>
+  }
+</section>
