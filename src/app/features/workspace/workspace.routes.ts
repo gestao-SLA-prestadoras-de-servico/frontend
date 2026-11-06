@@ -42,24 +42,26 @@ export const WORKSPACE_ROUTES: Routes = [
                   : profile.key === 'gestor' && page.key === 'empresas'
                     ? () =>
                         import('./gestor/pages/manager-companies').then((m) => m.ManagerCompanies)
-                    : profile.key === 'cliente' && page.key === 'chamados'
-                      ? () => import('./client/pages/client-tickets').then((m) => m.ClientTickets)
-                      : profile.key === 'cliente' && page.key === 'novo-chamado'
-                        ? () =>
-                            import('./client/pages/client-new-ticket').then(
-                              (m) => m.ClientNewTicket,
-                            )
-                        : profile.key === 'tecnico' && page.key === 'chamados'
+                    : profile.key === 'gestor' && page.key === 'usuarios'
+                      ? () => import('./gestor/pages/manager-users').then((m) => m.ManagerUsers)
+                      : profile.key === 'cliente' && page.key === 'chamados'
+                        ? () => import('./client/pages/client-tickets').then((m) => m.ClientTickets)
+                        : profile.key === 'cliente' && page.key === 'novo-chamado'
                           ? () =>
-                              import('./technician/pages/technician-tickets').then(
-                                (m) => m.TechnicianTickets,
+                              import('./client/pages/client-new-ticket').then(
+                                (m) => m.ClientNewTicket,
                               )
-                          : profile.key === 'tecnico' && page.key === 'atendimento'
+                          : profile.key === 'tecnico' && page.key === 'chamados'
                             ? () =>
-                                import('./technician/pages/technician-ticket').then(
-                                  (m) => m.TechnicianTicketPage,
+                                import('./technician/pages/technician-tickets').then(
+                                  (m) => m.TechnicianTickets,
                                 )
-                            : () => import('./pages/workspace-page').then((m) => m.WorkspacePage),
+                            : profile.key === 'tecnico' && page.key === 'atendimento'
+                              ? () =>
+                                  import('./technician/pages/technician-ticket').then(
+                                    (m) => m.TechnicianTicketPage,
+                                  )
+                              : () => import('./pages/workspace-page').then((m) => m.WorkspacePage),
           })),
           ...(profile.key === 'gestor'
             ? [
@@ -97,6 +99,17 @@ export const WORKSPACE_ROUTES: Routes = [
                   },
                   loadComponent: () =>
                     import('./gestor/pages/manager-company-new').then((m) => m.ManagerCompanyNew),
+                },
+                {
+                  path: 'usuarios/novo',
+                  title: 'Novo usuário | Gestor | NIVELO',
+                  data: {
+                    profile: 'gestor',
+                    page: 'usuarios',
+                    breadcrumb: 'Usuários',
+                  },
+                  loadComponent: () =>
+                    import('./gestor/pages/manager-user-new').then((m) => m.ManagerUserNew),
                 },
               ]
             : []),

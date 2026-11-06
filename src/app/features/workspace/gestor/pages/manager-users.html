@@ -1,0 +1,366 @@
+<div class="flex flex-wrap items-start justify-between gap-5">
+  <div class="max-w-[65ch]">
+    <h1
+      appPageHeading
+      class="text-[26px] leading-[1.25] font-semibold tracking-[-.03em] sm:text-[28px]"
+    >
+      Usuários
+    </h1>
+    <p class="mt-2 text-sm leading-[1.7] text-ink2">
+      Consulte perfis e situação da equipe que participa dos atendimentos.
+    </p>
+  </div>
+  <a
+    routerLink="/app/gestor/usuarios/novo"
+    class="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-pri px-4 py-2 text-sm font-semibold text-white no-underline hover:bg-pri-d focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+  >
+    <svg class="size-4" [lucideIcon]="icons.add" aria-hidden="true"></svg>Novo usuário
+  </a>
+</div>
+
+<p class="mt-4 flex items-start gap-2 text-xs leading-[1.7] text-ink3">
+  <svg class="mt-0.5 size-4 shrink-0" [lucideIcon]="icons.info" aria-hidden="true"></svg>
+  Dados fictícios. Cadastros e inativações desta tela não acessam o Keycloak e não são persistidos.
+</p>
+
+@if (notice(); as message) {
+  <section
+    #noticeTarget
+    tabindex="-1"
+    [attr.role]="message.tone === 'error' ? 'alert' : 'status'"
+    aria-live="polite"
+    class="mt-6 flex flex-wrap items-start justify-between gap-4 rounded-deadline p-4 sm:p-5"
+    [class.bg-grn-bg]="message.tone === 'success'"
+    [class.text-grn-t]="message.tone === 'success'"
+    [class.bg-danger-bg]="message.tone === 'error'"
+    [class.text-danger]="message.tone === 'error'"
+  >
+    <div>
+      <h2 class="text-sm font-semibold">{{ message.title }}</h2>
+      <p class="mt-1 text-sm">{{ message.detail }}</p>
+    </div>
+    <button
+      type="button"
+      class="min-h-11 rounded-sm px-3 text-sm font-semibold underline underline-offset-4"
+      aria-label="Fechar mensagem"
+      (click)="clearNotice()"
+    >
+      Fechar
+    </button>
+  </section>
+}
+
+<dl class="mt-7 grid grid-cols-3 gap-3 rounded-deadline bg-bg px-4 py-4 sm:px-6 sm:py-5">
+  <div>
+    <dt class="text-xs text-ink2 sm:text-sm">Usuários ativos</dt>
+    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums">{{ activeCount() }}</dd>
+  </div>
+  <div>
+    <dt class="text-xs text-ink2 sm:text-sm">Técnicos ativos</dt>
+    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums">{{ technicalCount() }}</dd>
+  </div>
+  <div>
+    <dt class="text-xs text-ink2 sm:text-sm">Inativos</dt>
+    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums">{{ inactiveCount() }}</dd>
+  </div>
+</dl>
+
+<section class="mt-7" aria-label="Busca e filtros de usuários">
+  <div class="grid gap-4 md:grid-cols-[minmax(0,1fr)_190px_190px]">
+    <div>
+      <label for="user-search" class="block text-sm font-semibold">Buscar usuário</label
+      ><input
+        id="user-search"
+        class="mt-2 block h-[52px] w-full min-w-0 rounded-[10px] border border-ink3/80 bg-sf px-3.5 text-base text-ink placeholder:text-ink3 focus-visible:border-pri focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+        type="search"
+        placeholder="Nome, e-mail ou empresa"
+        [value]="search()"
+        (input)="updateSearch($event)"
+      />
+    </div>
+    <div>
+      <label for="user-role" class="block text-sm font-semibold">Perfil</label
+      ><select
+        id="user-role"
+        class="mt-2 min-h-[52px] w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 text-base focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+        [value]="roleFilter()"
+        (change)="updateRole($event)"
+      >
+        <option>Todas</option>
+        <option>Cliente</option>
+        <option>Técnico</option>
+        <option>Gestor</option>
+      </select>
+    </div>
+    <div>
+      <label for="user-situation" class="block text-sm font-semibold">Situação</label
+      ><select
+        id="user-situation"
+        class="mt-2 min-h-[52px] w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 text-base focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+        [value]="situationFilter()"
+        (change)="updateSituation($event)"
+      >
+        <option>Todas</option>
+        <option>Ativo</option>
+        <option>Inativo</option>
+      </select>
+    </div>
+  </div>
+</section>
+
+<section class="mt-7" aria-labelledby="user-list-heading">
+  <div class="flex flex-wrap items-baseline justify-between gap-3">
+    <h2 id="user-list-heading" class="text-base font-semibold leading-[1.5] tracking-normal">
+      Equipe e contatos
+    </h2>
+    <p class="text-xs text-ink3" aria-live="polite">
+      {{ filteredUsers().length }} {{ filteredUsers().length === 1 ? 'resultado' : 'resultados' }}
+    </p>
+  </div>
+  @if (filteredUsers().length) {
+    <div class="mt-3 hidden overflow-x-auto rounded-deadline border border-line md:block">
+      <table class="w-full min-w-[760px] border-collapse text-left text-sm">
+        <caption class="sr-only">
+          Usuários fictícios, seus perfis e situações
+        </caption>
+        <thead class="bg-bg text-xs font-semibold text-ink2">
+          <tr>
+            <th scope="col" class="px-4 py-3">Usuário</th>
+            <th scope="col" class="px-4 py-3">Perfil</th>
+            <th scope="col" class="px-4 py-3">Empresa</th>
+            <th scope="col" class="px-4 py-3">Situação</th>
+            <th scope="col" class="px-4 py-3">Ações</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-line">
+          @for (user of filteredUsers(); track user.id) {
+            <tr>
+              <th scope="row" class="px-4 py-4 align-top font-semibold">
+                <span class="block">{{ user.name }}</span
+                ><span class="mt-1 block font-normal text-ink2 wrap-anywhere">{{
+                  user.email
+                }}</span>
+              </th>
+              <td class="px-4 py-4 align-top">{{ user.role }}</td>
+              <td class="px-4 py-4 align-top text-ink2">{{ user.company ?? '—' }}</td>
+              <td class="px-4 py-4 align-top">
+                <span
+                  class="inline-flex min-h-7 items-center rounded-sm px-2.5 text-xs font-semibold"
+                  [class.bg-grn-bg]="user.situation === 'Ativo'"
+                  [class.text-grn-t]="user.situation === 'Ativo'"
+                  [class.bg-bg]="user.situation === 'Inativo'"
+                  [class.text-ink2]="user.situation === 'Inativo'"
+                  >{{ user.situation }}</span
+                >
+              </td>
+              <td class="px-4 py-3 align-top">
+                @if (user.role === 'Técnico' && user.situation === 'Ativo') {
+                  <button
+                    #desktopTrigger
+                    type="button"
+                    class="min-h-10 rounded-sm px-2 text-sm font-semibold text-danger underline underline-offset-4 hover:opacity-80"
+                    [disabled]="!ready()"
+                    [attr.aria-label]="'Inativar ' + user.name"
+                    (click)="openDeactivate(user, desktopTrigger)"
+                  >
+                    Inativar
+                  </button>
+                } @else {
+                  <span class="px-2 text-ink3">—</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="mt-3 divide-y divide-line rounded-deadline border border-line md:hidden">
+      @for (user of filteredUsers(); track user.id) {
+        <article class="p-4 first:rounded-t-deadline last:rounded-b-deadline">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <h3 class="text-sm font-semibold">{{ user.name }}</h3>
+              <p class="mt-1 wrap-anywhere text-sm text-ink2">{{ user.email }}</p>
+            </div>
+            <span
+              class="inline-flex min-h-7 shrink-0 items-center rounded-sm px-2.5 text-xs font-semibold"
+              [class.bg-grn-bg]="user.situation === 'Ativo'"
+              [class.text-grn-t]="user.situation === 'Ativo'"
+              [class.bg-bg]="user.situation === 'Inativo'"
+              [class.text-ink2]="user.situation === 'Inativo'"
+              >{{ user.situation }}</span
+            >
+          </div>
+          <dl class="mt-4 grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <dt class="text-xs text-ink3">Perfil</dt>
+              <dd class="m-0 mt-0.5">{{ user.role }}</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-ink3">Empresa</dt>
+              <dd class="m-0 mt-0.5">{{ user.company ?? '—' }}</dd>
+            </div>
+          </dl>
+          @if (user.role === 'Técnico' && user.situation === 'Ativo') {
+            <div class="mt-4 border-t border-line pt-3">
+              <button
+                #mobileTrigger
+                type="button"
+                appButtonSecondary
+                class="min-h-11 px-4 py-2 text-danger"
+                [disabled]="!ready()"
+                [attr.aria-label]="'Inativar ' + user.name"
+                (click)="openDeactivate(user, mobileTrigger)"
+              >
+                Inativar técnico
+              </button>
+            </div>
+          }
+        </article>
+      }
+    </div>
+  } @else {
+    <div class="mt-3 rounded-deadline border border-dashed border-ink3 p-6 text-center sm:p-8">
+      <h3 class="font-semibold">Nenhum usuário encontrado</h3>
+      <p class="mt-2 text-sm text-ink2">Ajuste a busca ou os filtros para ver outros perfis.</p>
+      <button
+        type="button"
+        class="mt-3 min-h-11 px-3 text-sm font-semibold text-pri-d underline underline-offset-4"
+        (click)="clearFilters()"
+      >
+        Limpar filtros
+      </button>
+    </div>
+  }
+</section>
+
+<dialog
+  #deactivateDialog
+  tabindex="-1"
+  class="m-auto w-[min(640px,calc(100vw-24px))] max-h-[calc(100dvh-24px)] overflow-y-auto rounded-deadline border border-line bg-sf p-0 text-ink shadow-dialog backdrop:bg-navy/45"
+  aria-labelledby="deactivate-title"
+  (close)="onDialogClose()"
+  (keydown)="trapFocus($event)"
+  (click)="onBackdrop($event)"
+>
+  @if (selectedUser(); as user) {
+    <div class="p-5 sm:p-7">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[.08em] text-danger">
+            Ação demonstrativa
+          </p>
+          <h2 id="deactivate-title" class="mt-2 text-xl font-semibold tracking-[-.02em]">
+            Inativar {{ user.name }}
+          </h2>
+          <p class="mt-2 text-sm leading-[1.6] text-ink2">
+            Os chamados abertos precisam de um técnico substituto neste exemplo.
+          </p>
+        </div>
+        <button
+          type="button"
+          class="grid size-11 shrink-0 place-items-center rounded-lg text-ink2 hover:bg-bg"
+          aria-label="Fechar confirmação"
+          (click)="closeDialog()"
+        >
+          <svg class="size-5" [lucideIcon]="icons.close" aria-hidden="true"></svg>
+        </button>
+      </div>
+      <section
+        class="mt-5 rounded-deadline border border-line bg-bg p-4"
+        aria-label="Chamados relacionados ao técnico"
+      >
+        <h3 class="text-sm font-semibold">Chamados no cenário</h3>
+        <dl class="mt-3 grid grid-cols-3 gap-2 text-center">
+          <div class="rounded-control bg-sf p-3">
+            <dt class="text-xs text-ink2">Atribuídos</dt>
+            <dd class="m-0 mt-1 text-xl font-semibold tabular-nums">{{ user.assigned }}</dd>
+          </div>
+          <div class="rounded-control bg-sf p-3">
+            <dt class="text-xs text-ink2">Em atendimento</dt>
+            <dd class="m-0 mt-1 text-xl font-semibold tabular-nums">{{ user.inProgress }}</dd>
+          </div>
+          <div class="rounded-control bg-sf p-3">
+            <dt class="text-xs text-ink2">Resolvidos</dt>
+            <dd class="m-0 mt-1 text-xl font-semibold tabular-nums">{{ user.resolved }}</dd>
+          </div>
+        </dl>
+        <p class="mt-3 text-sm text-ink2">
+          {{ transferableCount() }}
+          {{
+            transferableCount() === 1
+              ? 'chamado aberto seria indicado'
+              : 'chamados abertos seriam indicados'
+          }}
+          para o substituto.
+        </p>
+      </section>
+      <div class="mt-5">
+        <label for="user-substitute" class="block text-sm font-semibold">Técnico substituto</label
+        ><select
+          id="user-substitute"
+          class="mt-2 min-h-[52px] w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 text-base focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+          [value]="selectedSubstituteId()"
+          (change)="updateSubstitute($event)"
+        >
+          <option value="">Selecione um técnico ativo</option>
+          @for (candidate of substitutes(); track candidate.id) {
+            <option [value]="candidate.id">
+              {{ candidate.name }} · {{ candidate.assigned + candidate.inProgress }}/{{
+                candidate.workloadLimit
+              }}
+              chamados ativos
+            </option>
+          }
+        </select>
+        <p class="mt-2 text-xs text-ink3">
+          Disponibilidade e carga são fictícias e servem apenas para demonstrar a escolha.
+        </p>
+      </div>
+      @if (chosenSubstitute(); as substitute) {
+        @if (hasSubstituteConflict()) {
+          <div class="mt-4 rounded-deadline bg-danger-bg p-4 text-danger" role="alert">
+            <p class="text-sm font-semibold">Substituição indisponível neste exemplo</p>
+            <p class="mt-1 text-sm">
+              {{ substitute.name }} já está no limite de {{ substitute.workloadLimit }} chamados
+              ativos. Escolha outro técnico para continuar.
+            </p>
+          </div>
+        } @else {
+          <div class="mt-4 rounded-deadline bg-pri-bg p-4 text-pri-d">
+            <p class="text-sm font-semibold">Carga compatível para a demonstração</p>
+            <p class="mt-1 text-sm">
+              {{ substitute.name }} poderá receber os {{ transferableCount() }} chamados abertos
+              listados acima.
+            </p>
+          </div>
+        }
+      }
+      <div class="mt-5 rounded-deadline border border-line p-4 text-sm text-ink2">
+        <p class="font-semibold text-ink">O que esta simulação demonstra</p>
+        <p class="mt-1">
+          Prazos e notificações de atendimento podem continuar no fluxo ao trocar o responsável.
+          Nenhum chamado ou conta real será alterado.
+        </p>
+      </div>
+      <div class="mt-6 flex flex-col-reverse justify-end gap-2 sm:flex-row">
+        <button
+          #cancelButton
+          type="button"
+          appButtonSecondary
+          class="min-h-11 px-4 py-2"
+          (click)="closeDialog()"
+        >
+          Voltar</button
+        ><button
+          type="button"
+          class="min-h-11 rounded-control bg-danger px-4 py-2 text-sm font-semibold text-white hover:opacity-90 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-danger disabled:cursor-not-allowed disabled:opacity-50"
+          [disabled]="!selectedSubstituteId() || hasSubstituteConflict()"
+          (click)="confirmDeactivation()"
+        >
+          Inativar e indicar substituto
+        </button>
+      </div>
+    </div>
+  }
+</dialog>
