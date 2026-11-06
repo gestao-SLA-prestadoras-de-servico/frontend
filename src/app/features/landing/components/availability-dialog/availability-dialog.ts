@@ -5,6 +5,7 @@ import {
   HostListener,
   viewChild,
 } from '@angular/core';
+import { preventDefaultUnlessReplayed } from '../../../../shared/utils/event-replay';
 import { ActionLabel } from '../action-label/action-label';
 import { Icon } from '../icon/icon';
 import { ButtonPrimary } from '../../../../shared/ui/button';
@@ -43,10 +44,10 @@ export class AvailabilityDialog {
     const active = dialog.ownerDocument.activeElement;
 
     if (event.shiftKey && active === first) {
-      event.preventDefault();
+      preventDefaultUnlessReplayed(event);
       last.focus();
     } else if (!event.shiftKey && active === last) {
-      event.preventDefault();
+      preventDefaultUnlessReplayed(event);
       first.focus();
     }
   }

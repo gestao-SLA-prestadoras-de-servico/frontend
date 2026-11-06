@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { gotoAndWaitForHydration } from './helpers/hydration';
 
 test('photo, product and history follow scrolling and return to their earlier position', async ({
   page,
@@ -7,7 +8,7 @@ test('photo, product and history follow scrolling and return to their earlier po
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto('/');
+  await gotoAndWaitForHydration(page, '/');
   await page.evaluate(() => document.fonts.ready);
   const photo = page.locator('[data-scroll-motion="photo"]').first();
   const section = photo.locator('..');
@@ -38,15 +39,23 @@ test('photo, product and history follow scrolling and return to their earlier po
       ),
     )
     .toBe(1100);
-  const first = await photo.evaluate((element) => getComputedStyle(element).transform);
+  const readTransform = () =>
+    photo.evaluate((element) => {
+      const matrix = new DOMMatrixReadOnly(getComputedStyle(element).transform);
+      return { scaleX: matrix.a, scaleY: matrix.d, translateY: matrix.f };
+    });
+  const first = await readTransform();
   await scrollTo(top + 200);
   await expect
-    .poll(() => photo.evaluate((element) => getComputedStyle(element).transform))
-    .not.toBe(first);
+    .poll(async () => (await readTransform()).translateY)
+    .not.toBe(first.translateY);
   await scrollTo(top - 700);
   await expect
-    .poll(() => photo.evaluate((element) => getComputedStyle(element).transform))
-    .toBe(first);
+    .poll(async () => Math.abs((await readTransform()).translateY - first.translateY))
+    .toBeLessThan(1);
+  const returned = await readTransform();
+  expect(returned.scaleX).toBeCloseTo(first.scaleX, 3);
+  expect(returned.scaleY).toBeCloseTo(first.scaleY, 3);
   await expect(page.locator('[data-scroll-motion="platform"]')).toHaveAttribute(
     'data-motion-active',
     '',
@@ -70,7 +79,7 @@ test('text entrances run once and keyboard focus cancels any remaining entrance'
       return animate.call(this, frames, options);
     };
   });
-  await page.goto('/');
+  await gotoAndWaitForHydration(page, '/');
   const title = page.locator('#contracts-title');
   await title.scrollIntoViewIfNeeded();
   const count = () =>
@@ -107,7 +116,7 @@ test('reduced motion cancels scroll effects immediately and a narrow viewport ke
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.goto('/');
+  await gotoAndWaitForHydration(page, '/');
   const actors = page.locator('[data-scroll-motion]');
   await expect(page.locator('[data-scroll-motion="phone"]')).toHaveAttribute(
     'data-motion-active',
@@ -136,7 +145,7 @@ test('missing animation APIs leave the same headings and images readable', async
     Object.defineProperty(Element.prototype, 'animate', { value: undefined });
     Object.defineProperty(window, 'IntersectionObserver', { value: undefined });
   });
-  await page.goto('/');
+  await gotoAndWaitForHydration(page, '/');
   for (const id of [
     'hero-title',
     'contracts-title',

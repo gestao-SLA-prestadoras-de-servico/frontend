@@ -2,7 +2,9 @@
 
 Referência de design patterns da **Plataforma de Gestão de SLA para Prestadoras de Serviço** (Projeto Integrador 2026.2). Preserva a especificação do canvas histórico "FlowSLA — Design da plataforma" (16 telas). A identidade pública atual passou a se chamar **Nivelo**.
 
-> **Escopo e estado:** as telas internas, os componentes de negócio, as integrações e os fluxos abaixo são uma especificação de protótipo ainda não implementada. A entrega atual é a landing pública `/`, sem autenticação ou API de produto. Exemplos e percentuais do canvas são fictícios.
+> **Escopo e estado:** os componentes de negócio, as integrações e os fluxos completos abaixo são uma especificação histórica de protótipo. Exemplos e percentuais do canvas são fictícios.
+>
+> **Atualização FRONTEND 04 (04/11/2026):** o shell, a navegação dos três perfis e as páginas de exemplo já existem em `/app`, junto da landing e das telas de acesso demonstrativas. A entrega usa dados fictícios, sem autenticação, autorização real ou API de produto; formulários e operações de negócio permanecem fora desse escopo. Consulte [FRONTEND_04_LAYOUT.md](FRONTEND_04_LAYOUT.md). As seções históricas abaixo não descrevem uma implementação completa desses fluxos.
 >
 > **Fonte da verdade visual atual:** [DESIGN.md](../DESIGN.md), extraído da landing Nivelo após a aprovação de C — Faixa de luz. O canvas histórico continua como referência dos fluxos propostos; sua antiga paleta, fontes, marca e composição da landing não substituem a identidade atual.
 > **Nomes de classe:** os nomes abaixo (`.chip`, `.rc`, `.ck`…) são os usados no protótipo. Podem ser mantidos, ou traduzidos para componentes (Angular) com os mesmos nomes de variantes.

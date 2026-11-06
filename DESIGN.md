@@ -300,6 +300,14 @@ A sessão fictícia usa cabeçalho branco, fundo `bg` e coluna central de até 1
 
 Todas essas telas identificam a demonstração e os dados fictícios. O acesso real à plataforma permanece indisponível. O formulário de entrada não verifica credenciais e não armazena os valores enviados. O roteiro e os limites funcionais estão em `docs/FRONTEND_05_ACCESS.md`.
 
+### Internal Workspace — FRONTEND 04
+
+Shell em modo Operate: sidebar de 232 px e cabeçalho sobre `bg`, área principal branca com borda `line` a 70%, raio de 16 px e recuo externo de 8 px. A área de leitura tem largura máxima de 1280 px, padding lateral de 16 px no celular e 24 px a partir de 640 px. O cabeçalho tem altura mínima de 80 px, cresce com o seletor em duas linhas no celular e não usa sombra. A sidebar é substituída por um diálogo lateral abaixo de 1024 px.
+
+Títulos usam Manrope 600, 26–28 px e tracking −0,03 em; texto de interface 14 px, apoio 12 px. Navegação ativa usa superfície branca e `pri-d`. Botões e menu do usuário reutilizam os componentes existentes; controles têm alvo mínimo de 44 px. Tabelas tornam-se listas abaixo de 768 px. Estados têm rótulos textuais; atribuído usa ciano suave, resolvido usa o verde existente, e a violação ilustrativa usa `danger` sobre `danger-bg`. Os exemplos são identificados em cada página.
+
+Os perfis têm navegação e conteúdo distintos, sem serem barreiras de autorização. A implementação e os limites das prévias estão documentados em `docs/FRONTEND_04_LAYOUT.md`. A composição foi herdada da marca com a direção `framed-sheet`; não substitui o sistema da landing ou do acesso.
+
 ## Do's and Don'ts
 
 ### Do:

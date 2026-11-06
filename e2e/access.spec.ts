@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
+import { gotoAndWaitForHydration } from './helpers/hydration';
 
 test('login validates required fields, format and password visibility', async ({ page }) => {
-  await page.goto('/login');
+  await gotoAndWaitForHydration(page, '/login');
   await expect(page.getByRole('heading', { name: 'Bem-vindo à NIVELO' })).toBeFocused();
   const email = page.getByRole('textbox', { name: 'E-mail', exact: true });
   const password = page.getByLabel('Senha', { exact: true });
@@ -25,7 +26,7 @@ test('loading and local entry accept any valid credentials without sending them'
     if (request.method() !== 'GET' || ['fetch', 'xhr'].includes(request.resourceType()))
       sent.push(request.url());
   });
-  await page.goto('/login');
+  await gotoAndWaitForHydration(page, '/login');
   await page.getByRole('textbox', { name: 'E-mail', exact: true }).fill('qualquer@empresa.com');
   await page.getByLabel('Senha', { exact: true }).fill('senha-qualquer');
   // Hold the 650 ms demo delay so a slower browser cannot skip the loading assertion.
@@ -46,7 +47,7 @@ test('loading and local entry accept any valid credentials without sending them'
 });
 
 test('user menu supports keyboard navigation, dismiss and sign out', async ({ page }) => {
-  await page.goto('/sessao-demo');
+  await gotoAndWaitForHydration(page, '/sessao-demo');
   const trigger = page.getByRole('button', { name: 'Menu de Camila Moreira' });
   await trigger.focus();
   await page.keyboard.press('ArrowDown');
@@ -73,7 +74,7 @@ test('user menu supports keyboard navigation, dismiss and sign out', async ({ pa
 });
 
 test('menu closes on outside pointer and Tab without trapping focus', async ({ page }) => {
-  await page.goto('/sessao-demo');
+  await gotoAndWaitForHydration(page, '/sessao-demo');
   const trigger = page.getByRole('button', { name: 'Menu de Camila Moreira' });
   await trigger.click();
   await page.getByRole('heading', { name: 'Sessão de demonstração' }).click();
@@ -90,7 +91,7 @@ test('expired session and re-entry remain demonstrative and usable with reduced 
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/sessao-demo');
+  await gotoAndWaitForHydration(page, '/sessao-demo');
   await page.getByRole('button', { name: 'Menu de Camila Moreira' }).click();
   await page.getByRole('menuitem', { name: 'Simular sessão expirada' }).click();
   await expect(page).toHaveURL(/\/sessao-expirada$/);
@@ -108,7 +109,7 @@ test('expired session and re-entry remain demonstrative and usable with reduced 
 });
 
 test('access routes fit small, medium, desktop and short screens', async ({ page }) => {
-  for (const size of [
+  const sizes = [
     { width: 320, height: 568 },
     { width: 390, height: 844 },
     { width: 768, height: 1024 },
@@ -116,14 +117,17 @@ test('access routes fit small, medium, desktop and short screens', async ({ page
     { width: 1366, height: 768 },
     { width: 1440, height: 900 },
     { width: 1024, height: 600 },
-  ]) {
-    await page.setViewportSize(size);
-    for (const route of ['/login', '/sessao-demo', '/sessao-expirada']) {
-      await page.goto(route);
+  ];
+
+  for (const route of ['/login', '/sessao-demo', '/sessao-expirada']) {
+    await gotoAndWaitForHydration(page, route);
+    if (route === '/login') await page.evaluate(() => document.fonts.ready);
+
+    for (const size of sizes) {
+      await page.setViewportSize(size);
       await expect(page.locator('h1')).toBeVisible();
       if (route === '/login') {
         await expect(page.getByRole('button', { name: 'Entrar', exact: true })).toBeEnabled();
-        await page.evaluate(() => document.fonts.ready);
         if (size.width >= 1024 && size.height >= 720) {
           expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBe(
             size.height,
@@ -140,15 +144,13 @@ test('access routes fit small, medium, desktop and short screens', async ({ page
         const box = await page.getByRole('menu').boundingBox();
         expect(box?.x).toBeGreaterThanOrEqual(0);
         expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(size.width);
+        await page.getByRole('button', { name: 'Menu de Camila Moreira' }).click();
       }
     }
   }
 });
 
-test('all access routes contain prerendered content without JavaScript', async ({
-  browser,
-  baseURL,
-}) => {
+test('all access routes contain prerendered content without JavaScript', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   for (const [route, heading] of [
@@ -156,7 +158,7 @@ test('all access routes contain prerendered content without JavaScript', async (
     ['/sessao-demo', 'Sessão de demonstração'],
     ['/sessao-expirada', 'Sessão expirada'],
   ]) {
-    await page.goto(`${baseURL}${route}`);
+    await page.goto(route);
     await expect(page.getByRole('heading', { name: heading, exact: true })).toBeVisible();
     if (route === '/login') {
       await expect(page.getByRole('button', { name: 'Entrar', exact: true })).toBeDisabled();

@@ -21,6 +21,7 @@ import { Icon } from './components/icon/icon';
 import { PlatformOverview } from './components/platform-overview/platform-overview';
 import { ButtonPrimary, ButtonSecondary } from '../../shared/ui/button';
 import { Link } from '../../shared/ui/link';
+import { preventDefaultUnlessReplayed } from '../../shared/utils/event-replay';
 import { Benefits } from './components/benefits/benefits';
 import { DeadlineStory } from './components/deadline-story/deadline-story';
 import { ContractWorkflow } from './components/contract-workflow/contract-workflow';
@@ -115,10 +116,10 @@ export class Landing {
     const first = items[0];
     const last = items[items.length - 1];
     if (event.shiftKey && this.document.activeElement === first) {
-      event.preventDefault();
+      preventDefaultUnlessReplayed(event);
       last.focus();
     } else if (!event.shiftKey && this.document.activeElement === last) {
-      event.preventDefault();
+      preventDefaultUnlessReplayed(event);
       first.focus();
     }
   }

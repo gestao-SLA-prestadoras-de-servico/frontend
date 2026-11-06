@@ -1,11 +1,12 @@
 import { expect, test } from '@playwright/test';
+import { gotoAndWaitForHydration } from './helpers/hydration';
 
 test.use({ reducedMotion: 'reduce' });
 
 for (const width of [320, 390, 768, 1024, 1440, 1536]) {
   test(`landing, menu, dialog and FAQ at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto('/');
+    await gotoAndWaitForHydration(page, '/');
     await page.evaluate(() => document.fonts.ready);
     await expect(page.locator('h1')).toContainText('Atendimento comprovado.');
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
@@ -57,7 +58,7 @@ for (const width of [320, 390, 768, 1024, 1440, 1536]) {
 }
 
 test('skip link takes keyboard users to the main content', async ({ page }) => {
-  await page.goto('/');
+  await gotoAndWaitForHydration(page, '/');
   const skipLink = page.locator('a[href="#conteudo"]');
   const main = page.locator('#conteudo');
 
@@ -72,7 +73,7 @@ test('mobile navigation follows anchors and closes only at the desktop breakpoin
   page,
 }) => {
   await page.setViewportSize({ width: 900, height: 900 });
-  await page.goto('/');
+  await gotoAndWaitForHydration(page, '/');
   const trigger = page.getByRole('button', { name: 'Abrir menu' });
   const menu = page.locator('#mobile-menu');
   await trigger.click();
@@ -92,7 +93,7 @@ test('mobile navigation follows anchors and closes only at the desktop breakpoin
 
 test('mobile menu closes on backdrop pointer and restores focus', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
-  await page.goto('/');
+  await gotoAndWaitForHydration(page, '/');
   const trigger = page.getByRole('button', { name: 'Abrir menu' });
   await trigger.focus();
   await page.keyboard.press('Enter');
@@ -107,7 +108,7 @@ test('mobile menu closes on backdrop pointer and restores focus', async ({ page 
 test('reduced motion keeps the opening illustration and suppresses decorative movement', async ({
   page,
 }) => {
-  await page.goto('/');
+  await gotoAndWaitForHydration(page, '/');
   await expect(page.locator('.opening-person img')).toBeVisible();
   const action = page.locator('#inicio a[href="#plataforma"]');
   await action.hover();
@@ -125,7 +126,7 @@ test('reduced motion keeps the opening illustration and suppresses decorative mo
 
 test('video media errors fall back to the poster', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.goto('/');
+  await gotoAndWaitForHydration(page, '/');
   const background = page.locator('app-hero-background');
   // The current opening uses an illustration; the optional film is commented out.
   // HeroBackground's playback/fallback lifecycle remains covered by its unit tests.
@@ -146,7 +147,7 @@ for (const viewport of [
     page,
   }) => {
     await page.setViewportSize(viewport);
-    await page.goto('/');
+    await gotoAndWaitForHydration(page, '/');
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(viewport.width);
     const action = page.locator('#inicio').getByRole('button', { name: 'Sobre a disponibilidade' });
     await expect(action).toBeInViewport();

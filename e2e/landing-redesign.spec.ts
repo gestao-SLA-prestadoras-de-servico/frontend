@@ -1,8 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { gotoAndWaitForHydration } from './helpers/hydration';
 
 test('profiles support keyboard selection, local simulations and resets', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/');
+  await gotoAndWaitForHydration(page, '/');
   const tabs = page.getByRole('tablist', { name: 'Perfis da plataforma' });
   const manager = tabs.getByRole('tab', { name: 'Gestor', exact: true });
   const technician = tabs.getByRole('tab', { name: 'Técnico', exact: true });
@@ -75,7 +76,7 @@ test('the three deadline posters follow scrolling and become static with reduced
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.goto('/');
+  await gotoAndWaitForHydration(page, '/');
   await page.evaluate(() => document.fonts.ready);
   const scene = page.locator('#prazos');
   await expect(scene.locator('.poster-print')).toHaveCount(3);
@@ -99,7 +100,7 @@ test('the three deadline posters follow scrolling and become static with reduced
 
 test('closing availability dialog returns focus to its trigger', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/');
+  await gotoAndWaitForHydration(page, '/');
   const trigger = page
     .locator('#disponibilidade')
     .getByRole('button', { name: 'Sobre a disponibilidade' });
