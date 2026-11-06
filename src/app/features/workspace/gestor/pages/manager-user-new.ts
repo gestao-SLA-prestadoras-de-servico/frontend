@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  Injector,
+  signal,
+} from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -35,6 +42,7 @@ export class ManagerUserNew {
   private readonly router = inject(Router);
   private readonly store = inject(UserDemoStore);
   private readonly document = inject(DOCUMENT);
+  private readonly injector = inject(Injector);
   protected readonly icons = WORKSPACE_ICONS;
   protected readonly submitted = signal(false);
   protected readonly form: UserForm = new FormGroup({
@@ -81,7 +89,9 @@ export class ManagerUserNew {
         ? ['name', 'email', 'company']
         : ['name', 'email'];
       const first = fields.find((field) => this.form.controls[field].invalid);
-      this.document.getElementById(`new-user-${first ?? 'name'}`)?.focus();
+      afterNextRender(() => this.document.getElementById(`new-user-${first ?? 'name'}`)?.focus(), {
+        injector: this.injector,
+      });
       return;
     }
     const values = this.form.getRawValue();
@@ -93,7 +103,9 @@ export class ManagerUserNew {
     });
     if (!created) {
       this.form.controls.email.setErrors({ duplicate: true });
-      this.document.getElementById('new-user-email')?.focus();
+      afterNextRender(() => this.document.getElementById('new-user-email')?.focus(), {
+        injector: this.injector,
+      });
       return;
     }
     this.store.setNotice({

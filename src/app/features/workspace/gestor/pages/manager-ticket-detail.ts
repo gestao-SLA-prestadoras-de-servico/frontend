@@ -461,7 +461,10 @@ export class ManagerTicketDetail {
   }
 
   protected onEvidenceDialogClose(): void {
-    if (!this.completing) this.evidenceTrigger?.focus();
+    const trigger = this.evidenceTrigger;
+    if (!this.completing && trigger?.isConnected) {
+      afterNextRender(() => trigger.focus(), { injector: this.injector });
+    }
     this.evidenceTrigger = undefined;
     this.completing = false;
     this.selectedEvidenceId.set('');
