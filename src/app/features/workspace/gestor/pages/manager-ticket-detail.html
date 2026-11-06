@@ -223,6 +223,93 @@
           sessão.
         </p>
       </div>
+      <section
+        class="mt-5 border-t border-line pt-5"
+        aria-labelledby="completion-notifications-heading"
+      >
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h2
+              id="completion-notifications-heading"
+              class="text-base font-semibold leading-[1.5] tracking-normal"
+            >
+              Avisos de conclusão
+            </h2>
+            <p class="mt-1 text-sm text-ink2">Receba um aviso quando o chamado for concluído.</p>
+          </div>
+          <span
+            class="shrink-0 rounded-sm px-2 py-1 text-xs font-semibold"
+            [class.bg-grn-bg]="notificationState() === 'Ligado'"
+            [class.text-grn-t]="notificationState() === 'Ligado'"
+            [class.bg-bg]="notificationState() !== 'Ligado'"
+            [class.text-ink2]="notificationState() !== 'Ligado'"
+          >
+            {{ notificationState() }}
+          </span>
+        </div>
+        <label
+          for="completion-notification-switch"
+          class="mt-4 flex items-start gap-3 rounded-control border border-line bg-sf p-3"
+          [class.cursor-pointer]="!notificationDisabled()"
+          [class.cursor-not-allowed]="notificationDisabled()"
+          [class.opacity-70]="notificationDisabled()"
+        >
+          <input
+            id="completion-notification-switch"
+            class="peer sr-only"
+            type="checkbox"
+            role="switch"
+            [checked]="notificationPreference()"
+            [disabled]="notificationDisabled()"
+            [attr.aria-checked]="notificationPreference()"
+            aria-describedby="completion-notification-help completion-notification-state"
+            (change)="updateNotificationPreference($event)"
+          />
+          <span
+            aria-hidden="true"
+            class="relative mt-0.5 h-7 w-12 shrink-0 rounded-full bg-ink3 transition-colors after:absolute after:left-1 after:top-1 after:size-5 after:rounded-full after:bg-white after:transition-transform after:content-[''] peer-checked:bg-pri peer-checked:after:translate-x-5 peer-disabled:bg-line peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-pri"
+          ></span>
+          <span class="min-w-0">
+            <span class="block text-sm font-semibold">Avisar somente este Gestor</span>
+            <span
+              id="completion-notification-help"
+              class="mt-1 block text-xs leading-[1.6] text-ink2"
+            >
+              A escolha é individual por Gestor. Cada pessoa define seus próprios avisos.
+            </span>
+          </span>
+        </label>
+        <p
+          id="completion-notification-state"
+          class="mt-2 text-xs text-ink3"
+          [attr.aria-live]="notificationDisabled() ? null : 'polite'"
+        >
+          @if (notificationDisabled()) {
+            Aviso indisponível para chamados cancelados ou encerrados.
+          } @else {
+            Avisos {{ notificationPreference() ? 'ligados' : 'desligados' }} neste chamado.
+          }
+        </p>
+        @if (notificationNotice()) {
+          <div
+            class="mt-3 rounded-deadline bg-grn-bg p-3 text-grn-t"
+            role="status"
+            aria-live="polite"
+          >
+            <p class="text-sm">{{ notificationNotice() }}</p>
+            <button
+              type="button"
+              class="mt-2 min-h-11 px-2 text-sm font-semibold underline underline-offset-4"
+              (click)="clearNotificationNotice()"
+            >
+              Fechar mensagem
+            </button>
+          </div>
+        }
+        <p class="mt-2 text-xs leading-[1.6] text-ink3">
+          Demonstração local: esta preferência não é enviada nem salva no servidor.
+        </p>
+      </section>
       @if (isOpenTicket()) {
         <section class="mt-5 border-t border-line pt-5" aria-labelledby="triage-heading">
           <div class="flex flex-wrap items-start justify-between gap-2">

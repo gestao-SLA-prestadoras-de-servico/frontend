@@ -122,6 +122,28 @@ export class ManagerTicketDetail {
     title: string;
     detail: string;
   } | null>(null);
+  protected readonly notificationOverrides = signal<Readonly<Record<number, boolean>>>({});
+  protected readonly notificationDisabled = computed(() => {
+    const ticket = this.ticket();
+    return (
+      !ticket ||
+      ticket.notifyOnCompletion === null ||
+      ['CANCELADO', 'ENCERRADO'].includes(ticket.status)
+    );
+  });
+  protected readonly notificationPreference = computed(() => {
+    const ticket = this.ticket();
+    if (!ticket || this.notificationDisabled()) return false;
+    return this.notificationOverrides()[ticket.id] ?? ticket.notifyOnCompletion ?? false;
+  });
+  protected readonly notificationState = computed(() =>
+    this.notificationDisabled()
+      ? 'Indisponível'
+      : this.notificationPreference()
+        ? 'Ligado'
+        : 'Desligado',
+  );
+  protected readonly notificationNotice = signal('');
   protected readonly technicians = computed(() =>
     this.userStore
       .users()
@@ -523,6 +545,22 @@ export class ManagerTicketDetail {
 
   protected clearEvidenceNotice(): void {
     this.evidenceNotice.set(null);
+  }
+
+  protected updateNotificationPreference(event: Event): void {
+    const ticket = this.ticket();
+    if (!ticket || this.notificationDisabled()) return;
+    const enabled = (event.target as HTMLInputElement).checked;
+    this.notificationOverrides.update((choices) => ({ ...choices, [ticket.id]: enabled }));
+    this.notificationNotice.set(
+      enabled
+        ? 'Avisos de conclusão ligados neste chamado apenas para o seu usuário Gestor. A escolha não foi salva.'
+        : 'Avisos de conclusão desligados neste chamado apenas para o seu usuário Gestor. A escolha não foi salva.',
+    );
+  }
+
+  protected clearNotificationNotice(): void {
+    this.notificationNotice.set('');
   }
 
   protected hasProcessingEvidence(evidences: readonly ManagerTicketEvidence[]): boolean {
