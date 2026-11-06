@@ -1,0 +1,330 @@
+<div class="flex flex-wrap items-start justify-between gap-5">
+  <div class="max-w-[65ch]">
+    <h1
+      appPageHeading
+      class="text-[26px] leading-[1.25] font-semibold tracking-[-.03em] sm:text-[28px]"
+    >
+      Contratos
+    </h1>
+    <p class="mt-2 text-sm leading-[1.7] text-ink2">
+      Consulte a vigência dos contratos e as políticas vinculadas a cada empresa.
+    </p>
+  </div>
+  <a routerLink="/app/gestor/contratos/nova" appButtonPrimary class="min-h-11 px-4 py-2.5">
+    <svg class="size-4" [lucideIcon]="icons.add" aria-hidden="true"></svg>Novo contrato
+  </a>
+</div>
+
+<p class="mt-4 flex items-start gap-2 text-xs leading-[1.7] text-ink3">
+  <svg class="mt-0.5 size-4 shrink-0" [lucideIcon]="icons.info" aria-hidden="true"></svg>
+  Demonstração com contratos e políticas fictícias. Nenhuma operação real é executada.
+</p>
+
+@if (notice(); as message) {
+  <section
+    #noticeTarget
+    tabindex="-1"
+    role="status"
+    aria-labelledby="contract-notice-title"
+    class="mt-6 flex flex-wrap items-start justify-between gap-4 rounded-deadline bg-grn-bg p-4 text-grn-t sm:p-5"
+  >
+    <div>
+      <h2 id="contract-notice-title" class="text-sm font-semibold leading-normal tracking-normal">
+        {{ message.title }}
+      </h2>
+      <p class="mt-1 text-sm">{{ message.detail }}</p>
+    </div>
+    <button
+      type="button"
+      class="min-h-11 rounded-sm px-3 text-sm font-semibold underline underline-offset-4"
+      (click)="clearNotice()"
+    >
+      Fechar
+    </button>
+  </section>
+}
+
+<dl
+  class="mt-7 grid grid-cols-2 gap-x-4 gap-y-4 rounded-deadline bg-bg px-4 py-4 sm:grid-cols-4 sm:px-6 sm:py-5"
+>
+  <div>
+    <dt class="text-xs text-ink2 sm:text-sm">Contratos</dt>
+    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums">{{ contracts().length }}</dd>
+  </div>
+  <div>
+    <dt class="text-xs text-ink2 sm:text-sm">Vigentes</dt>
+    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums">{{ currentCount() }}</dd>
+  </div>
+  <div>
+    <dt class="text-xs text-ink2 sm:text-sm">Futuros</dt>
+    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums">{{ futureCount() }}</dd>
+  </div>
+  <div>
+    <dt class="text-xs text-ink2 sm:text-sm">Vencidos</dt>
+    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums">{{ expiredCount() }}</dd>
+  </div>
+</dl>
+<p class="mt-2 text-xs text-ink3">Situação avaliada em 05/11/2026.</p>
+
+<section class="mt-7" aria-label="Busca e filtros de contratos">
+  <div class="grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]">
+    <div>
+      <label for="contract-search" class="block text-sm font-semibold">Buscar contrato</label>
+      <input
+        id="contract-search"
+        appInput
+        class="mt-2"
+        type="search"
+        autocomplete="off"
+        placeholder="Número, empresa ou política"
+        [value]="query()"
+        (input)="updateQuery($event)"
+      />
+    </div>
+    <div>
+      <label for="contract-term-filter" class="block text-sm font-semibold">Vigência</label>
+      <select
+        id="contract-term-filter"
+        class="mt-2 min-h-[52px] w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 py-2 text-base text-ink hover:border-ink2 focus-visible:border-pri focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+        [value]="filter()"
+        (change)="updateFilter($event)"
+      >
+        <option value="all">Todas</option>
+        <option value="current">Vigentes</option>
+        <option value="future">Futuros</option>
+        <option value="expired">Vencidos</option>
+      </select>
+    </div>
+  </div>
+</section>
+
+<section class="mt-7" aria-labelledby="contract-list-heading">
+  <div class="flex flex-wrap items-baseline justify-between gap-3">
+    <h2 id="contract-list-heading" class="text-base font-semibold leading-[1.5] tracking-normal">
+      Lista de contratos
+    </h2>
+    <p class="text-xs text-ink3" aria-live="polite">
+      {{ filteredRows().length }} {{ filteredRows().length === 1 ? 'resultado' : 'resultados' }}
+    </p>
+  </div>
+
+  @if (filteredRows().length) {
+    <div class="mt-3 hidden overflow-x-auto rounded-deadline border border-line xl:block">
+      <table class="w-full min-w-[980px] table-fixed border-collapse text-left text-sm">
+        <caption class="sr-only">
+          Contratos fictícios, vigência e política vinculada
+        </caption>
+        <colgroup>
+          <col class="w-[14%]" />
+          <col class="w-[20%]" />
+          <col class="w-[11%]" />
+          <col class="w-[11%]" />
+          <col class="w-[22%]" />
+          <col class="w-[10%]" />
+          <col class="w-[12%]" />
+        </colgroup>
+        <thead class="bg-bg text-xs font-semibold text-ink2">
+          <tr>
+            <th scope="col" class="px-3 py-3">Contrato</th>
+            <th scope="col" class="px-3 py-3">Empresa</th>
+            <th scope="col" class="px-3 py-3">Início</th>
+            <th scope="col" class="px-3 py-3">Fim</th>
+            <th scope="col" class="px-3 py-3">Política vinculada</th>
+            <th scope="col" class="px-3 py-3">Situação</th>
+            <th scope="col" class="px-3 py-3">Detalhes</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-line">
+          @for (row of filteredRows(); track row.contract.id) {
+            <tr>
+              <th scope="row" class="px-3 py-4 align-top font-semibold leading-[1.5]">
+                {{ row.contract.id }}
+              </th>
+              <td class="px-3 py-4 align-top text-ink2 wrap-anywhere">{{ row.companyName }}</td>
+              <td class="px-3 py-4 align-top tabular-nums">
+                {{ row.contract.startDate | date: 'dd/MM/yyyy' : 'UTC' }}
+              </td>
+              <td class="px-3 py-4 align-top tabular-nums">
+                {{ row.contract.endDate | date: 'dd/MM/yyyy' : 'UTC' }}
+              </td>
+              <td class="px-3 py-4 align-top">
+                <span class="block text-xs font-semibold text-ink2">{{ row.policyCode }}</span>
+                <span class="mt-0.5 block text-sm wrap-anywhere">{{ row.policyName }}</span>
+              </td>
+              <td class="px-3 py-4 align-top">
+                @if (row.term === 'current') {
+                  <span
+                    class="inline-flex min-h-7 items-center rounded-sm bg-grn-bg px-2 text-xs font-semibold text-grn-t"
+                    >Vigente</span
+                  >
+                } @else if (row.term === 'future') {
+                  <span
+                    class="inline-flex min-h-7 items-center rounded-sm bg-pri-bg px-2 text-xs font-semibold text-pri-d"
+                    >Futuro</span
+                  >
+                } @else {
+                  <span
+                    class="inline-flex min-h-7 items-center rounded-sm bg-danger-bg px-2 text-xs font-semibold text-danger"
+                    >Vencido</span
+                  >
+                }
+              </td>
+              <td class="px-3 py-3 align-top">
+                <button
+                  #detailsDesktopTrigger
+                  type="button"
+                  class="min-h-10 rounded-sm px-2 text-sm font-semibold text-pri-d underline underline-offset-4 hover:text-pri"
+                  [disabled]="!ready()"
+                  [attr.aria-label]="'Ver detalhes do contrato ' + row.contract.id"
+                  (click)="openDetails(row.contract, detailsDesktopTrigger)"
+                >
+                  Ver detalhes
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-3 divide-y divide-line rounded-deadline border border-line xl:hidden">
+      @for (row of filteredRows(); track row.contract.id) {
+        <article
+          class="p-4 first:rounded-t-deadline last:rounded-b-deadline"
+          [attr.aria-labelledby]="'contract-title-' + row.contract.id"
+        >
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h3
+                [id]="'contract-title-' + row.contract.id"
+                class="text-sm font-semibold leading-[1.5] tracking-[-.01em]"
+              >
+                {{ row.contract.id }}
+              </h3>
+              <p class="mt-1 text-sm text-ink2">{{ row.companyName }}</p>
+            </div>
+            @if (row.term === 'current') {
+              <span
+                class="inline-flex min-h-7 items-center rounded-sm bg-grn-bg px-2.5 text-xs font-semibold text-grn-t"
+                >Vigente</span
+              >
+            } @else if (row.term === 'future') {
+              <span
+                class="inline-flex min-h-7 items-center rounded-sm bg-pri-bg px-2.5 text-xs font-semibold text-pri-d"
+                >Futuro</span
+              >
+            } @else {
+              <span
+                class="inline-flex min-h-7 items-center rounded-sm bg-danger-bg px-2.5 text-xs font-semibold text-danger"
+                >Vencido</span
+              >
+            }
+          </div>
+          <dl class="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+            <div>
+              <dt class="text-xs text-ink3">Início</dt>
+              <dd class="m-0 mt-0.5 tabular-nums">
+                {{ row.contract.startDate | date: 'dd/MM/yyyy' : 'UTC' }}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-xs text-ink3">Fim</dt>
+              <dd class="m-0 mt-0.5 tabular-nums">
+                {{ row.contract.endDate | date: 'dd/MM/yyyy' : 'UTC' }}
+              </dd>
+            </div>
+            <div class="col-span-2">
+              <dt class="text-xs text-ink3">Política vinculada</dt>
+              <dd class="m-0 mt-0.5">{{ row.policyCode }} · {{ row.policyName }}</dd>
+            </div>
+          </dl>
+          <div class="mt-3 border-t border-line pt-2">
+            <button
+              #detailsMobileTrigger
+              type="button"
+              class="min-h-11 rounded-sm px-2 text-sm font-semibold text-pri-d underline underline-offset-4"
+              [disabled]="!ready()"
+              [attr.aria-label]="'Ver detalhes do contrato ' + row.contract.id"
+              (click)="openDetails(row.contract, detailsMobileTrigger)"
+            >
+              Ver detalhes
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  } @else {
+    <div class="mt-3 rounded-deadline bg-bg px-5 py-7 sm:px-7" role="status">
+      <h3 class="text-sm font-semibold leading-normal tracking-normal">
+        Nenhum contrato encontrado
+      </h3>
+      <p class="mt-2 max-w-[60ch] text-sm text-ink2">
+        Ajuste a busca ou o filtro de vigência para ver outros contratos de exemplo.
+      </p>
+      <button
+        type="button"
+        class="mt-4 min-h-11 rounded-sm px-2 text-sm font-semibold text-pri-d underline underline-offset-4"
+        (click)="clearFilters()"
+      >
+        Limpar busca e filtro
+      </button>
+    </div>
+  }
+</section>
+
+<dialog
+  #detailsDialog
+  tabindex="-1"
+  class="m-auto max-h-[calc(100dvh-32px)] w-[min(560px,calc(100%-24px))] overflow-y-auto rounded-surface border border-line bg-sf p-0 text-ink shadow-dialog backdrop:bg-navy/50"
+  aria-labelledby="contract-details-title"
+  (close)="onDetailsClose()"
+  (click)="onDetailsBackdrop($event)"
+  (keydown)="trapDetailsFocus($event)"
+>
+  @if (selectedContract(); as contract) {
+    <div class="p-5 sm:p-7">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h2
+            id="contract-details-title"
+            class="text-xl font-semibold leading-snug tracking-[-.02em]"
+          >
+            {{ contract.id }}
+          </h2>
+          <p class="mt-2 text-sm text-ink2">{{ companyName(contract.companyId) }}</p>
+        </div>
+        <button
+          #closeDetailsButton
+          type="button"
+          class="min-h-11 shrink-0 rounded-sm px-3 text-sm font-semibold text-pri-d underline underline-offset-4"
+          (click)="closeDetails()"
+        >
+          Fechar
+        </button>
+      </div>
+      <dl class="mt-6 divide-y divide-line border-y border-line text-sm">
+        <div class="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
+          <dt class="text-ink2">Início da vigência</dt>
+          <dd class="m-0 font-semibold tabular-nums">
+            {{ contract.startDate | date: 'dd/MM/yyyy' : 'UTC' }}
+          </dd>
+        </div>
+        <div class="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
+          <dt class="text-ink2">Fim da vigência</dt>
+          <dd class="m-0 font-semibold tabular-nums">
+            {{ contract.endDate | date: 'dd/MM/yyyy' : 'UTC' }}
+          </dd>
+        </div>
+        <div class="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
+          <dt class="text-ink2">Política vinculada</dt>
+          <dd class="m-0 font-semibold">{{ policyName(contract.policyId) }}</dd>
+        </div>
+        <div class="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
+          <dt class="text-ink2">Situação em 05/11/2026</dt>
+          <dd class="m-0 font-semibold">{{ contractTermLabel(contract) }}</dd>
+        </div>
+      </dl>
+      <p class="mt-4 text-xs text-ink3">Dados fictícios. Nenhum cadastro foi alterado.</p>
+    </div>
+  }
+</dialog>

@@ -135,8 +135,8 @@ export const WORKSPACE_PROFILES: readonly WorkspaceProfile[] = [
       {
         key: 'contratos',
         path: '/app/gestor/contratos',
-        title: 'Contratos e SLA',
-        description: 'O contexto contratual que orienta os três compromissos de prazo.',
+        title: 'Contratos',
+        description: 'Vigência dos contratos empresariais e políticas vinculadas.',
         icon: 'contracts',
         group: 'Gestão',
         kind: 'preview',
