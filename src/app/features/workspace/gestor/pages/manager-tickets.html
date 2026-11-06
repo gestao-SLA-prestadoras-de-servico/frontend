@@ -16,17 +16,17 @@
   </p>
 </div>
 
-<dl class="mt-6 grid grid-cols-3 gap-2 rounded-deadline bg-bg p-4 sm:gap-4 sm:px-6 sm:py-5">
-  <div>
-    <dt class="text-xs text-ink2 sm:text-sm">Em aberto</dt>
-    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums">{{ openCount() }}</dd>
+<dl class="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
+  <div class="rounded-deadline bg-pri-bg p-3 sm:p-4">
+    <dt class="text-xs text-pri-d sm:text-sm">Em aberto</dt>
+    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums text-pri-d">{{ openCount() }}</dd>
   </div>
-  <div>
-    <dt class="text-xs text-ink2 sm:text-sm">Resolvidos</dt>
-    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums">{{ resolvedCount() }}</dd>
+  <div class="rounded-deadline bg-grn-bg p-3 sm:p-4">
+    <dt class="text-xs text-grn-t sm:text-sm">Resolvidos</dt>
+    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums text-grn-t">{{ resolvedCount() }}</dd>
   </div>
-  <div>
-    <dt class="text-xs text-ink2 sm:text-sm">Atrasados</dt>
+  <div class="rounded-deadline bg-danger-bg p-3 sm:p-4">
+    <dt class="text-xs text-danger sm:text-sm">Atrasados</dt>
     <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums text-danger">{{ overdueCount() }}</dd>
   </div>
 </dl>
@@ -142,10 +142,7 @@
               <td class="px-4 py-4 align-top">
                 <span
                   class="inline-flex min-h-7 items-center rounded-sm px-2.5 text-xs font-semibold"
-                  [class.bg-danger-bg]="ticket.overdue"
-                  [class.text-danger]="ticket.overdue"
-                  [class.bg-bg]="!ticket.overdue"
-                  [class.text-ink2]="!ticket.overdue"
+                  [ngClass]="statusClasses(ticket.status)"
                   >{{ statusLabel(ticket.status) }}</span
                 >
                 @if (ticket.overdue) {
@@ -153,9 +150,11 @@
                 }
               </td>
               <td class="px-4 py-4 align-top">
-                <span class="font-semibold" [class.text-danger]="ticket.priority === 'Alta'">{{
-                  ticket.priority
-                }}</span>
+                <span
+                  class="inline-flex min-h-7 items-center rounded-sm px-2.5 text-xs font-semibold"
+                  [ngClass]="priorityClasses(ticket.priority)"
+                  >{{ ticket.priority }}</span
+                >
               </td>
               <td class="px-4 py-4 align-top" [class.text-danger]="ticket.overdue">
                 {{ ticket.nextDeadline }}
@@ -181,10 +180,7 @@
             </div>
             <span
               class="inline-flex min-h-7 shrink-0 items-center rounded-sm px-2.5 text-xs font-semibold"
-              [class.bg-danger-bg]="ticket.overdue"
-              [class.text-danger]="ticket.overdue"
-              [class.bg-bg]="!ticket.overdue"
-              [class.text-ink2]="!ticket.overdue"
+              [ngClass]="statusClasses(ticket.status)"
               >{{ statusLabel(ticket.status) }}</span
             >
           </div>
@@ -199,8 +195,12 @@
             </div>
             <div>
               <dt class="text-xs text-ink3">Prioridade</dt>
-              <dd class="m-0 mt-0.5 font-semibold" [class.text-danger]="ticket.priority === 'Alta'">
-                {{ ticket.priority }}
+              <dd class="m-0 mt-0.5">
+                <span
+                  class="inline-flex min-h-7 items-center rounded-sm px-2.5 text-xs font-semibold"
+                  [ngClass]="priorityClasses(ticket.priority)"
+                  >{{ ticket.priority }}</span
+                >
               </dd>
             </div>
             <div>

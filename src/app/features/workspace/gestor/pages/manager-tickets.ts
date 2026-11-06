@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { PageHeading } from '@app/shared/ui/page-heading/page-heading.directive';
@@ -8,13 +9,17 @@ import {
   ManagerTicketPriority,
   ManagerTicketStatus,
 } from '../data/manager-ticket-demo-store';
+import {
+  managerTicketPriorityClasses,
+  managerTicketStatusClasses,
+} from '../data/manager-ticket-presentation';
 
 type TicketFilter = 'Todas' | ManagerTicketStatus;
 type PriorityFilter = 'Todas' | ManagerTicketPriority;
 
 @Component({
   selector: 'app-manager-tickets',
-  imports: [RouterLink, PageHeading, LucideDynamicIcon],
+  imports: [NgClass, RouterLink, PageHeading, LucideDynamicIcon],
   templateUrl: './manager-tickets.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
@@ -22,6 +27,8 @@ type PriorityFilter = 'Todas' | ManagerTicketPriority;
 export class ManagerTickets {
   private readonly store = inject(ManagerTicketDemoStore);
   protected readonly icons = WORKSPACE_ICONS;
+  protected readonly statusClasses = managerTicketStatusClasses;
+  protected readonly priorityClasses = managerTicketPriorityClasses;
   protected readonly allTickets = this.store.tickets;
   protected readonly clientFilter = signal('Todas');
   protected readonly technicianFilter = signal('Todos');

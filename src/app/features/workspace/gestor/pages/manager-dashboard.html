@@ -25,15 +25,15 @@
 
 <section class="mt-7" aria-label="Indicadores da fila">
   <dl class="grid gap-3 sm:grid-cols-3">
-    <div class="rounded-deadline bg-bg p-4 sm:p-5">
+    <div class="rounded-deadline bg-pri-bg p-4 sm:p-5">
       <dt class="text-sm text-ink2">Em aberto</dt>
-      <dd class="m-0 mt-2 text-3xl font-semibold tabular-nums">{{ openCount() }}</dd>
-      <p class="mt-1 text-xs text-ink3">Abertos, atribuídos ou em atendimento</p>
+      <dd class="m-0 mt-2 text-3xl font-semibold tabular-nums text-pri-d">{{ openCount() }}</dd>
+      <p class="mt-1 text-xs text-pri-d">Abertos, atribuídos ou em atendimento</p>
     </div>
-    <div class="rounded-deadline bg-bg p-4 sm:p-5">
+    <div class="rounded-deadline bg-grn-bg p-4 sm:p-5">
       <dt class="text-sm text-ink2">Resolvidos</dt>
-      <dd class="m-0 mt-2 text-3xl font-semibold tabular-nums">{{ resolvedCount() }}</dd>
-      <p class="mt-1 text-xs text-ink3">Inclui atendimentos encerrados</p>
+      <dd class="m-0 mt-2 text-3xl font-semibold tabular-nums text-grn-t">{{ resolvedCount() }}</dd>
+      <p class="mt-1 text-xs text-grn-t">Inclui atendimentos encerrados</p>
     </div>
     <div class="rounded-deadline bg-danger-bg p-4 sm:p-5 text-danger">
       <dt class="text-sm">Prazos violados</dt>
@@ -67,10 +67,7 @@
             <span class="font-mono text-xs text-ink3">#{{ ticket.id }}</span
             ><span
               class="inline-flex min-h-7 items-center rounded-sm px-2.5 text-xs font-semibold"
-              [class.bg-danger-bg]="ticket.overdue"
-              [class.text-danger]="ticket.overdue"
-              [class.bg-pri-bg]="!ticket.overdue"
-              [class.text-pri-d]="!ticket.overdue"
+              [ngClass]="statusClasses(ticket.status)"
               >{{
                 ticket.status === 'ABERTO'
                   ? 'Em triagem'
@@ -78,6 +75,11 @@
                     ? 'Em atendimento'
                     : 'Atribuído'
               }}</span
+            >
+            <span
+              class="inline-flex min-h-7 items-center rounded-sm px-2.5 text-xs font-semibold"
+              [ngClass]="priorityClasses(ticket.priority)"
+              >{{ ticket.priority }}</span
             >
             @if (ticket.overdue) {
               <span

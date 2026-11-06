@@ -1,4 +1,4 @@
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, NgClass } from '@angular/common';
 import {
   afterNextRender,
   ChangeDetectionStrategy,
@@ -24,6 +24,11 @@ import {
   ManagerTicketPriority,
 } from '../data/manager-ticket-demo-store';
 import { UserDemoStore } from '../data/user-demo-store';
+import {
+  managerDeadlineClasses,
+  managerTicketPriorityClasses,
+  managerTicketStatusClasses,
+} from '../data/manager-ticket-presentation';
 
 const PRIORITY_REFERENCE = {
   Alta: [
@@ -42,7 +47,7 @@ type AssignmentMode = 'initial' | 'reassign' | null;
 
 @Component({
   selector: 'app-manager-ticket-detail',
-  imports: [RouterLink, ButtonSecondary, PageHeading, LucideDynamicIcon],
+  imports: [NgClass, RouterLink, ButtonSecondary, PageHeading, LucideDynamicIcon],
   templateUrl: './manager-ticket-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
@@ -88,6 +93,9 @@ export class ManagerTicketDetail {
     },
   );
   protected readonly icons = WORKSPACE_ICONS;
+  protected readonly statusClasses = managerTicketStatusClasses;
+  protected readonly priorityClasses = managerTicketPriorityClasses;
+  protected readonly deadlineClasses = managerDeadlineClasses;
   protected readonly ticket = computed(() => this.store.byId(this.routeId()));
   protected readonly selectedEvidence = computed(
     () =>

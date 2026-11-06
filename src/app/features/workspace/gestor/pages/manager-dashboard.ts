@@ -1,13 +1,18 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { PageHeading } from '@app/shared/ui/page-heading/page-heading.directive';
 import { WORKSPACE_ICONS } from '../../data/workspace-icons';
 import { ManagerTicketDemoStore } from '../data/manager-ticket-demo-store';
+import {
+  managerTicketPriorityClasses,
+  managerTicketStatusClasses,
+} from '../data/manager-ticket-presentation';
 
 @Component({
   selector: 'app-manager-dashboard',
-  imports: [RouterLink, PageHeading, LucideDynamicIcon],
+  imports: [NgClass, RouterLink, PageHeading, LucideDynamicIcon],
   templateUrl: './manager-dashboard.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
@@ -15,6 +20,8 @@ import { ManagerTicketDemoStore } from '../data/manager-ticket-demo-store';
 export class ManagerDashboard {
   private readonly store = inject(ManagerTicketDemoStore);
   protected readonly icons = WORKSPACE_ICONS;
+  protected readonly statusClasses = managerTicketStatusClasses;
+  protected readonly priorityClasses = managerTicketPriorityClasses;
   protected readonly tickets = this.store.tickets;
   protected readonly openCount = computed(
     () =>
