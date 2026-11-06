@@ -47,6 +47,7 @@ Thumbs.db
 .codex
 .agents
 .impeccable
+.taste-skill
 
 # Playwright
 /test-results/

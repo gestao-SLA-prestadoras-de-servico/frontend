@@ -20,6 +20,8 @@ colors:
   grn: '#087a69'
   grn-bg: '#e5f6f0'
   grn-t: '#066c5b'
+  danger: '#b42318'
+  danger-bg: '#fef3f2'
 typography:
   display:
     fontFamily: 'Manrope, Arial, sans-serif'
@@ -285,6 +287,18 @@ Um `dialog` nativo centralizado, com largura máxima de 460 px e recuo lateral m
 ### FAQ
 
 Seis disclosures nativos em `details` e `summary`, com separadores, área mínima de 72 px e símbolo de mais que gira quando aberto. Permanecem operáveis por teclado; movimento reduzido elimina a rotação animada.
+
+### Access Demo — FRONTEND 05
+
+As rotas de entrada e sessão expirada compartilham `AccessLayout`: fundo `bg`, superfície branca e uma foto corporativa ilustrativa ocupando metade esquerda a partir de 1024 px. Em telas menores, a foto some e o formulário ocupa uma coluna. No login, o símbolo e o nome da marca ficam centralizados acima do título. O conteúdo de acesso tem largura máxima de 400 px, recuo mínimo de 20 px e altura natural para permitir rolagem em telas baixas.
+
+No desktop, o contorno externo usa 16 px e a superfície acompanha a altura útil da janela. O conteúdo permanece centralizado entre o cabeçalho e o rodapé, com respiro vertical fluido de 24 a 36 px no `main`. Os intervalos do login são mais compactos a partir de 1024 px, permitindo que o estado inicial caiba em 1280 × 720 e 1366 × 768 sem rolagem. Campos de 52 px, alvos dos controles e espaços para mensagens obrigatórias são preservados. Telas muito baixas, zoom e avisos adicionais mantêm rolagem natural quando necessária.
+
+Os títulos de acesso usam Manrope 600, 30 px no celular e 36 px a partir de 640 px, entrelinha 1,2 e tracking −0,025 em. Rótulos de 14 px ficam acima de campos de 52 px, com raio de 10 px. Os campos usam borda `ink3` a 80%, fundo branco e foco `pri`. Mensagens e bordas de validação usam `danger`. A ação principal reutiliza `ButtonPrimary`, com altura de 52 px no formulário. O carregamento muda o rótulo e desabilita o conjunto, sem alterar a largura do botão; ao terminar, qualquer e-mail válido e senha preenchida seguem para a sessão de demonstração local.
+
+A sessão fictícia usa cabeçalho branco, fundo `bg` e coluna central de até 1100 px. Perfil e explicação de expiração ficam em superfícies tonais, sem sombras. O menu do usuário é a única superfície flutuante: largura de 280 px, raio de 12 px e `shadow-header`. Os alvos do menu têm pelo menos 48 px. A entrada não tem coreografia de carregamento; o movimento se limita ao feedback dos controles e ao indicador de espera, respeitando movimento reduzido.
+
+Todas essas telas identificam a demonstração e os dados fictícios. O acesso real à plataforma permanece indisponível. O formulário de entrada não verifica credenciais e não armazena os valores enviados. O roteiro e os limites funcionais estão em `docs/FRONTEND_05_ACCESS.md`.
 
 ## Do's and Don'ts
 

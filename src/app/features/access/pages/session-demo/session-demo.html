@@ -1,0 +1,96 @@
+<div class="flex min-h-svh flex-col bg-bg">
+  <header class="bg-sf px-5 sm:px-10">
+    <div class="mx-auto flex min-h-[88px] max-w-[1100px] items-center justify-between gap-4">
+      <app-brand />
+      <app-user-menu
+        [displayName]="demo.name"
+        [email]="demo.email"
+        [roleLabel]="demo.role"
+        [initials]="demo.initials"
+        (signOut)="signOut()"
+        (expireSession)="expireSession()"
+      />
+    </div>
+  </header>
+  <main class="mx-auto w-full max-w-[1180px] grow px-5 pt-10 pb-16 sm:px-10 sm:pt-16">
+    <a
+      routerLink="/"
+      class="inline-flex min-h-11 items-center gap-2 rounded-sm text-sm font-medium text-ink2 no-underline hover:text-pri-d"
+      ><svg class="size-4" [lucideIcon]="icons.back" aria-hidden="true"></svg>Voltar ao site</a
+    >
+    <h1
+      appPageHeading
+      class="mt-6 text-[28px] leading-[1.2] font-semibold tracking-[-.035em] sm:text-[32px]"
+    >
+      Sessão de demonstração
+    </h1>
+    <p class="mt-3 max-w-[60ch] text-base leading-[1.65] text-ink2">
+      Olá, {{ demo.firstName }}. Este é o exemplo visual do seu acesso à NIVELO.
+    </p>
+    <div class="mt-10 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+      <section class="rounded-surface bg-sf p-6 sm:p-8" aria-labelledby="demo-profile-heading">
+        <div class="flex items-center gap-4">
+          <span
+            class="grid size-14 shrink-0 place-items-center rounded-full bg-pri-bg text-lg font-semibold text-pri-d"
+            aria-hidden="true"
+            >{{ demo.initials }}</span
+          >
+          <div>
+            <h2
+              id="demo-profile-heading"
+              class="text-xl leading-[1.35] font-semibold tracking-[-.02em]"
+            >
+              {{ demo.name }}
+            </h2>
+            <p class="mt-1 text-sm text-ink2">Perfil fictício · {{ demo.role }}</p>
+          </div>
+        </div>
+        <dl class="mt-8 space-y-5 text-sm">
+          <div>
+            <dt class="text-ink2">E-mail de demonstração</dt>
+            <dd class="m-0 mt-1 font-medium wrap-anywhere">{{ demo.email }}</dd>
+          </div>
+          <div>
+            <dt class="text-ink2">Estado exibido</dt>
+            <dd
+              class="m-0 mt-2 inline-flex items-center gap-2 rounded-status bg-grn-bg px-2.5 py-1 font-medium text-grn-t"
+            >
+              <span class="size-1.5 rounded-full bg-grn" aria-hidden="true"></span>Sessão ativa ·
+              Simulação
+            </dd>
+          </div>
+        </dl>
+        <p class="mt-8 max-w-[52ch] text-sm leading-[1.7] text-ink2">
+          Os dados deste perfil são apenas ilustrativos. Você pode demonstrar a saída no menu do
+          usuário, no topo da página.
+        </p>
+      </section>
+      <section class="rounded-surface bg-pri-bg p-6 sm:p-8" aria-labelledby="demo-expiry-heading">
+        <h2 id="demo-expiry-heading" class="text-xl leading-[1.35] font-semibold tracking-[-.02em]">
+          Quando a sessão termina
+        </h2>
+        <p class="mt-3 max-w-[42ch] text-sm leading-[1.7] text-ink2">
+          Veja o aviso de sessão expirada e a opção de entrar novamente. A simulação é acionada por
+          você.
+        </p>
+        <a
+          routerLink="/sessao-expirada"
+          appButtonPrimary
+          class="mt-7 min-h-12 px-5 py-3 text-center no-underline"
+          >Simular sessão expirada<svg
+            class="size-[18px] shrink-0"
+            [lucideIcon]="icons.arrow"
+            aria-hidden="true"
+          ></svg
+        ></a>
+      </section>
+    </div>
+    <p class="mt-7 max-w-[76ch] text-sm leading-[1.7] text-ink2">
+      Esta interface demonstra os estados de entrada, saída e sessão expirada. Nenhum acesso real é
+      criado e nenhum dado é enviado ou salvo.
+    </p>
+  </main>
+  <footer class="mx-auto w-full max-w-[1180px] px-5 pb-6 text-xs text-ink3 sm:px-10">
+    NIVELO · Projeto Integrador 2026.2 · Interface de demonstração
+  </footer>
+</div>

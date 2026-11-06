@@ -1,0 +1,59 @@
+<button
+  #trigger
+  type="button"
+  class="inline-flex min-h-12 items-center gap-3 rounded-control px-2.5 py-1.5 text-left transition-colors duration-150 hover:bg-pri-bg motion-reduce:transition-none"
+  [attr.aria-label]="'Menu de ' + displayName()"
+  aria-haspopup="menu"
+  [attr.aria-expanded]="open()"
+  aria-controls="session-user-menu"
+  (click)="toggle()"
+  (keydown)="onTriggerKeydown($event)"
+>
+  <span
+    class="grid size-9 shrink-0 place-items-center rounded-full bg-pri-bg text-sm font-bold text-pri-d"
+    aria-hidden="true"
+    >{{ initials() }}</span
+  >
+  <span class="hidden sm:block"
+    ><span class="block text-sm font-semibold">{{ displayName() }}</span
+    ><span class="block text-xs text-ink2">{{ roleLabel() }}</span></span
+  >
+  <svg class="size-4 text-ink2" [lucideIcon]="icons.chevron" aria-hidden="true"></svg>
+</button>
+@if (open()) {
+  <div
+    id="session-user-menu"
+    role="menu"
+    tabindex="-1"
+    aria-label="Opções da sessão"
+    class="absolute top-[calc(100%+8px)] right-0 z-30 w-[280px] max-w-[calc(100vw-40px)] rounded-deadline bg-sf p-2 shadow-header"
+    (keydown)="onMenuKeydown($event)"
+  >
+    <div class="px-3 pt-2 pb-3" role="presentation">
+      <p class="text-sm font-semibold">{{ displayName() }}</p>
+      <p class="mt-0.5 text-xs text-ink2 wrap-anywhere">{{ email() }}</p>
+      <p class="mt-1 text-xs text-ink3">Perfil de demonstração</p>
+    </div>
+    <button
+      #menuItem
+      type="button"
+      role="menuitem"
+      tabindex="-1"
+      class="flex min-h-12 w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-ink2 transition-colors duration-150 hover:bg-bg focus-visible:bg-bg focus-visible:outline-offset-[-3px] motion-reduce:transition-none"
+      (click)="select('expire')"
+    >
+      <svg class="size-[18px] shrink-0" [lucideIcon]="icons.clock" aria-hidden="true"></svg>Simular
+      sessão expirada
+    </button>
+    <button
+      #menuItem
+      type="button"
+      role="menuitem"
+      tabindex="-1"
+      class="flex min-h-12 w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-semibold text-ink transition-colors duration-150 hover:bg-bg focus-visible:bg-bg focus-visible:outline-offset-[-3px] motion-reduce:transition-none"
+      (click)="select('exit')"
+    >
+      <svg class="size-[18px] shrink-0" [lucideIcon]="icons.logout" aria-hidden="true"></svg>Sair
+    </button>
+  </div>
+}

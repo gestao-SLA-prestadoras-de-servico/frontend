@@ -22,6 +22,8 @@ A entrega atual é uma landing pública na rota `/` do Angular existente, com pr
 
 O uso da futura plataforma pelo navegador do celular está previsto; esta entrega não oferece aplicativo nativo ou funcionamento offline. Os dados, estados, horários e imagens do chamado #1042 são ilustrativos. As simulações de distribuição, registro de evidência e validação alteram apenas a demonstração local; não enviam informações, não enviam arquivos e não persistem dados de produto. O cenário de validação do cliente é independente do chamado principal, cuja resolução permanece em andamento.
 
+A entrega FRONTEND 05 acrescenta as rotas `/login`, `/sessao-demo` e `/sessao-expirada`, preservando a landing. Elas demonstram entrada com campos obrigatórios, carregamento, navegação local usando qualquer e-mail válido e senha preenchida, saída e expiração com um perfil fictício. Não autenticam usuários, não protegem rotas, não armazenam credenciais e não se integram ao Keycloak. O perfil ilustrativo e o roteiro estão em `docs/FRONTEND_05_ACCESS.md`.
+
 ## Brand Commitments
 
 Nome Nivelo, em substituição a FlowSLA na apresentação atual. Português brasileiro, linguagem direta e concreta. Preservar a identidade estabelecida na opção C — Faixa de luz: Manrope, azul-noite, azul corporativo, verde operacional, turquesa do símbolo e superfícies claras. A referência Isoline substitui a composição da landing, preservando essa identidade, o símbolo original e os links, a aparência e o comportamento da navbar. O vídeo de luz e seu poster continuam em uma pequena janela da abertura. `DESIGN.md` é a fonte da verdade visual implementada, com valores extraídos do código; `docs/NIVELO_BRAND.md` registra a relação entre os ativos e a prancha.
