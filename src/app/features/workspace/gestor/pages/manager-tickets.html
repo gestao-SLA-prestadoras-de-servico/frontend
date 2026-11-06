@@ -1,0 +1,236 @@
+<div class="flex flex-wrap items-start justify-between gap-5">
+  <div class="max-w-[65ch]">
+    <h1
+      appPageHeading
+      class="text-[26px] leading-[1.25] font-semibold tracking-[-.03em] sm:text-[28px]"
+    >
+      Fila de chamados
+    </h1>
+    <p class="mt-2 text-sm leading-[1.7] text-ink2">
+      Encontre o próximo atendimento pelos dados do cliente, do técnico e da prioridade.
+    </p>
+  </div>
+  <p class="flex items-start gap-2 text-xs leading-[1.7] text-ink3">
+    <svg class="mt-0.5 size-4 shrink-0" [lucideIcon]="icons.info" aria-hidden="true"></svg>Dados
+    fictícios · 05/11/2026
+  </p>
+</div>
+
+<dl class="mt-6 grid grid-cols-3 gap-2 rounded-deadline bg-bg p-4 sm:gap-4 sm:px-6 sm:py-5">
+  <div>
+    <dt class="text-xs text-ink2 sm:text-sm">Em aberto</dt>
+    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums">{{ openCount() }}</dd>
+  </div>
+  <div>
+    <dt class="text-xs text-ink2 sm:text-sm">Resolvidos</dt>
+    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums">{{ resolvedCount() }}</dd>
+  </div>
+  <div>
+    <dt class="text-xs text-ink2 sm:text-sm">Atrasados</dt>
+    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums text-danger">{{ overdueCount() }}</dd>
+  </div>
+</dl>
+
+<section class="mt-6" aria-label="Filtros de chamados">
+  <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div>
+      <label for="ticket-client" class="block text-sm font-semibold">Cliente</label
+      ><select
+        id="ticket-client"
+        class="mt-2 min-h-[52px] w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 text-base focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+        [value]="clientFilter()"
+        (change)="updateClient($event)"
+      >
+        <option>Todas</option>
+        @for (client of clients(); track client) {
+          <option [value]="client">{{ client }}</option>
+        }
+      </select>
+    </div>
+    <div>
+      <label for="ticket-technician" class="block text-sm font-semibold">Técnico</label
+      ><select
+        id="ticket-technician"
+        class="mt-2 min-h-[52px] w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 text-base focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+        [value]="technicianFilter()"
+        (change)="updateTechnician($event)"
+      >
+        <option>Todos</option>
+        @for (technician of technicians(); track technician) {
+          <option [value]="technician">{{ technician }}</option>
+        }
+      </select>
+    </div>
+    <div>
+      <label for="ticket-status" class="block text-sm font-semibold">Situação</label
+      ><select
+        id="ticket-status"
+        class="mt-2 min-h-[52px] w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 text-base focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+        [value]="statusFilter()"
+        (change)="updateStatus($event)"
+      >
+        <option>Todas</option>
+        <option value="ABERTO">Aberto</option>
+        <option value="ATRIBUIDO">Atribuído</option>
+        <option value="EM_ATENDIMENTO">Em atendimento</option>
+        <option value="RESOLVIDO">Resolvido</option>
+        <option value="CANCELADO">Cancelado</option>
+        <option value="ENCERRADO">Encerrado</option>
+      </select>
+    </div>
+    <div>
+      <label for="ticket-priority" class="block text-sm font-semibold">Prioridade</label
+      ><select
+        id="ticket-priority"
+        class="mt-2 min-h-[52px] w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 text-base focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+        [value]="priorityFilter()"
+        (change)="updatePriority($event)"
+      >
+        <option>Todas</option>
+        <option>Alta</option>
+        <option>Normal</option>
+      </select>
+    </div>
+  </div>
+</section>
+
+<section class="mt-7" aria-labelledby="ticket-list-title">
+  <div class="flex flex-wrap items-baseline justify-between gap-3">
+    <h2 id="ticket-list-title" class="text-base font-semibold leading-[1.5] tracking-normal">
+      Chamados no cenário
+    </h2>
+    <p class="text-xs text-ink3" aria-live="polite">
+      {{ filteredTickets().length }}
+      {{ filteredTickets().length === 1 ? 'resultado' : 'resultados' }}
+      <button
+        type="button"
+        class="ml-2 min-h-10 px-2 font-semibold text-pri-d underline underline-offset-4"
+        (click)="clearFilters()"
+      >
+        Limpar filtros
+      </button>
+    </p>
+  </div>
+  @if (filteredTickets().length) {
+    <div class="mt-3 hidden overflow-x-auto rounded-deadline border border-line md:block">
+      <table class="w-full min-w-[940px] border-collapse text-left text-sm">
+        <caption class="sr-only">
+          Fila demonstrativa com status, cliente, técnico, prioridade e prazo
+        </caption>
+        <thead class="bg-bg text-xs font-semibold text-ink2">
+          <tr>
+            <th scope="col" class="px-4 py-3">Chamado</th>
+            <th scope="col" class="px-4 py-3">Cliente</th>
+            <th scope="col" class="px-4 py-3">Técnico</th>
+            <th scope="col" class="px-4 py-3">Situação</th>
+            <th scope="col" class="px-4 py-3">Prioridade</th>
+            <th scope="col" class="px-4 py-3">Próximo prazo</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-line">
+          @for (ticket of filteredTickets(); track ticket.id) {
+            <tr>
+              <th scope="row" class="px-4 py-4 align-top">
+                <a
+                  class="font-semibold text-pri-d underline-offset-4 hover:underline"
+                  [routerLink]="['/app/gestor/chamados', ticket.id]"
+                  >#{{ ticket.id }} · {{ ticket.title }}</a
+                >
+              </th>
+              <td class="px-4 py-4 align-top">{{ ticket.client }}</td>
+              <td class="px-4 py-4 align-top">{{ ticket.technician ?? 'Sem indicação' }}</td>
+              <td class="px-4 py-4 align-top">
+                <span
+                  class="inline-flex min-h-7 items-center rounded-sm px-2.5 text-xs font-semibold"
+                  [class.bg-danger-bg]="ticket.overdue"
+                  [class.text-danger]="ticket.overdue"
+                  [class.bg-bg]="!ticket.overdue"
+                  [class.text-ink2]="!ticket.overdue"
+                  >{{ statusLabel(ticket.status) }}</span
+                >
+                @if (ticket.overdue) {
+                  <span class="mt-1 block text-xs font-semibold text-danger">SLA violado</span>
+                }
+              </td>
+              <td class="px-4 py-4 align-top">
+                <span class="font-semibold" [class.text-danger]="ticket.priority === 'Alta'">{{
+                  ticket.priority
+                }}</span>
+              </td>
+              <td class="px-4 py-4 align-top" [class.text-danger]="ticket.overdue">
+                {{ ticket.nextDeadline }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="mt-3 divide-y divide-line rounded-deadline border border-line md:hidden">
+      @for (ticket of filteredTickets(); track ticket.id) {
+        <article class="p-4 first:rounded-t-deadline last:rounded-b-deadline">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="font-mono text-xs text-ink3">#{{ ticket.id }}</p>
+              <h3 class="mt-1 text-sm leading-[1.5] font-semibold">
+                <a
+                  class="text-inherit underline decoration-transparent underline-offset-4 hover:text-pri-d hover:decoration-current"
+                  [routerLink]="['/app/gestor/chamados', ticket.id]"
+                  >{{ ticket.title }}</a
+                >
+              </h3>
+            </div>
+            <span
+              class="inline-flex min-h-7 shrink-0 items-center rounded-sm px-2.5 text-xs font-semibold"
+              [class.bg-danger-bg]="ticket.overdue"
+              [class.text-danger]="ticket.overdue"
+              [class.bg-bg]="!ticket.overdue"
+              [class.text-ink2]="!ticket.overdue"
+              >{{ statusLabel(ticket.status) }}</span
+            >
+          </div>
+          <dl class="mt-4 grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <dt class="text-xs text-ink3">Cliente</dt>
+              <dd class="m-0 mt-0.5">{{ ticket.client }}</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-ink3">Técnico</dt>
+              <dd class="m-0 mt-0.5">{{ ticket.technician ?? 'Sem indicação' }}</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-ink3">Prioridade</dt>
+              <dd class="m-0 mt-0.5 font-semibold" [class.text-danger]="ticket.priority === 'Alta'">
+                {{ ticket.priority }}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-xs text-ink3">Próximo prazo</dt>
+              <dd class="m-0 mt-0.5" [class.text-danger]="ticket.overdue">
+                {{ ticket.nextDeadline }}
+              </dd>
+            </div>
+          </dl>
+          <a
+            [routerLink]="['/app/gestor/chamados', ticket.id]"
+            class="mt-4 inline-flex min-h-11 items-center gap-2 border-t border-line pt-3 text-sm font-semibold text-pri-d underline underline-offset-4"
+            >Abrir detalhes <svg class="size-4" [lucideIcon]="icons.arrow" aria-hidden="true"></svg
+          ></a>
+        </article>
+      }
+    </div>
+  } @else {
+    <div class="mt-3 rounded-deadline border border-dashed border-ink3 p-6 text-center sm:p-8">
+      <h3 class="text-base font-semibold">Nenhum chamado corresponde aos filtros</h3>
+      <p class="mt-2 text-sm text-ink2">
+        Remova um filtro para ampliar a consulta da demonstração.
+      </p>
+      <button
+        type="button"
+        class="mt-3 min-h-11 px-3 text-sm font-semibold text-pri-d underline underline-offset-4"
+        (click)="clearFilters()"
+      >
+        Limpar filtros
+      </button>
+    </div>
+  }
+</section>

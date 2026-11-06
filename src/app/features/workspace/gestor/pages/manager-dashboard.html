@@ -1,0 +1,135 @@
+<div class="flex flex-wrap items-start justify-between gap-5">
+  <div class="max-w-[65ch]">
+    <h1
+      appPageHeading
+      class="text-[26px] leading-[1.25] font-semibold tracking-[-.03em] sm:text-[28px]"
+    >
+      Painel de operações
+    </h1>
+    <p class="mt-2 text-sm leading-[1.7] text-ink2">
+      A fila de hoje, com os prazos que pedem atenção primeiro.
+    </p>
+  </div>
+  <a
+    routerLink="/app/gestor/chamados"
+    class="inline-flex min-h-11 items-center gap-2 rounded-control bg-pri px-4 py-2 text-sm font-semibold text-white no-underline hover:bg-pri-d focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+    ><svg class="size-4" [lucideIcon]="icons.tickets" aria-hidden="true"></svg>Abrir fila de
+    chamados</a
+  >
+</div>
+
+<p class="mt-4 flex items-start gap-2 text-xs leading-[1.7] text-ink3">
+  <svg class="mt-0.5 size-4 shrink-0" [lucideIcon]="icons.info" aria-hidden="true"></svg>Retrato
+  fictício de 05/11/2026. Os indicadores e prazos não consultam uma operação real.
+</p>
+
+<section class="mt-7" aria-label="Indicadores da fila">
+  <dl class="grid gap-3 sm:grid-cols-3">
+    <div class="rounded-deadline bg-bg p-4 sm:p-5">
+      <dt class="text-sm text-ink2">Em aberto</dt>
+      <dd class="m-0 mt-2 text-3xl font-semibold tabular-nums">{{ openCount() }}</dd>
+      <p class="mt-1 text-xs text-ink3">Abertos, atribuídos ou em atendimento</p>
+    </div>
+    <div class="rounded-deadline bg-bg p-4 sm:p-5">
+      <dt class="text-sm text-ink2">Resolvidos</dt>
+      <dd class="m-0 mt-2 text-3xl font-semibold tabular-nums">{{ resolvedCount() }}</dd>
+      <p class="mt-1 text-xs text-ink3">Inclui atendimentos encerrados</p>
+    </div>
+    <div class="rounded-deadline bg-danger-bg p-4 sm:p-5 text-danger">
+      <dt class="text-sm">Prazos violados</dt>
+      <dd class="m-0 mt-2 text-3xl font-semibold tabular-nums">{{ overdueCount() }}</dd>
+      <p class="mt-1 text-xs">Exemplos que pedem triagem</p>
+    </div>
+  </dl>
+</section>
+
+<section class="mt-8" aria-labelledby="priority-heading">
+  <div class="flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <h2 id="priority-heading" class="text-base leading-[1.5] font-semibold tracking-normal">
+        Para olhar agora
+      </h2>
+      <p class="mt-1 text-sm text-ink2">Chamados abertos ou com prazo sinalizado no exemplo.</p>
+    </div>
+    <a
+      routerLink="/app/gestor/chamados"
+      class="inline-flex min-h-11 items-center text-sm font-semibold text-pri-d underline underline-offset-4"
+      >Ver todos os chamados</a
+    >
+  </div>
+  <div class="mt-4 divide-y divide-line rounded-deadline border border-line">
+    @for (ticket of priorityTickets(); track ticket.id) {
+      <article
+        class="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5"
+      >
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-mono text-xs text-ink3">#{{ ticket.id }}</span
+            ><span
+              class="inline-flex min-h-7 items-center rounded-sm px-2.5 text-xs font-semibold"
+              [class.bg-danger-bg]="ticket.overdue"
+              [class.text-danger]="ticket.overdue"
+              [class.bg-pri-bg]="!ticket.overdue"
+              [class.text-pri-d]="!ticket.overdue"
+              >{{
+                ticket.status === 'ABERTO'
+                  ? 'Em triagem'
+                  : ticket.status === 'EM_ATENDIMENTO'
+                    ? 'Em atendimento'
+                    : 'Atribuído'
+              }}</span
+            >
+            @if (ticket.overdue) {
+              <span
+                class="inline-flex min-h-7 items-center rounded-sm bg-danger-bg px-2.5 text-xs font-semibold text-danger"
+                >Prazo violado</span
+              >
+            }
+          </div>
+          <h3 class="mt-2 text-sm leading-[1.5] font-semibold">
+            <a
+              class="text-inherit underline decoration-transparent underline-offset-4 hover:text-pri-d hover:decoration-current"
+              [routerLink]="['/app/gestor/chamados', ticket.id]"
+              >{{ ticket.title }}</a
+            >
+          </h3>
+          <p class="mt-1 text-sm text-ink2">
+            {{ ticket.client }} · {{ ticket.technician ?? 'Sem técnico indicado' }}
+          </p>
+        </div>
+        <div
+          class="flex items-center justify-between gap-3 border-t border-line pt-3 sm:border-0 sm:pt-0"
+        >
+          <p class="text-sm" [class.text-danger]="ticket.overdue">
+            <span class="block text-xs text-ink3">Próximo prazo</span
+            ><span class="mt-1 block font-medium">{{ ticket.nextDeadline }}</span>
+          </p>
+          <a
+            [routerLink]="['/app/gestor/chamados', ticket.id]"
+            class="grid size-11 shrink-0 place-items-center rounded-lg text-pri-d hover:bg-pri-bg"
+            [attr.aria-label]="'Abrir chamado ' + ticket.id"
+            ><svg class="size-4" [lucideIcon]="icons.arrow" aria-hidden="true"></svg
+          ></a>
+        </div>
+      </article>
+    }
+  </div>
+</section>
+
+<aside
+  class="mt-7 flex flex-col gap-3 rounded-deadline border border-line p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5"
+>
+  <div>
+    <h2 class="text-sm font-semibold leading-[1.5] tracking-normal">
+      Organize o próximo atendimento
+    </h2>
+    <p class="mt-1 text-sm text-ink2">
+      Use os filtros da fila para separar prioridade, situação e responsável.
+    </p>
+  </div>
+  <a
+    routerLink="/app/gestor/chamados"
+    class="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-control border border-line2 px-4 py-2 text-sm font-semibold text-ink no-underline hover:bg-bg"
+    ><svg class="size-4" [lucideIcon]="icons.tickets" aria-hidden="true"></svg>Consultar fila</a
+  >
+</aside>

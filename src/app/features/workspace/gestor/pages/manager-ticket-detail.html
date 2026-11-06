@@ -1,0 +1,132 @@
+@if (ticket(); as item) {
+  <div class="flex flex-wrap items-start justify-between gap-5">
+    <div class="min-w-0">
+      <a
+        routerLink="/app/gestor/chamados"
+        class="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-pri-d underline underline-offset-4"
+        ><svg class="size-4" [lucideIcon]="icons.back" aria-hidden="true"></svg>Voltar à fila</a
+      >
+      <div class="mt-4 flex flex-wrap items-center gap-2">
+        <span class="font-mono text-xs text-ink3">#{{ item.id }}</span
+        ><span
+          class="inline-flex min-h-7 items-center rounded-sm bg-bg px-2.5 text-xs font-semibold text-ink2"
+          >{{ statusLabel(item.status) }}</span
+        ><span
+          class="inline-flex min-h-7 items-center rounded-sm px-2.5 text-xs font-semibold"
+          [class.bg-danger-bg]="item.priority === 'Alta'"
+          [class.text-danger]="item.priority === 'Alta'"
+          [class.bg-pri-bg]="item.priority === 'Normal'"
+          [class.text-pri-d]="item.priority === 'Normal'"
+          >{{ item.priority }}</span
+        >
+      </div>
+      <h1
+        appPageHeading
+        class="mt-2 text-[26px] leading-[1.25] font-semibold tracking-[-.03em] sm:text-[28px]"
+      >
+        {{ item.title }}
+      </h1>
+      <p class="mt-2 text-sm text-ink2">{{ item.client }} · {{ item.location }}</p>
+    </div>
+    <p class="flex items-start gap-2 text-xs leading-[1.7] text-ink3">
+      <svg class="mt-0.5 size-4 shrink-0" [lucideIcon]="icons.info" aria-hidden="true"></svg
+      >Detalhes fictícios · 05/11/2026
+    </p>
+  </div>
+  @if (item.overdue) {
+    <div
+      class="mt-5 flex items-start gap-3 rounded-deadline bg-danger-bg p-4 text-danger"
+      role="alert"
+    >
+      <svg class="mt-0.5 size-5 shrink-0" [lucideIcon]="icons.info" aria-hidden="true"></svg>
+      <div>
+        <h2 class="text-sm font-semibold">Um prazo aparece violado neste exemplo</h2>
+        <p class="mt-1 text-sm">
+          O chamado continua na fila de triagem. O marcador serve apenas para orientar a
+          demonstração.
+        </p>
+      </div>
+    </div>
+  }
+  <div class="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+    <div class="min-w-0 space-y-5">
+      <section class="rounded-deadline border border-line p-4 sm:p-5">
+        <h2 class="text-base font-semibold leading-[1.5] tracking-normal">Prazos do chamado</h2>
+        <dl class="mt-4 grid gap-3 sm:grid-cols-3">
+          <div class="rounded-control bg-bg p-3">
+            <dt class="text-xs text-ink2">Resposta</dt>
+            <dd class="m-0 mt-1 text-sm font-semibold" [class.text-danger]="item.overdue">
+              {{ item.responseClock }}
+            </dd>
+          </div>
+          <div class="rounded-control bg-bg p-3">
+            <dt class="text-xs text-ink2">Atendimento em campo</dt>
+            <dd class="m-0 mt-1 text-sm font-semibold">{{ item.fieldClock }}</dd>
+          </div>
+          <div class="rounded-control bg-bg p-3">
+            <dt class="text-xs text-ink2">Resolução</dt>
+            <dd class="m-0 mt-1 text-sm font-semibold">{{ item.resolutionClock }}</dd>
+          </div>
+        </dl>
+      </section>
+      <section class="rounded-deadline border border-line p-4 sm:p-5">
+        <h2 class="text-base font-semibold leading-[1.5] tracking-normal">Descrição</h2>
+        <p class="mt-3 max-w-[70ch] text-sm leading-[1.7] text-ink2">{{ item.description }}</p>
+      </section>
+      <section class="rounded-deadline border border-line p-4 sm:p-5">
+        <h2 class="text-base font-semibold leading-[1.5] tracking-normal">Linha do tempo</h2>
+        <ol class="mt-4 space-y-4">
+          @for (event of item.timeline; track event.at + event.title) {
+            <li
+              class="grid grid-cols-[100px_minmax(0,1fr)] gap-3 border-l-2 pl-4"
+              [class.border-line]="event.tone === 'neutral'"
+              [class.border-pri]="event.tone === 'blue'"
+              [class.border-grn]="event.tone === 'green'"
+              [class.border-danger]="event.tone === 'red'"
+            >
+              <time class="text-xs text-ink3">{{ event.at }}</time>
+              <div>
+                <h3 class="text-sm font-semibold">{{ event.title }}</h3>
+                <p class="mt-1 text-sm text-ink2">{{ event.detail }}</p>
+              </div>
+            </li>
+          }
+        </ol>
+      </section>
+    </div>
+    <aside class="h-fit rounded-deadline bg-bg p-4 sm:p-5">
+      <h2 class="text-base font-semibold leading-[1.5] tracking-normal">Responsabilidade</h2>
+      <dl class="mt-4 grid gap-4 text-sm">
+        <div>
+          <dt class="text-xs text-ink3">Técnico</dt>
+          <dd class="m-0 mt-1 font-semibold">{{ item.technician ?? 'Ainda não indicado' }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-ink3">Aberto em</dt>
+          <dd class="m-0 mt-1">{{ item.openedAt }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-ink3">Próximo prazo</dt>
+          <dd class="m-0 mt-1 font-semibold" [class.text-danger]="item.overdue">
+            {{ item.nextDeadline }}
+          </dd>
+        </div>
+      </dl>
+      <div class="mt-5 border-t border-line pt-4">
+        <p class="text-xs leading-[1.6] text-ink2">
+          Este resumo organiza as informações do chamado. As ações demonstrativas entram nesta tela
+          nas próximas etapas da implementação.
+        </p>
+      </div>
+    </aside>
+  </div>
+} @else {
+  <div class="rounded-deadline border border-line p-6">
+    <h1 appPageHeading class="text-xl font-semibold">Chamado não encontrado</h1>
+    <a
+      routerLink="/app/gestor/chamados"
+      class="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-pri-d underline underline-offset-4"
+      >Voltar à fila</a
+    >
+  </div>
+}
