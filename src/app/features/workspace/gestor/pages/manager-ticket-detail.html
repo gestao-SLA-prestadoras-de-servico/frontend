@@ -277,6 +277,50 @@
           </p>
         </section>
       }
+      <section class="mt-5 border-t border-danger/20 pt-5" aria-labelledby="cancel-section-heading">
+        <h2
+          id="cancel-section-heading"
+          class="text-base font-semibold leading-[1.5] tracking-normal"
+        >
+          Cancelar chamado
+        </h2>
+        @if (cancelNotice()) {
+          <div
+            #cancelNoticeTarget
+            tabindex="-1"
+            class="mt-3 rounded-deadline bg-grn-bg p-4 text-grn-t"
+            role="status"
+            aria-live="polite"
+          >
+            <p class="text-sm font-semibold">Confirmação local</p>
+            <p class="mt-1 text-sm">{{ cancelNotice() }}</p>
+            <button
+              type="button"
+              class="mt-2 min-h-11 px-2 text-sm font-semibold underline underline-offset-4"
+              (click)="clearCancelNotice()"
+            >
+              Fechar mensagem
+            </button>
+          </div>
+        }
+        <p class="mt-2 text-sm text-ink2">
+          A ação exige um motivo e é apresentada como irreversível.
+        </p>
+        <button
+          #cancelTrigger
+          type="button"
+          class="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-control bg-danger px-4 py-2 text-sm font-semibold text-white hover:opacity-90 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-danger disabled:cursor-not-allowed disabled:opacity-45"
+          [disabled]="!canCancel() || !ready()"
+          (click)="openCancellation(cancelTrigger)"
+        >
+          Cancelar chamado
+        </button>
+        @if (!canCancel()) {
+          <p class="mt-2 text-xs leading-[1.6] text-ink2">
+            Indisponível para chamados resolvidos, cancelados ou encerrados.
+          </p>
+        }
+      </section>
     </aside>
   </div>
   <dialog
@@ -456,6 +500,83 @@
         </div>
       </div>
     }
+  </dialog>
+  <dialog
+    #cancelDialog
+    tabindex="-1"
+    class="m-auto w-[min(560px,calc(100vw-24px))] max-h-[calc(100dvh-24px)] overflow-y-auto rounded-deadline border border-line bg-sf p-0 text-ink shadow-dialog backdrop:bg-navy/45"
+    aria-labelledby="cancel-dialog-title"
+    (close)="onCancelDialogClose()"
+    (keydown)="trapCancelFocus($event)"
+    (click)="onCancelBackdrop($event)"
+  >
+    <div class="p-5 sm:p-7">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h2 id="cancel-dialog-title" class="text-xl font-semibold tracking-[-.02em]">
+            Cancelar chamado #{{ item.id }}
+          </h2>
+          <p class="mt-2 text-sm text-ink2">{{ item.title }}</p>
+        </div>
+        <button
+          type="button"
+          class="grid size-11 shrink-0 place-items-center rounded-lg text-ink2 hover:bg-bg"
+          aria-label="Fechar cancelamento"
+          (click)="closeCancellation()"
+        >
+          <svg class="size-5" [lucideIcon]="icons.close" aria-hidden="true"></svg>
+        </button>
+      </div>
+      <div class="mt-5 rounded-deadline bg-danger-bg p-4 text-danger" role="alert">
+        <p class="text-sm font-semibold">Ação irreversível na operação</p>
+        <p class="mt-1 text-sm">
+          Chamados cancelados não podem ser retomados. Verifique a solicitação antes de continuar.
+          Esta confirmação é apenas demonstrativa.
+        </p>
+      </div>
+      <div class="mt-5">
+        <label for="cancel-reason" class="block text-sm font-semibold"
+          >Motivo <span class="text-xs font-normal text-ink2">(obrigatório)</span></label
+        ><textarea
+          #cancelReasonField
+          id="cancel-reason"
+          class="mt-2 min-h-32 w-full resize-y rounded-[10px] border border-ink3/80 bg-sf px-3.5 py-3 text-base text-ink placeholder:text-ink3 focus-visible:border-pri focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+          [value]="cancelReason()"
+          aria-required="true"
+          [attr.aria-invalid]="cancelError()"
+          [attr.aria-describedby]="
+            cancelError() ? 'cancel-reason-error cancel-reason-help' : 'cancel-reason-help'
+          "
+          placeholder="Descreva por que o chamado deve ser cancelado."
+          (input)="updateCancelReason($event)"
+        ></textarea>
+        @if (cancelError()) {
+          <p id="cancel-reason-error" class="mt-2 text-sm text-danger" role="alert">
+            Informe um motivo com pelo menos 10 caracteres.
+          </p>
+        }
+        <p id="cancel-reason-help" class="mt-2 text-xs leading-[1.6] text-ink2">
+          O motivo fica visível somente durante esta simulação e não é salvo.
+        </p>
+      </div>
+      <div class="mt-6 flex flex-col-reverse justify-end gap-2 sm:flex-row">
+        <button
+          #cancelSafetyButton
+          type="button"
+          appButtonSecondary
+          class="min-h-11 px-4 py-2"
+          (click)="closeCancellation()"
+        >
+          Voltar</button
+        ><button
+          type="button"
+          class="min-h-11 rounded-control bg-danger px-4 py-2 text-sm font-semibold text-white hover:opacity-90 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-danger"
+          (click)="confirmCancellation()"
+        >
+          Confirmar cancelamento
+        </button>
+      </div>
+    </div>
   </dialog>
 } @else {
   <div class="rounded-deadline border border-line p-6">

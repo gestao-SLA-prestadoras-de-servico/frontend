@@ -52,15 +52,22 @@ export class ManagerTicketDetail {
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('triageDialog');
   private readonly assignmentDialog =
     viewChild.required<ElementRef<HTMLDialogElement>>('assignmentDialog');
+  private readonly cancelDialog = viewChild.required<ElementRef<HTMLDialogElement>>('cancelDialog');
   private readonly cancelButton = viewChild<ElementRef<HTMLButtonElement>>('cancelTriageButton');
   private readonly cancelAssignmentButton =
     viewChild<ElementRef<HTMLButtonElement>>('cancelAssignmentButton');
+  private readonly cancelSafetyButton =
+    viewChild<ElementRef<HTMLButtonElement>>('cancelSafetyButton');
   private readonly positionField = viewChild<ElementRef<HTMLTextAreaElement>>('firstPositionField');
+  private readonly cancelReasonField =
+    viewChild<ElementRef<HTMLTextAreaElement>>('cancelReasonField');
   private readonly noticeTarget = viewChild<ElementRef<HTMLElement>>('triageNotice');
   private readonly assignmentNoticeTarget =
     viewChild<ElementRef<HTMLElement>>('assignmentNoticeTarget');
+  private readonly cancelNoticeTarget = viewChild<ElementRef<HTMLElement>>('cancelNoticeTarget');
   private trigger?: HTMLButtonElement;
   private assignmentTrigger?: HTMLButtonElement;
+  private cancelTrigger?: HTMLButtonElement;
   protected readonly ready = signal(false);
   private completing = false;
   private readonly routeId = toSignal(
@@ -85,6 +92,12 @@ export class ManagerTicketDetail {
   protected readonly assignmentMode = signal<AssignmentMode>(null);
   protected readonly selectedTechnicianId = signal('');
   protected readonly assignmentNotice = signal('');
+  protected readonly cancelNotice = signal('');
+  protected readonly cancelReason = signal('');
+  protected readonly cancelSubmitted = signal(false);
+  protected readonly cancelError = computed(
+    () => this.cancelSubmitted() && this.cancelReason().trim().length < 10,
+  );
   protected readonly technicians = computed(() =>
     this.userStore
       .users()
@@ -107,6 +120,9 @@ export class ManagerTicketDetail {
     return !!technician && this.assignmentLoadAfter() > technician.workloadLimit;
   });
   protected readonly canAssign = computed(() =>
+    ['ABERTO', 'ATRIBUIDO', 'EM_ATENDIMENTO'].includes(this.ticket()?.status ?? ''),
+  );
+  protected readonly canCancel = computed(() =>
     ['ABERTO', 'ATRIBUIDO', 'EM_ATENDIMENTO'].includes(this.ticket()?.status ?? ''),
   );
 
@@ -290,6 +306,87 @@ export class ManagerTicketDetail {
 
   protected clearAssignmentNotice(): void {
     this.assignmentNotice.set('');
+  }
+
+  protected openCancellation(trigger: HTMLButtonElement): void {
+    if (!this.ready() || !this.canCancel()) return;
+    this.cancelTrigger = trigger;
+    this.completing = false;
+    this.cancelReason.set('');
+    this.cancelSubmitted.set(false);
+    afterNextRender(
+      () => {
+        if (this.cancelDialog().nativeElement.open) return;
+        this.cancelDialog().nativeElement.showModal();
+        this.cancelSafetyButton()?.nativeElement.focus();
+      },
+      { injector: this.injector },
+    );
+  }
+
+  protected updateCancelReason(event: Event): void {
+    this.cancelReason.set((event.target as HTMLTextAreaElement).value);
+  }
+
+  protected closeCancellation(): void {
+    if (this.cancelDialog().nativeElement.open) this.cancelDialog().nativeElement.close();
+  }
+
+  protected onCancelDialogClose(): void {
+    if (!this.completing) this.cancelTrigger?.focus();
+    this.cancelTrigger = undefined;
+    this.completing = false;
+  }
+
+  protected onCancelBackdrop(event: MouseEvent): void {
+    const dialog = this.cancelDialog().nativeElement;
+    if (event.target !== dialog) return;
+    const rect = dialog.getBoundingClientRect();
+    if (
+      event.clientX < rect.left ||
+      event.clientX > rect.right ||
+      event.clientY < rect.top ||
+      event.clientY > rect.bottom
+    )
+      this.closeCancellation();
+  }
+
+  protected trapCancelFocus(event: KeyboardEvent): void {
+    if (event.key !== 'Tab') return;
+    const elements = [
+      ...this.cancelDialog().nativeElement.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), textarea',
+      ),
+    ].filter((element) => element.getClientRects().length);
+    const first = elements[0];
+    const last = elements[elements.length - 1];
+    if (
+      (event.shiftKey && this.document.activeElement === first) ||
+      (!event.shiftKey && this.document.activeElement === last)
+    ) {
+      preventDefaultUnlessReplayed(event);
+      (event.shiftKey ? last : first)?.focus();
+    }
+  }
+
+  protected confirmCancellation(): void {
+    this.cancelSubmitted.set(true);
+    if (this.cancelReason().trim().length < 10) {
+      this.cancelReasonField()?.nativeElement.focus();
+      return;
+    }
+    this.cancelNotice.set(
+      'Confirmação demonstrativa registrada. O status e os dados do chamado permaneceram inalterados.',
+    );
+    this.completing = true;
+    this.closeCancellation();
+    afterNextRender(() => this.cancelNoticeTarget()?.nativeElement.focus(), {
+      injector: this.injector,
+    });
+  }
+
+  protected clearCancelNotice(): void {
+    this.cancelNotice.set('');
   }
 
   protected isInProgress(): boolean {
