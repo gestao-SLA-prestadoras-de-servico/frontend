@@ -325,6 +325,28 @@ export class ManagerTicketDemoStore {
     );
     return true;
   }
+
+  setEvidenceStatus(
+    id: number,
+    evidenceId: string,
+    status: ManagerTicketEvidence['status'],
+  ): boolean {
+    const current = this.byId(id);
+    if (!current?.evidences.some((evidence) => evidence.id === evidenceId)) return false;
+    this.tickets.update((tickets) =>
+      tickets.map((ticket) =>
+        ticket.id === id
+          ? {
+              ...ticket,
+              evidences: ticket.evidences.map((evidence) =>
+                evidence.id === evidenceId ? { ...evidence, status } : evidence,
+              ),
+            }
+          : ticket,
+      ),
+    );
+    return true;
+  }
 }
 
 export function managerTicketById(value: string | number | null): ManagerTicket | null {

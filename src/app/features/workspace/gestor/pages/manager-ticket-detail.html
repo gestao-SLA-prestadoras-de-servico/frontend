@@ -73,6 +73,111 @@
         <h2 class="text-base font-semibold leading-[1.5] tracking-normal">Descrição</h2>
         <p class="mt-3 max-w-[70ch] text-sm leading-[1.7] text-ink2">{{ item.description }}</p>
       </section>
+      @if (item.evidences.length) {
+        <section
+          class="rounded-deadline border border-line p-4 sm:p-5"
+          aria-labelledby="ticket-evidence-title"
+          [attr.aria-busy]="hasProcessingEvidence(item.evidences)"
+        >
+          <div class="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2
+                id="ticket-evidence-title"
+                class="text-base font-semibold leading-[1.5] tracking-normal"
+              >
+                Evidências do atendimento
+              </h2>
+              <p class="mt-1 text-sm text-ink2">Arquivos e processamento da demonstração.</p>
+            </div>
+            <span class="text-xs text-ink3"
+              >{{ item.evidences.length }}
+              {{ item.evidences.length === 1 ? 'arquivo' : 'arquivos' }}</span
+            >
+          </div>
+          @if (evidenceNotice(); as notice) {
+            <div
+              #evidenceNoticeTarget
+              tabindex="-1"
+              class="mt-4 rounded-deadline p-4"
+              [class.bg-pri-bg]="notice.tone === 'loading'"
+              [class.text-pri-d]="notice.tone === 'loading'"
+              [class.bg-grn-bg]="notice.tone === 'success'"
+              [class.text-grn-t]="notice.tone === 'success'"
+              [class.bg-danger-bg]="notice.tone === 'error'"
+              [class.text-danger]="notice.tone === 'error'"
+              [attr.role]="notice.tone === 'error' ? 'alert' : 'status'"
+              aria-live="polite"
+            >
+              <p class="text-sm font-semibold">{{ notice.title }}</p>
+              <p class="mt-1 text-sm">{{ notice.detail }}</p>
+              <button
+                type="button"
+                class="mt-2 min-h-11 px-2 text-sm font-semibold underline underline-offset-4"
+                aria-label="Fechar aviso de evidência"
+                (click)="clearEvidenceNotice()"
+              >
+                Fechar mensagem
+              </button>
+            </div>
+          }
+          <div class="mt-4 grid gap-3 sm:grid-cols-2">
+            @for (evidence of item.evidences; track evidence.id) {
+              <article
+                class="rounded-deadline border border-line p-3"
+                [attr.aria-busy]="evidence.status === 'PROCESSANDO'"
+              >
+                <div class="grid min-h-32 place-items-center rounded-control bg-bg p-4 text-center">
+                  <svg class="size-8 text-ink3" [lucideIcon]="icons.image" aria-hidden="true"></svg>
+                  <p class="mt-2 text-xs text-ink2">Prévia ilustrativa · sem imagem real</p>
+                </div>
+                <div class="mt-3 flex flex-wrap items-start justify-between gap-2">
+                  <div class="min-w-0">
+                    <h3 class="wrap-anywhere text-sm font-semibold">{{ evidence.fileName }}</h3>
+                    <p class="mt-1 text-xs text-ink2">{{ evidence.caption }}</p>
+                    <p class="mt-1 text-xs text-ink3">{{ evidence.uploadedAt }}</p>
+                  </div>
+                  <span
+                    class="inline-flex min-h-7 shrink-0 items-center rounded-sm px-2.5 text-xs font-semibold"
+                    [class.bg-danger-bg]="evidence.status === 'FALHA'"
+                    [class.text-danger]="evidence.status === 'FALHA'"
+                    [class.bg-pri-bg]="evidence.status === 'PROCESSANDO'"
+                    [class.text-pri-d]="evidence.status === 'PROCESSANDO'"
+                    [class.bg-grn-bg]="evidence.status === 'DISPONÍVEL'"
+                    [class.text-grn-t]="evidence.status === 'DISPONÍVEL'"
+                    >{{ evidence.status }}</span
+                  >
+                </div>
+                @if (evidence.status === 'FALHA') {
+                  <div class="mt-3 rounded-control bg-danger-bg p-3 text-danger">
+                    <p class="text-xs font-semibold">Falha de processamento</p>
+                    <p class="mt-1 text-xs leading-[1.6]">{{ evidence.failureMessage }}</p>
+                  </div>
+                }
+                @if (evidence.status === 'PROCESSANDO') {
+                  <p class="mt-3 text-sm text-pri-d" role="status">
+                    Preparando miniatura nesta demonstração…
+                  </p>
+                }
+                @if (evidence.status === 'FALHA') {
+                  <button
+                    #evidenceTrigger
+                    type="button"
+                    class="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-control border border-line2 px-4 py-2 text-sm font-semibold text-ink hover:bg-sf focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+                    [disabled]="reprocessingEvidenceId() === evidence.id"
+                    [attr.aria-label]="'Reprocessar evidência ' + evidence.fileName"
+                    (click)="openEvidenceReprocess(evidence.id, evidenceTrigger)"
+                  >
+                    Reprocessar
+                  </button>
+                }
+              </article>
+            }
+          </div>
+          <p class="mt-3 text-xs leading-[1.6] text-ink3">
+            Nenhum arquivo é enviado ou retransmitido. Os estados são apenas demonstrativos.
+          </p>
+        </section>
+      }
       <section class="rounded-deadline border border-line p-4 sm:p-5">
         <h2 class="text-base font-semibold leading-[1.5] tracking-normal">Linha do tempo</h2>
         <ol class="mt-4 space-y-4">
@@ -114,8 +219,8 @@
       </dl>
       <div class="mt-5 border-t border-line pt-4">
         <p class="text-xs leading-[1.6] text-ink2">
-          Este resumo organiza as informações do chamado. As ações demonstrativas entram nesta tela
-          nas próximas etapas da implementação.
+          As ações nesta página são demonstrativas e alteram somente os dados em memória desta
+          sessão.
         </p>
       </div>
       @if (isOpenTicket()) {
@@ -577,6 +682,78 @@
         </button>
       </div>
     </div>
+  </dialog>
+  <dialog
+    #evidenceDialog
+    tabindex="-1"
+    class="m-auto w-[min(520px,calc(100vw-24px))] max-h-[calc(100dvh-24px)] overflow-y-auto rounded-deadline border border-line bg-sf p-0 text-ink shadow-dialog backdrop:bg-navy/45"
+    aria-labelledby="evidence-dialog-title"
+    (close)="onEvidenceDialogClose()"
+    (keydown)="trapEvidenceFocus($event)"
+    (click)="onEvidenceBackdrop($event)"
+  >
+    @if (selectedEvidence(); as evidence) {
+      <div class="p-5 sm:p-7">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 id="evidence-dialog-title" class="text-xl font-semibold tracking-[-.02em]">
+              Reprocessar evidência
+            </h2>
+            <p class="mt-2 break-all text-sm text-ink2">{{ evidence.fileName }}</p>
+          </div>
+          <button
+            type="button"
+            class="grid size-11 shrink-0 place-items-center rounded-lg text-ink2 hover:bg-bg"
+            aria-label="Fechar reprocessamento"
+            (click)="closeEvidenceDialog()"
+          >
+            <svg class="size-5" [lucideIcon]="icons.close" aria-hidden="true"></svg>
+          </button>
+        </div>
+        <div class="mt-5 rounded-deadline bg-pri-bg p-4 text-pri-d" role="status">
+          <p class="text-sm font-semibold">Arquivo original preservado</p>
+          <p class="mt-1 text-sm">
+            A demonstração simula apenas o processamento da miniatura. Nenhum arquivo será enviado
+            ou retransmitido.
+          </p>
+        </div>
+        <div class="mt-5">
+          <label for="evidence-outcome" class="block text-sm font-semibold">
+            Resultado simulado
+          </label>
+          <select
+            id="evidence-outcome"
+            class="mt-2 min-h-[52px] w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 text-base focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+            [value]="reprocessOutcome()"
+            (change)="updateReprocessOutcome($event)"
+          >
+            <option value="DISPONÍVEL">Miniatura disponível</option>
+            <option value="FALHA">Nova falha de processamento</option>
+          </select>
+          <p class="mt-2 text-xs leading-[1.6] text-ink2">
+            A escolha controla apenas o resultado visual desta simulação local.
+          </p>
+        </div>
+        <div class="mt-6 flex flex-col-reverse justify-end gap-2 sm:flex-row">
+          <button
+            #cancelEvidenceButton
+            type="button"
+            appButtonSecondary
+            class="min-h-11 px-4 py-2"
+            (click)="closeEvidenceDialog()"
+          >
+            Voltar
+          </button>
+          <button
+            type="button"
+            class="min-h-11 rounded-control bg-pri px-4 py-2 text-sm font-semibold text-white hover:bg-pri-d focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+            (click)="confirmEvidenceReprocess()"
+          >
+            Confirmar reprocessamento
+          </button>
+        </div>
+      </div>
+    }
   </dialog>
 } @else {
   <div class="rounded-deadline border border-line p-6">

@@ -10,6 +10,7 @@ import {
   LucideFileText,
   LucideHouse,
   LucideInfo,
+  LucideImage,
   LucideMenu,
   LucidePlus,
   LucideTicket,
@@ -38,4 +39,5 @@ export const WORKSPACE_ICONS = {
   info: LucideInfo,
   help: LucideCircleHelp,
   bell: LucideBell,
+  image: LucideImage,
 } as const;
