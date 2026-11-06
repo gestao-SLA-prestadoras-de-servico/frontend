@@ -38,22 +38,24 @@
     {{ ticket().evidences.length === 1 ? 'evidência de exemplo' : 'evidências de exemplo' }}
   </div>
 
-  <a
-    [routerLink]="['/app/tecnico/chamados', ticket().id]"
-    appButtonPrimary
-    class="mt-6 min-h-11 w-full px-4 py-2.5"
-  >
-    @switch (ticket().status) {
-      @case ('ATRIBUIDO') {
-        Iniciar atendimento
+  <div class="mt-auto pt-6">
+    <a
+      [routerLink]="['/app/tecnico/chamados', ticket().id]"
+      appButtonPrimary
+      class="min-h-11 w-full px-4 py-2.5"
+    >
+      @switch (ticket().status) {
+        @case ('ATRIBUIDO') {
+          Iniciar atendimento
+        }
+        @case ('EM_ATENDIMENTO') {
+          Continuar atendimento
+        }
+        @default {
+          Ver atendimento concluído
+        }
       }
-      @case ('EM_ATENDIMENTO') {
-        Continuar atendimento
-      }
-      @default {
-        Ver atendimento concluído
-      }
-    }
-    <svg class="size-4" lucideArrowRight aria-hidden="true"></svg>
-  </a>
+      <svg class="size-4" lucideArrowRight aria-hidden="true"></svg>
+    </a>
+  </div>
 </article>

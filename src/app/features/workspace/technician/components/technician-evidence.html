@@ -18,7 +18,7 @@
   </div>
 
   @if (items().length) {
-    <ul class="mt-5 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2">
+    <ul class="mt-5 grid list-none grid-cols-2 gap-4 p-0">
       @for (item of items(); track item.id; let index = $index) {
         <li class="min-w-0">
           <div class="group relative">
@@ -55,8 +55,12 @@
               </button>
             }
           </div>
-          <div class="mt-2 flex flex-wrap items-center justify-between gap-2">
-            <p class="min-w-0 truncate text-xs font-semibold text-ink">{{ item.name }}</p>
+          <div
+            class="mt-2 flex flex-col items-start gap-1 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-2"
+          >
+            <p class="w-full min-w-0 truncate text-xs font-semibold text-ink sm:flex-1">
+              {{ item.name }}
+            </p>
             <span
               class="inline-flex min-h-6 items-center gap-1 rounded-full px-2 py-1 text-[10px] leading-none font-bold tracking-[0.025em]"
               [class]="stateClasses[item.state]"
