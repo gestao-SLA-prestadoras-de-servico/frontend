@@ -289,6 +289,42 @@ export class ManagerTicketDemoStore {
   byId(id: number): ManagerTicket | null {
     return this.tickets().find((ticket) => ticket.id === id) ?? null;
   }
+
+  assign(id: number, technician: string): boolean {
+    const current = this.byId(id);
+    if (
+      !current ||
+      !['ABERTO', 'ATRIBUIDO', 'EM_ATENDIMENTO'].includes(current.status) ||
+      !technician
+    )
+      return false;
+
+    const previousTechnician = current.technician;
+    const initialAssignment = current.status === 'ABERTO';
+    this.tickets.update((tickets) =>
+      tickets.map((ticket) =>
+        ticket.id === id
+          ? {
+              ...ticket,
+              technician,
+              status: initialAssignment ? 'ATRIBUIDO' : ticket.status,
+              timeline: [
+                ...ticket.timeline,
+                {
+                  at: '05 nov · demonstração',
+                  title: initialAssignment ? 'Técnico indicado' : 'Técnico reatribuído',
+                  detail: previousTechnician
+                    ? `${previousTechnician} → ${technician}`
+                    : `${technician} · atribuição inicial`,
+                  tone: 'blue' as const,
+                },
+              ],
+            }
+          : ticket,
+      ),
+    );
+    return true;
+  }
 }
 
 export function managerTicketById(value: string | number | null): ManagerTicket | null {

@@ -161,6 +161,29 @@ export class UserDemoStore {
     return true;
   }
 
+  transferOpenAssignment(
+    previousTechnician: string | null,
+    nextTechnician: string,
+    kind: 'assigned' | 'inProgress',
+  ): void {
+    this.users.update((users) =>
+      users.map((user) => {
+        if (user.role !== 'Técnico') return user;
+        if (user.name === previousTechnician) {
+          return kind === 'assigned'
+            ? { ...user, assigned: Math.max(0, user.assigned - 1) }
+            : { ...user, inProgress: Math.max(0, user.inProgress - 1) };
+        }
+        if (user.name === nextTechnician) {
+          return kind === 'assigned'
+            ? { ...user, assigned: user.assigned + 1 }
+            : { ...user, inProgress: user.inProgress + 1 };
+        }
+        return user;
+      }),
+    );
+  }
+
   setNotice(notice: ManagerUserNotice | null): void {
     this.notice.set(notice);
   }
