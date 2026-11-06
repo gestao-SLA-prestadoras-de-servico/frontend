@@ -1,7 +1,7 @@
 export type ProfileKey = 'gestor' | 'tecnico' | 'cliente';
 export type PageKind = 'overview' | 'tickets' | 'preview';
 export type WorkspaceIconKey =
-  'home' | 'tickets' | 'reports' | 'contracts' | 'users' | 'audit' | 'service' | 'add';
+  'home' | 'tickets' | 'reports' | 'contracts' | 'building' | 'users' | 'audit' | 'service' | 'add';
 
 export interface WorkspacePageData {
   key: string;
@@ -152,10 +152,19 @@ export const WORKSPACE_PROFILES: readonly WorkspaceProfile[] = [
         },
       },
       {
+        key: 'empresas',
+        path: '/app/gestor/empresas',
+        title: 'Empresas',
+        description: 'Cadastro de clientes empresariais e dados de contato.',
+        icon: 'building',
+        group: 'Gestão',
+        kind: 'preview',
+      },
+      {
         key: 'usuarios',
         path: '/app/gestor/usuarios',
-        title: 'Clientes e usuários',
-        description: 'As pessoas e empresas que participam do atendimento.',
+        title: 'Usuários',
+        description: 'As pessoas e os perfis que participam do atendimento.',
         icon: 'users',
         group: 'Gestão',
         kind: 'preview',

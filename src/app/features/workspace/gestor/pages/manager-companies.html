@@ -1,0 +1,436 @@
+<div class="flex flex-wrap items-start justify-between gap-5">
+  <div class="max-w-[65ch]">
+    <h1
+      appPageHeading
+      class="text-[26px] leading-[1.25] font-semibold tracking-[-.03em] sm:text-[28px]"
+    >
+      Empresas
+    </h1>
+    <p class="mt-2 text-sm leading-[1.7] text-ink2">
+      Consulte clientes empresariais e mantenha os dados de contato atualizados.
+    </p>
+  </div>
+  <a routerLink="/app/gestor/empresas/nova" appButtonPrimary class="min-h-11 px-4 py-2.5">
+    <svg class="size-4" [lucideIcon]="icons.add" aria-hidden="true"></svg>Nova empresa
+  </a>
+</div>
+
+<p class="mt-4 flex items-start gap-2 text-xs leading-[1.7] text-ink3">
+  <svg class="mt-0.5 size-4 shrink-0" [lucideIcon]="icons.info" aria-hidden="true"></svg>
+  Demonstração com dados fictícios. Nenhum cadastro real é criado ou alterado.
+</p>
+
+@if (notice(); as message) {
+  @if (message.tone === 'success') {
+    <section
+      #noticeTarget
+      tabindex="-1"
+      role="status"
+      aria-labelledby="company-notice-title"
+      class="mt-6 flex flex-wrap items-start justify-between gap-4 rounded-deadline bg-grn-bg p-4 text-grn-t sm:p-5"
+    >
+      <div>
+        <h2 id="company-notice-title" class="text-sm font-semibold leading-normal tracking-normal">
+          {{ message.title }}
+        </h2>
+        <p class="mt-1 text-sm">{{ message.detail }}</p>
+      </div>
+      <button
+        type="button"
+        class="min-h-11 rounded-sm px-3 text-sm font-semibold underline underline-offset-4"
+        aria-label="Fechar mensagem"
+        (click)="clearNotice()"
+      >
+        Fechar
+      </button>
+    </section>
+  } @else {
+    <section
+      #noticeTarget
+      tabindex="-1"
+      role="alert"
+      aria-labelledby="company-notice-title"
+      class="mt-6 flex flex-wrap items-start justify-between gap-4 rounded-deadline bg-danger-bg p-4 text-danger sm:p-5"
+    >
+      <div>
+        <h2
+          id="company-notice-title"
+          class="text-sm font-semibold leading-normal tracking-normal text-danger"
+        >
+          {{ message.title }}
+        </h2>
+        <p class="mt-1 text-sm">{{ message.detail }}</p>
+      </div>
+      <button
+        type="button"
+        class="min-h-11 rounded-sm px-3 text-sm font-semibold underline underline-offset-4"
+        aria-label="Fechar mensagem"
+        (click)="clearNotice()"
+      >
+        Fechar
+      </button>
+    </section>
+  }
+}
+
+<dl class="mt-7 grid grid-cols-3 gap-3 rounded-deadline bg-bg px-4 py-4 sm:px-6 sm:py-5">
+  <div>
+    <dt class="text-xs text-ink2 sm:text-sm">Empresas</dt>
+    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums">{{ companies().length }}</dd>
+  </div>
+  <div>
+    <dt class="text-xs text-ink2 sm:text-sm">Ativas</dt>
+    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums">{{ activeCompanies() }}</dd>
+  </div>
+  <div>
+    <dt class="text-xs text-ink2 sm:text-sm">Inativas</dt>
+    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums">{{ inactiveCompanies() }}</dd>
+  </div>
+</dl>
+
+<section class="mt-7" aria-label="Busca e filtros de empresas">
+  <div class="grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]">
+    <div>
+      <label for="company-search" class="block text-sm font-semibold">Buscar empresa</label>
+      <input
+        id="company-search"
+        appInput
+        class="mt-2"
+        type="search"
+        autocomplete="off"
+        placeholder="Razão social, e-mail ou endereço"
+        [value]="search()"
+        (input)="updateSearch($event)"
+      />
+    </div>
+    <div>
+      <label for="company-filter" class="block text-sm font-semibold">Situação</label>
+      <select
+        id="company-filter"
+        class="mt-2 min-h-[52px] w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 py-2 text-base text-ink hover:border-ink2 focus-visible:border-pri focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+        [value]="filter()"
+        (change)="updateFilter($event)"
+      >
+        <option value="all">Todas as situações</option>
+        <option value="active">Ativa</option>
+        <option value="inactive">Inativa</option>
+      </select>
+    </div>
+  </div>
+</section>
+
+<section class="mt-7" aria-labelledby="company-list-heading">
+  <div class="flex flex-wrap items-baseline justify-between gap-3">
+    <h2 id="company-list-heading" class="text-base font-semibold leading-[1.5] tracking-normal">
+      Lista de empresas
+    </h2>
+    <p class="text-xs text-ink3" aria-live="polite">
+      {{ filteredCompanies().length }}
+      {{ filteredCompanies().length === 1 ? 'resultado' : 'resultados' }}
+    </p>
+  </div>
+
+  @if (filteredCompanies().length) {
+    <div class="mt-3 hidden overflow-x-auto rounded-deadline border border-line xl:block">
+      <table class="w-full min-w-[850px] table-fixed border-collapse text-left text-sm">
+        <caption class="sr-only">
+          Empresas fictícias e suas situações
+        </caption>
+        <colgroup>
+          <col class="w-[28%]" />
+          <col class="w-[20%]" />
+          <col class="w-[25%]" />
+          <col class="w-[12%]" />
+          <col class="w-[15%]" />
+        </colgroup>
+        <thead class="bg-bg text-xs font-semibold text-ink2">
+          <tr>
+            <th scope="col" class="px-4 py-3">Razão social</th>
+            <th scope="col" class="px-4 py-3">E-mail de contato</th>
+            <th scope="col" class="px-4 py-3">Endereço</th>
+            <th scope="col" class="px-4 py-3">Situação</th>
+            <th scope="col" class="px-4 py-3">Ações</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-line">
+          @for (company of filteredCompanies(); track company.id) {
+            <tr>
+              <th scope="row" class="px-4 py-4 align-top font-semibold leading-[1.5]">
+                <span class="block wrap-anywhere">{{ company.legalName }}</span>
+              </th>
+              <td class="px-4 py-4 align-top text-ink2 wrap-anywhere">
+                {{ company.contactEmail }}
+              </td>
+              <td class="px-4 py-4 align-top text-ink2 wrap-anywhere">{{ company.address }}</td>
+              <td class="px-4 py-4 align-top">
+                @if (company.situation === 'active') {
+                  <span
+                    class="inline-flex min-h-7 items-center rounded-sm bg-grn-bg px-2.5 text-xs font-semibold text-grn-t"
+                    >Ativa</span
+                  >
+                } @else {
+                  <span
+                    class="inline-flex min-h-7 items-center rounded-sm bg-bg px-2.5 text-xs font-semibold text-ink2"
+                    >Inativa</span
+                  >
+                }
+              </td>
+              <td class="px-4 py-3 align-top">
+                <div class="flex flex-col items-start gap-1">
+                  <button
+                    #editDesktopTrigger
+                    type="button"
+                    class="min-h-10 rounded-sm px-2 text-sm font-semibold text-pri-d underline underline-offset-4 hover:text-pri"
+                    [disabled]="!ready()"
+                    [attr.aria-label]="'Editar ' + company.legalName"
+                    (click)="openEdit(company, editDesktopTrigger)"
+                  >
+                    Editar
+                  </button>
+                  @if (company.situation === 'active') {
+                    <button
+                      #deactivateDesktopTrigger
+                      type="button"
+                      class="min-h-10 rounded-sm px-2 text-sm font-semibold text-danger underline underline-offset-4 hover:opacity-80"
+                      [disabled]="!ready()"
+                      [attr.aria-label]="'Inativar ' + company.legalName"
+                      (click)="openDeactivate(company, deactivateDesktopTrigger)"
+                    >
+                      Inativar
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-3 divide-y divide-line rounded-deadline border border-line xl:hidden">
+      @for (company of filteredCompanies(); track company.id) {
+        <article
+          class="p-4 first:rounded-t-deadline last:rounded-b-deadline"
+          [attr.aria-labelledby]="'company-mobile-title-' + company.id"
+        >
+          <div class="flex items-start justify-between gap-3">
+            <h3
+              [id]="'company-mobile-title-' + company.id"
+              class="min-w-0 text-sm leading-[1.5] font-semibold tracking-[-.01em]"
+            >
+              {{ company.legalName }}
+            </h3>
+            @if (company.situation === 'active') {
+              <span
+                class="inline-flex min-h-7 shrink-0 items-center rounded-sm bg-grn-bg px-2.5 text-xs font-semibold text-grn-t"
+                >Ativa</span
+              >
+            } @else {
+              <span
+                class="inline-flex min-h-7 shrink-0 items-center rounded-sm bg-bg px-2.5 text-xs font-semibold text-ink2"
+                >Inativa</span
+              >
+            }
+          </div>
+          <dl class="mt-4 grid gap-3 text-sm">
+            <div>
+              <dt class="text-xs text-ink3">E-mail de contato</dt>
+              <dd class="m-0 mt-0.5 wrap-anywhere">{{ company.contactEmail }}</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-ink3">Endereço</dt>
+              <dd class="m-0 mt-0.5 wrap-anywhere">{{ company.address }}</dd>
+            </div>
+          </dl>
+          <div class="mt-4 flex flex-wrap gap-2 border-t border-line pt-3">
+            <button
+              #editMobileTrigger
+              type="button"
+              appButtonSecondary
+              class="min-h-11 px-4 py-2"
+              [disabled]="!ready()"
+              [attr.aria-label]="'Editar ' + company.legalName"
+              (click)="openEdit(company, editMobileTrigger)"
+            >
+              Editar
+            </button>
+            @if (company.situation === 'active') {
+              <button
+                #deactivateMobileTrigger
+                type="button"
+                class="min-h-11 rounded-control border border-danger/30 px-4 py-2 text-sm font-semibold text-danger hover:bg-danger-bg"
+                [disabled]="!ready()"
+                [attr.aria-label]="'Inativar ' + company.legalName"
+                (click)="openDeactivate(company, deactivateMobileTrigger)"
+              >
+                Inativar
+              </button>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  } @else {
+    <div class="mt-3 rounded-deadline bg-bg px-5 py-7 sm:px-7" role="status">
+      <h3 class="text-sm font-semibold leading-normal tracking-normal">
+        Nenhuma empresa encontrada
+      </h3>
+      <p class="mt-2 max-w-[60ch] text-sm text-ink2">
+        Ajuste a busca ou a situação selecionada para ver outros cadastros fictícios.
+      </p>
+      <button
+        type="button"
+        appButtonSecondary
+        class="mt-4 min-h-11 px-4 py-2.5"
+        (click)="clearSearchAndFilter()"
+      >
+        Limpar busca e filtro
+      </button>
+    </div>
+  }
+</section>
+
+<dialog
+  #companyDialog
+  tabindex="-1"
+  class="m-auto max-h-[calc(100dvh-32px)] w-[min(600px,calc(100%-24px))] overflow-y-auto rounded-surface border border-line bg-sf p-0 text-ink shadow-dialog backdrop:bg-navy/50"
+  [attr.aria-labelledby]="
+    dialogMode() === 'edit' ? 'company-dialog-title' : 'company-deactivate-title'
+  "
+  (close)="onDialogClose()"
+  (click)="onBackdrop($event)"
+  (keydown)="trapFocus($event)"
+>
+  @if (dialogMode() === 'edit' && selectedCompany(); as company) {
+    <div class="p-5 sm:p-7">
+      <h2 id="company-dialog-title" class="text-xl font-semibold leading-snug tracking-[-.02em]">
+        Editar empresa
+      </h2>
+      <p class="mt-2 text-sm text-ink2">Atualize os dados de contato de {{ company.legalName }}.</p>
+      <p class="mt-3 text-xs text-ink3">
+        As alterações afetam somente esta demonstração em memória.
+      </p>
+      <form class="mt-6 space-y-5" [formGroup]="form" (ngSubmit)="submitEdit()" novalidate>
+        <div>
+          <label for="edit-company-legalName" class="block text-sm font-semibold"
+            >Razão social</label
+          >
+          <input
+            #editName
+            id="edit-company-legalName"
+            appInput
+            class="mt-2"
+            formControlName="legalName"
+            required
+            minlength="3"
+            maxlength="160"
+            autocomplete="organization"
+            [attr.aria-invalid]="invalid('legalName')"
+            aria-describedby="edit-company-legalName-error"
+          />
+          <p
+            id="edit-company-legalName-error"
+            class="mt-2 text-sm text-danger"
+            [hidden]="!invalid('legalName')"
+          >
+            {{ fieldErrors.legalName }}
+          </p>
+        </div>
+        <div>
+          <label for="edit-company-contactEmail" class="block text-sm font-semibold"
+            >E-mail de contato</label
+          >
+          <input
+            id="edit-company-contactEmail"
+            appInput
+            class="mt-2"
+            type="email"
+            formControlName="contactEmail"
+            required
+            maxlength="160"
+            autocomplete="email"
+            [attr.aria-invalid]="invalid('contactEmail')"
+            aria-describedby="edit-company-contactEmail-error"
+          />
+          <p
+            id="edit-company-contactEmail-error"
+            class="mt-2 text-sm text-danger"
+            [hidden]="!invalid('contactEmail')"
+          >
+            {{ fieldErrors.contactEmail }}
+          </p>
+        </div>
+        <div>
+          <label for="edit-company-address" class="block text-sm font-semibold">Endereço</label>
+          <textarea
+            id="edit-company-address"
+            class="block min-h-28 w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 py-3 text-base text-ink placeholder:text-ink3 focus-visible:border-pri focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri aria-invalid:border-danger aria-invalid:focus-visible:outline-danger"
+            rows="3"
+            formControlName="address"
+            required
+            minlength="8"
+            maxlength="240"
+            autocomplete="street-address"
+            [attr.aria-invalid]="invalid('address')"
+            aria-describedby="edit-company-address-error"
+          ></textarea>
+          <p
+            id="edit-company-address-error"
+            class="mt-2 text-sm text-danger"
+            [hidden]="!invalid('address')"
+          >
+            {{ fieldErrors.address }}
+          </p>
+        </div>
+        <div class="flex flex-wrap justify-end gap-3 border-t border-line pt-5">
+          <button
+            #cancelAction
+            type="button"
+            appButtonSecondary
+            class="min-h-11 px-4 py-2.5"
+            (click)="closeDialog()"
+          >
+            Cancelar
+          </button>
+          <button type="submit" appButtonPrimary class="min-h-11 px-4 py-2.5">
+            Salvar edição demonstrativa
+          </button>
+        </div>
+      </form>
+    </div>
+  } @else if (dialogMode() === 'deactivate' && selectedCompany(); as company) {
+    <div class="p-5 sm:p-7">
+      <h2
+        id="company-deactivate-title"
+        class="text-xl font-semibold leading-snug tracking-[-.02em]"
+      >
+        Confirmar inativação?
+      </h2>
+      <p class="mt-3 text-sm leading-[1.7] text-ink2">
+        {{ company.legalName }} passará a aparecer como inativa nesta demonstração.
+      </p>
+      <p class="mt-3 text-xs text-ink3">
+        Nenhum cadastro real será desativado. A alteração existe somente nesta sessão e será
+        descartada ao recarregar.
+      </p>
+      <div class="mt-6 flex flex-wrap justify-end gap-3 border-t border-line pt-5">
+        <button
+          #cancelAction
+          type="button"
+          appButtonSecondary
+          class="min-h-11 px-4 py-2.5"
+          (click)="closeDialog()"
+        >
+          Manter ativa
+        </button>
+        <button
+          type="button"
+          class="inline-flex min-h-11 items-center justify-center rounded-control border border-transparent bg-danger px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-danger"
+          (click)="confirmDeactivation()"
+        >
+          Confirmar inativação
+        </button>
+      </div>
+    </div>
+  }
+</dialog>

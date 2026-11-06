@@ -1,0 +1,201 @@
+<a
+  routerLink="/app/gestor/empresas"
+  class="mb-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-pri-d underline underline-offset-4"
+>
+  <svg class="size-4" [lucideIcon]="icons.back" aria-hidden="true"></svg>Empresas
+</a>
+<h1
+  appPageHeading
+  class="text-[26px] leading-[1.25] font-semibold tracking-[-.03em] sm:text-[28px]"
+>
+  Nova empresa
+</h1>
+<p class="mt-2 text-sm leading-[1.7] text-ink2">
+  Informe os dados de contato do cliente empresarial.
+</p>
+<p class="mt-4 flex items-start gap-2 text-xs leading-[1.7] text-ink3">
+  <svg class="mt-0.5 size-4 shrink-0" [lucideIcon]="icons.info" aria-hidden="true"></svg>
+  Dados fictícios. O cadastro é demonstrativo e não será enviado a um serviço externo.
+</p>
+
+@if (created(); as company) {
+  <section
+    #successMessage
+    tabindex="-1"
+    role="status"
+    aria-labelledby="company-created-title"
+    class="mt-7 rounded-deadline bg-grn-bg p-5 sm:p-7"
+  >
+    <h2
+      id="company-created-title"
+      class="text-lg font-semibold leading-[1.4] tracking-[-.02em] text-grn-t"
+    >
+      Cadastro demonstrativo concluído
+    </h2>
+    <p class="mt-2 max-w-[65ch] text-sm text-grn-t">
+      {{ company.legalName }} foi incluída na lista desta sessão. Nenhuma informação foi enviada ou
+      salva.
+    </p>
+    <dl class="mt-5 grid gap-x-8 gap-y-4 text-sm sm:grid-cols-2">
+      <div>
+        <dt class="text-xs text-grn-t">E-mail de contato</dt>
+        <dd class="m-0 mt-1 font-medium wrap-anywhere">{{ company.contactEmail }}</dd>
+      </div>
+      <div>
+        <dt class="text-xs text-grn-t">Endereço</dt>
+        <dd class="m-0 mt-1 font-medium wrap-anywhere">{{ company.address }}</dd>
+      </div>
+    </dl>
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a routerLink="/app/gestor/empresas" appButtonPrimary class="min-h-11 px-4 py-2.5">
+        Ver empresas<svg class="size-4" [lucideIcon]="icons.arrow" aria-hidden="true"></svg>
+      </a>
+      <button
+        type="button"
+        appButtonSecondary
+        class="min-h-11 px-4 py-2.5"
+        (click)="startAnother()"
+      >
+        Cadastrar outra
+      </button>
+    </div>
+  </section>
+} @else {
+  <section
+    class="mt-7 max-w-[760px] rounded-deadline bg-bg p-5 sm:p-7"
+    aria-labelledby="company-form-title"
+  >
+    <h2 id="company-form-title" class="text-base font-semibold leading-[1.5] tracking-normal">
+      Dados da empresa
+    </h2>
+    <p class="mt-2 text-xs text-ink3">Todos os campos são obrigatórios.</p>
+
+    @if (simulatedError()) {
+      <div
+        #errorMessage
+        tabindex="-1"
+        role="alert"
+        class="mt-5 rounded-deadline bg-danger-bg p-4 text-sm text-danger"
+      >
+        <p class="font-semibold">Falha simulada ao salvar</p>
+        <p class="mt-1">
+          Os dados continuam no formulário e nenhum registro foi incluído. Revise as informações ou
+          tente novamente.
+        </p>
+      </div>
+    }
+
+    <form class="mt-6 space-y-5" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div>
+        <label for="new-company-legalName" class="block text-sm font-semibold">Razão social</label>
+        <input
+          id="new-company-legalName"
+          appInput
+          class="mt-2"
+          formControlName="legalName"
+          required
+          minlength="3"
+          maxlength="160"
+          autocomplete="organization"
+          placeholder="Ex.: Edifício Aurora Administração Predial Ltda."
+          [attr.aria-invalid]="invalid('legalName')"
+          aria-describedby="new-company-legalName-help new-company-legalName-error"
+          (input)="clearSimulatedError()"
+        />
+        <p id="new-company-legalName-help" class="mt-2 text-xs text-ink3">
+          Use de 3 a 160 caracteres.
+        </p>
+        <p
+          id="new-company-legalName-error"
+          class="mt-2 text-sm text-danger"
+          [hidden]="!invalid('legalName')"
+        >
+          {{ fieldErrors.legalName }}
+        </p>
+      </div>
+
+      <div>
+        <label for="new-company-contactEmail" class="block text-sm font-semibold"
+          >E-mail de contato</label
+        >
+        <input
+          id="new-company-contactEmail"
+          appInput
+          class="mt-2"
+          type="email"
+          formControlName="contactEmail"
+          required
+          maxlength="160"
+          autocomplete="email"
+          placeholder="contato@empresa.example"
+          [attr.aria-invalid]="invalid('contactEmail')"
+          aria-describedby="new-company-contactEmail-help new-company-contactEmail-error"
+          (input)="clearSimulatedError()"
+        />
+        <p id="new-company-contactEmail-help" class="mt-2 text-xs text-ink3">
+          Endereço usado para contato no cenário de demonstração.
+        </p>
+        <p
+          id="new-company-contactEmail-error"
+          class="mt-2 text-sm text-danger"
+          [hidden]="!invalid('contactEmail')"
+        >
+          {{ fieldErrors.contactEmail }}
+        </p>
+      </div>
+
+      <div>
+        <label for="new-company-address" class="block text-sm font-semibold">Endereço</label>
+        <textarea
+          id="new-company-address"
+          class="block min-h-28 w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 py-3 text-base text-ink placeholder:text-ink3 transition-[border-color,background-color] duration-150 hover:border-ink2 focus-visible:border-pri focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri aria-invalid:border-danger aria-invalid:focus-visible:outline-danger motion-reduce:transition-none"
+          rows="3"
+          formControlName="address"
+          required
+          minlength="8"
+          maxlength="240"
+          autocomplete="street-address"
+          placeholder="Rua, número, bairro, cidade e UF"
+          [attr.aria-invalid]="invalid('address')"
+          aria-describedby="new-company-address-help new-company-address-error"
+          (input)="clearSimulatedError()"
+        ></textarea>
+        <p id="new-company-address-help" class="mt-2 text-xs text-ink3">
+          Use de 8 a 240 caracteres.
+        </p>
+        <p
+          id="new-company-address-error"
+          class="mt-2 text-sm text-danger"
+          [hidden]="!invalid('address')"
+        >
+          {{ fieldErrors.address }}
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3 border-t border-line pt-5">
+        <button
+          type="submit"
+          appButtonPrimary
+          class="min-h-12 px-5 py-3 disabled:cursor-wait disabled:opacity-60"
+          [disabled]="!ready()"
+        >
+          Concluir cadastro<svg class="size-4" [lucideIcon]="icons.arrow" aria-hidden="true"></svg>
+        </button>
+        <button
+          type="button"
+          appButtonSecondary
+          class="min-h-12 px-5 py-3"
+          (click)="simulateError()"
+        >
+          Simular erro ao salvar
+        </button>
+        <a routerLink="/app/gestor/empresas" appButtonSecondary class="min-h-12 px-5 py-3">
+          Cancelar
+        </a>
+      </div>
+      <p class="text-xs text-ink3">
+        A simulação de erro não altera nem envia os dados preenchidos.
+      </p>
+    </form>
+  </section>
+}
