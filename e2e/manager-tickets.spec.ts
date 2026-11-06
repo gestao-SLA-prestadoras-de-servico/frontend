@@ -31,9 +31,9 @@ test('FE-022 dashboard summarizes the shared ticket scene and links into the que
   await expect(page.getByText('Nenhum chamado corresponde aos filtros')).toBeVisible();
   await page.getByRole('button', { name: 'Limpar filtros' }).last().click();
   await page.getByLabel('Prioridade').selectOption('Alta');
-  await expect(page.getByRole('table').getByRole('row')).toHaveCount(2);
+  await expect(page.getByRole('table').getByRole('row')).toHaveCount(3);
   await expect(page.getByRole('table')).toContainText('Falha no sistema de climatização');
-  await expect(page.getByRole('table')).not.toContainText('Instabilidade no ponto de rede');
+  await expect(page.getByRole('table')).toContainText('Instabilidade no ponto de rede');
   await page.getByRole('button', { name: 'Limpar filtros' }).first().click();
 
   await page.getByLabel('Situação').selectOption('RESOLVIDO');

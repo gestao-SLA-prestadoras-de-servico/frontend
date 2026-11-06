@@ -49,7 +49,7 @@ const INITIAL_TICKETS: readonly ManagerTicket[] = [
     client: 'Clínica Horizonte',
     location: 'Recepção · Térreo',
     status: 'ABERTO',
-    priority: 'Normal',
+    priority: 'Alta',
     suggestedPriority: 'Alta',
     technician: null,
     openedAt: '05 nov · 08h40',
