@@ -1,0 +1,241 @@
+<a routerLink="/app/cliente" class="client-link mb-4"
+  ><svg class="size-4" [lucideIcon]="icons.back" aria-hidden="true"></svg>Meus chamados</a
+>
+<h1 appPageHeading class="client-title">Abrir chamado</h1>
+<p class="mt-2 text-sm text-ink2">Conte o que aconteceu e onde o atendimento é necessário.</p>
+<app-client-notice class="mt-4" />
+@if (success()) {
+  <section
+    #confirmation
+    tabindex="-1"
+    class="client-success mt-7 rounded-deadline bg-grn-bg p-6"
+    aria-labelledby="new-confirmation-title"
+  >
+    <h2 id="new-confirmation-title" class="client-heading text-grn-t">
+      Solicitação demonstrativa concluída
+    </h2>
+    <p class="mt-3 max-w-[65ch] text-sm text-grn-t">
+      O formulário foi validado. Nenhum chamado foi criado e suas informações não foram enviadas nem
+      salvas.
+    </p>
+    <dl class="mt-5 grid gap-4 text-sm sm:grid-cols-2">
+      <div>
+        <dt class="text-grn-t">Título informado</dt>
+        <dd class="m-0 mt-1 font-semibold wrap-anywhere">{{ form.controls.title.value.trim() }}</dd>
+      </div>
+      <div>
+        <dt class="text-grn-t">Contrato de exemplo</dt>
+        <dd class="m-0 mt-1 font-semibold">{{ selectedContract()?.id }}</dd>
+      </div>
+    </dl>
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a routerLink="/app/cliente" appButtonPrimary class="min-h-11 px-4 py-2.5"
+        >Voltar aos meus chamados</a
+      ><button
+        type="button"
+        appButtonSecondary
+        class="min-h-11 px-4 py-2.5"
+        (click)="startAnother()"
+      >
+        Testar outra solicitação
+      </button>
+    </div>
+  </section>
+} @else {
+  <div class="mt-7 grid items-start gap-6 xl:grid-cols-[minmax(0,1.6fr)_minmax(280px,1fr)]">
+    <section class="client-panel" aria-labelledby="new-form-heading">
+      <h2 id="new-form-heading" class="client-heading">Dados da solicitação</h2>
+      <p class="mt-2 text-xs text-ink3">
+        Todos os campos são obrigatórios, exceto a prioridade sugerida.
+      </p>
+      <form class="mt-6 space-y-5" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div>
+          <label class="client-label" for="new-contract">Contrato</label
+          ><select
+            id="new-contract"
+            class="client-control"
+            formControlName="contract"
+            required
+            [attr.aria-invalid]="invalid('contract')"
+            aria-describedby="new-contract-help new-contract-error"
+          >
+            <option value="">Selecione um contrato</option>
+            @for (contract of contracts; track contract.id) {
+              <option [value]="contract.id">{{ contract.id }} · {{ contract.title }}</option>
+            }
+          </select>
+          <p id="new-contract-help" class="mt-2 text-xs text-ink3">
+            Edifício Aurora · Contratos fictícios.
+          </p>
+          <p id="new-contract-error" class="client-error" [hidden]="!invalid('contract')">
+            {{ fieldErrors.contract }}
+          </p>
+          @if (selectedContract(); as contract) {
+            @if (!contract.available) {
+              <div role="alert" class="mt-3 rounded-lg bg-danger-bg p-4 text-sm text-danger">
+                <p class="font-semibold">Contrato indisponível para abertura</p>
+                <p class="mt-1">
+                  {{ contract.validity }}. Selecione o contrato vigente para continuar a
+                  demonstração.
+                </p>
+              </div>
+            }
+          }
+        </div>
+        <div>
+          <label class="client-label" for="new-title">Título do chamado</label
+          ><input
+            id="new-title"
+            class="client-control"
+            formControlName="title"
+            required
+            minlength="5"
+            maxlength="120"
+            placeholder="Ex.: Falha na climatização do 4º andar"
+            [attr.aria-invalid]="invalid('title')"
+            aria-describedby="new-title-help new-title-error"
+          />
+          <p id="new-title-help" class="mt-2 text-xs text-ink3">
+            Resuma o problema em 5 a 120 caracteres.
+          </p>
+          <p id="new-title-error" class="client-error" [hidden]="!invalid('title')">
+            {{ fieldErrors.title }}
+          </p>
+        </div>
+        <div>
+          <label class="client-label" for="new-description">Descrição do problema</label
+          ><textarea
+            id="new-description"
+            class="client-control resize-y"
+            rows="5"
+            formControlName="description"
+            required
+            minlength="20"
+            maxlength="2000"
+            placeholder="Descreva o problema, quando começou e como afeta o local."
+            [attr.aria-invalid]="invalid('description')"
+            aria-describedby="new-description-help new-description-error"
+          ></textarea>
+          <p id="new-description-help" class="mt-2 text-xs text-ink3">
+            Use de 20 a 2.000 caracteres. Não inclua dados sensíveis nesta demonstração.
+          </p>
+          <p id="new-description-error" class="client-error" [hidden]="!invalid('description')">
+            {{ fieldErrors.description }}
+          </p>
+        </div>
+        <div>
+          <label class="client-label" for="new-location">Local do atendimento</label
+          ><input
+            id="new-location"
+            class="client-control"
+            formControlName="location"
+            required
+            minlength="3"
+            maxlength="160"
+            placeholder="Ex.: Sala técnica · 4º andar"
+            [attr.aria-invalid]="invalid('location')"
+            aria-describedby="new-location-help new-location-error"
+          />
+          <p id="new-location-help" class="mt-2 text-xs text-ink3">
+            Indique o ambiente e o andar em 3 a 160 caracteres.
+          </p>
+          <p id="new-location-error" class="client-error" [hidden]="!invalid('location')">
+            {{ fieldErrors.location }}
+          </p>
+        </div>
+        <div>
+          <label class="client-label" for="new-priority"
+            >Prioridade sugerida <span class="font-normal text-ink3">(opcional)</span></label
+          ><select
+            id="new-priority"
+            class="client-control"
+            formControlName="priority"
+            [attr.aria-invalid]="invalid('priority')"
+            aria-describedby="new-priority-help new-priority-error"
+          >
+            @for (priority of priorities; track priority) {
+              <option [value]="priority">{{ priority }}</option>
+            }
+          </select>
+          <p id="new-priority-help" class="mt-2 text-xs text-ink3">
+            Normal é o padrão. A prioridade final seria avaliada pela prestadora.
+          </p>
+          <p id="new-priority-error" class="client-error" [hidden]="!invalid('priority')">
+            {{ fieldErrors.priority }}
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3 border-t border-line pt-5">
+          <button
+            type="submit"
+            appButtonPrimary
+            class="min-h-12 px-5 py-3 disabled:cursor-not-allowed disabled:opacity-60"
+            [disabled]="!ready()"
+          >
+            Enviar solicitação<svg
+              class="size-4"
+              [lucideIcon]="icons.arrow"
+              aria-hidden="true"
+            ></svg></button
+          ><a routerLink="/app/cliente" appButtonSecondary class="min-h-12 px-5 py-3">Cancelar</a>
+        </div>
+        <p class="text-xs text-ink3">O envio apenas demonstra a confirmação do formulário.</p>
+      </form>
+    </section>
+    <aside class="grid gap-5" aria-label="Orientações para abertura">
+      <section class="client-panel" aria-labelledby="contract-deadlines-heading">
+        <h2 id="contract-deadlines-heading" class="client-heading">Prazos do contrato</h2>
+        @if (selectedContract(); as contract) {
+          <p class="mt-2 text-xs text-ink3">{{ contract.id }} · {{ contract.validity }}</p>
+          @if (contract.available) {
+            <dl class="mt-5 divide-y divide-line text-sm">
+              <div class="flex justify-between gap-4 py-3 first:pt-0">
+                <dt class="text-ink2">Resposta</dt>
+                <dd class="m-0 font-semibold tabular-nums">{{ contract.response }}</dd>
+              </div>
+              <div class="flex justify-between gap-4 py-3">
+                <dt class="text-ink2">Atendimento em campo</dt>
+                <dd class="m-0 shrink-0 font-semibold tabular-nums">{{ contract.field }}</dd>
+              </div>
+              <div class="flex justify-between gap-4 py-3 last:pb-0">
+                <dt class="text-ink2">Resolução</dt>
+                <dd class="m-0 font-semibold tabular-nums">{{ contract.resolution }}</dd>
+              </div>
+            </dl>
+            <p class="mt-5 text-xs text-ink3">
+              Prazos ilustrativos a partir da abertura. A contagem real seguirá a política
+              contratual.
+            </p>
+          } @else {
+            <p class="mt-4 text-sm text-ink2">
+              Os prazos não estão disponíveis para novas solicitações neste contrato vencido.
+            </p>
+          }
+        } @else {
+          <p class="mt-4 text-sm text-ink2">Selecione um contrato para consultar os três prazos.</p>
+        }
+      </section>
+      <section class="rounded-deadline bg-bg p-6" aria-labelledby="next-steps-heading">
+        <h2 id="next-steps-heading" class="client-heading">Depois da solicitação</h2>
+        <ol class="mt-5 list-decimal space-y-5 pl-5 text-sm marker:text-ink3">
+          <li class="pl-1">
+            <p class="font-semibold">Triagem da prestadora</p>
+            <p class="mt-1 text-ink2">Avaliação do problema e da prioridade sugerida.</p>
+          </li>
+          <li class="pl-1">
+            <p class="font-semibold">Atendimento técnico</p>
+            <p class="mt-1 text-ink2">Acompanhamento dos prazos e dos registros do serviço.</p>
+          </li>
+          <li class="pl-1">
+            <p class="font-semibold">Sua revisão</p>
+            <p class="mt-1 text-ink2">
+              Confira as evidências e confirme a resolução ou solicite reabertura.
+            </p>
+          </li>
+        </ol>
+        <p class="mt-5 text-xs text-ink3">
+          Fluxo previsto. Nenhuma dessas etapas é iniciada nesta demonstração.
+        </p>
+      </section>
+    </aside>
+  </div>
+}

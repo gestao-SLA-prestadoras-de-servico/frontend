@@ -1,0 +1,131 @@
+@if (ticket().status === 'RESOLVIDO') {
+  <section class="rounded-deadline bg-pri-bg p-5 sm:p-6" aria-labelledby="client-review-heading">
+    <div class="flex flex-wrap items-start justify-between gap-5">
+      <div class="max-w-[65ch]">
+        <h2 id="client-review-heading" class="client-heading text-pri-d">
+          O atendimento resolveu o problema?
+        </h2>
+        <p class="mt-2 text-sm text-pri-d">
+          Confira o relato técnico e as evidências. Você pode confirmar a resolução ou explicar por
+          que o chamado precisa ser reaberto.
+        </p>
+        <p class="mt-3 text-sm font-semibold text-pri-d">
+          Prazo de validação: {{ ticket().validationDueAt | date: 'dd/MM/yyyy, HH:mm' : '-0300' }} ·
+          Brasília.
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <button
+          #confirmTrigger
+          type="button"
+          appButtonPrimary
+          class="min-h-12 px-5 py-3 disabled:opacity-60"
+          [disabled]="!ready()"
+          (click)="open('confirm', confirmTrigger)"
+        >
+          Confirmar resolução</button
+        ><button
+          #reopenTrigger
+          type="button"
+          appButtonSecondary
+          class="min-h-12 px-5 py-3 disabled:opacity-60"
+          [disabled]="!ready()"
+          (click)="open('reopen', reopenTrigger)"
+        >
+          Solicitar reabertura
+        </button>
+      </div>
+    </div>
+  </section>
+} @else {
+  <section class="rounded-deadline bg-bg p-5" aria-labelledby="client-review-unavailable">
+    <h2 id="client-review-unavailable" class="text-sm font-semibold leading-normal tracking-normal">
+      Revisão indisponível neste estado
+    </h2>
+    <p class="mt-2 text-sm text-ink2">
+      {{
+        ticket().status === 'ENCERRADO'
+          ? 'Este atendimento já foi encerrado no cenário fictício. A validação e a solicitação de reabertura não estão disponíveis.'
+          : 'A validação e a solicitação de reabertura ficam disponíveis após o técnico marcar o atendimento como resolvido.'
+      }}
+    </p>
+  </section>
+}
+@if (result(); as outcome) {
+  <section
+    #feedback
+    tabindex="-1"
+    class="client-success mt-4 rounded-deadline bg-grn-bg p-5"
+    aria-labelledby="client-review-result"
+  >
+    <h2 id="client-review-result" class="client-heading text-grn-t">
+      {{
+        outcome === 'confirm' ? 'Confirmação demonstrada' : 'Solicitação de reabertura demonstrada'
+      }}
+    </h2>
+    <p class="mt-2 text-sm text-grn-t">
+      {{
+        outcome === 'confirm'
+          ? 'Em uma operação real, a confirmação encerraria o chamado.'
+          : 'Em uma operação real, a justificativa seria enviada para avaliação da prestadora.'
+      }}
+      Nesta demonstração, nenhuma informação foi enviada ou salva e o estado do chamado permanece
+      igual.
+    </p>
+  </section>
+}
+<dialog
+  tabindex="-1"
+  #reviewDialog
+  class="client-dialog"
+  aria-labelledby="client-review-dialog-title"
+  aria-describedby="client-review-dialog-description"
+  (close)="onClose()"
+  (click)="onBackdrop($event)"
+  (keydown)="trapFocus($event)"
+>
+  <h2 id="client-review-dialog-title" class="text-xl font-semibold leading-snug tracking-[-.02em]">
+    {{ action() === 'confirm' ? 'Confirmar resolução?' : 'Solicitar reabertura' }}
+  </h2>
+  <p id="client-review-dialog-description" class="mt-3 text-sm text-ink2">
+    {{
+      action() === 'confirm'
+        ? 'Ao confirmar em uma operação real, você reconheceria que o problema foi resolvido e o chamado seria encerrado.'
+        : 'Explique o que ainda precisa ser corrigido. Em uma operação real, a prestadora receberia sua justificativa para avaliar a reabertura.'
+    }}
+  </p>
+  <p class="mt-3 text-xs text-ink3">
+    Demonstração: nenhuma mudança de estado ou envio de dados será realizado.
+  </p>
+  <form class="mt-5" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    @if (action() === 'reopen') {
+      <label for="reopen-reason" class="client-label">Justificativa da reabertura</label
+      ><textarea
+        #reasonField
+        id="reopen-reason"
+        class="client-control"
+        rows="5"
+        [formControl]="reason"
+        required
+        minlength="20"
+        maxlength="1000"
+        placeholder="Descreva o que continua acontecendo após o atendimento."
+        [attr.aria-invalid]="invalidReason"
+        aria-describedby="reopen-reason-help reopen-reason-error"
+      ></textarea>
+      <p id="reopen-reason-help" class="mt-2 text-xs text-ink3">
+        Obrigatório. Use de 20 a 1.000 caracteres.
+      </p>
+      <p id="reopen-reason-error" class="client-error" [hidden]="!invalidReason">
+        Explique o motivo usando de 20 a 1.000 caracteres.
+      </p>
+    }
+    <div class="mt-6 flex flex-wrap justify-end gap-3">
+      <button #cancel type="button" appButtonSecondary class="min-h-12 px-5 py-3" (click)="close()">
+        Cancelar</button
+      ><button type="submit" appButtonPrimary class="min-h-12 px-5 py-3">
+        {{ action() === 'confirm' ? 'Confirmar resolução' : 'Enviar justificativa' }}
+      </button>
+    </div>
+  </form>
+</dialog>

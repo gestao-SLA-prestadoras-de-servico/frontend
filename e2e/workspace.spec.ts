@@ -31,7 +31,7 @@ const profiles = [
     name: 'Marina Alves',
     heading: 'Meus chamados',
     links: ['Meus chamados', 'Abrir chamado'],
-    count: 3,
+    count: 4,
   },
 ] as const;
 

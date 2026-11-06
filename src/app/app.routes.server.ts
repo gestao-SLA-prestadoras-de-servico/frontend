@@ -1,5 +1,6 @@
-import { RenderMode, ServerRoute } from '@angular/ssr';
+import { PrerenderFallback, RenderMode, ServerRoute } from '@angular/ssr';
 import { WORKSPACE_PROFILES } from './features/workspace/data/workspace-data';
+import { CLIENT_TICKETS } from './features/workspace/client/data/client-data';
 
 export const serverRoutes: ServerRoute[] = [
   ...['', 'login', 'sessao-demo', 'sessao-expirada', 'app'].map((path): ServerRoute => ({
@@ -12,5 +13,11 @@ export const serverRoutes: ServerRoute[] = [
       renderMode: RenderMode.Prerender,
     })),
   ),
+  {
+    path: 'app/cliente/chamados/:id',
+    renderMode: RenderMode.Prerender,
+    getPrerenderParams: async () => CLIENT_TICKETS.map((ticket) => ({ id: String(ticket.id) })),
+    fallback: PrerenderFallback.Server,
+  },
   { path: '**', renderMode: RenderMode.Server, status: 404 },
 ];

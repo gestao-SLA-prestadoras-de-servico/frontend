@@ -46,7 +46,10 @@ Thumbs.db
 #ia
 .codex
 .agents
-.impeccable
+.impeccable/*
+!.impeccable/surfaces/
+.impeccable/surfaces/*
+!.impeccable/surfaces/src-app-features-workspace-client.md
 .taste-skill
 
 # Playwright
