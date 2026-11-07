@@ -10,13 +10,21 @@ import {
 } from '../data/manager-ticket-demo-store';
 import { ManagerTicketBadge } from '../components/manager-ticket-badge';
 import { ManagerTicketClocks } from '../components/manager-ticket-clocks';
+import { ManagerMetricCard } from '../components/manager-metric-card';
 
 type TicketFilter = 'Todas' | ManagerTicketStatus;
 type PriorityFilter = 'Todas' | ManagerTicketPriority;
 
 @Component({
   selector: 'app-manager-tickets',
-  imports: [RouterLink, PageHeading, LucideDynamicIcon, ManagerTicketBadge, ManagerTicketClocks],
+  imports: [
+    RouterLink,
+    PageHeading,
+    LucideDynamicIcon,
+    ManagerTicketBadge,
+    ManagerTicketClocks,
+    ManagerMetricCard,
+  ],
   templateUrl: './manager-tickets.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },

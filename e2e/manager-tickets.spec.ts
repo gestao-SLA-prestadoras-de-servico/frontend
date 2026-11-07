@@ -8,18 +8,41 @@ test('FE-022 dashboard summarizes the shared ticket scene and links into the que
   await gotoAndWaitForHydration(page, '/app/gestor');
 
   await expect(page.locator('main h1')).toHaveText('Painel de operações');
-  const indicators = page.getByRole('region', { name: 'Indicadores da fila' }).locator('dd');
+  const indicators = page
+    .getByRole('region', { name: 'Indicadores da fila' })
+    .locator('dd > span:first-child');
   await expect(indicators).toHaveText(['1', '1', '1', '1']);
+  await expect(
+    page.getByRole('region', { name: 'Indicadores da fila' }).locator('svg'),
+  ).toHaveCount(4);
   await expect(page.getByRole('link', { name: /Abrir fila de chamados/ })).toBeVisible();
   const attentionTable = page.getByRole('table', { name: 'Chamados que pedem atenção' });
   await expect(attentionTable.getByRole('row')).toHaveCount(5);
   await expect(attentionTable).toContainText('Falha no sistema de climatização');
   await expect(attentionTable).toContainText('Oscilação no quadro elétrico');
   await expect(attentionTable).toContainText('Ajuste da bomba de circulação');
-  await expect(attentionTable).toContainText('Prazo violado');
+  await expect(attentionTable).toContainText('Violado');
+  await expect(attentionTable.getByRole('rowheader').first()).toContainText('Clínica Horizonte');
+  await expect(attentionTable.getByRole('list', { name: 'Relógios de SLA' })).toHaveCount(4);
+  const activity = page.getByRole('region', { name: 'Atendimento ao longo do tempo' });
+  await expect(activity).toContainText('44 recebidos · 35 resolvidos');
+  await activity.getByText('Ver dados do gráfico').click();
+  const activityData = activity.getByRole('table');
+  await expect(activityData.getByRole('row')).toHaveCount(8);
+  expect(
+    await activityData
+      .locator('tbody tr')
+      .evaluateAll((rows) =>
+        rows.reduce((sum, row) => sum + Number(row.querySelectorAll('td')[0].textContent), 0),
+      ),
+  ).toBe(44);
+  await activity.getByText('Ver dados do gráfico').click();
+  const health = page.getByRole('region', { name: 'Saúde do SLA' });
+  await expect(health).toContainText('75%');
+  await expect(health.locator('dd')).toHaveText(['3', '1']);
   await expect(page.getByRole('heading', { name: 'Chamados por estados' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Cumprimentos SLA do mês' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Carga por técnico' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Carga da equipe' })).toBeVisible();
   const slaSummary = page.getByRole('region', { name: 'Cumprimentos SLA do mês' });
   await expect(slaSummary).toContainText('96%');
   await expect(slaSummary).toContainText('54 cumpridos · 2 violados');
@@ -27,11 +50,12 @@ test('FE-022 dashboard summarizes the shared ticket scene and links into the que
   await expect(slaSummary).toContainText('51 cumpridos · 5 violados');
   await expect(slaSummary).toContainText('88%');
   await expect(slaSummary).toContainText('49 cumpridos · 7 violados');
-  const workload = page.getByRole('region', { name: 'Carga por técnico' });
+  const workload = page.getByRole('region', { name: 'Carga da equipe' });
   await expect(workload).toContainText('Bruno Prado');
   await expect(workload).toContainText('4 de 4');
   await expect(workload).toContainText('Rafael Costa');
   await expect(workload).toContainText('2 de 4');
+  await page.locator('main h1').focus();
   await page.keyboard.press('Tab');
   await expect(page.getByRole('link', { name: /Abrir fila de chamados/ })).toBeFocused();
   await page.screenshot({ path: 'tmp/fe022-dashboard-desktop.png', fullPage: true });
@@ -48,6 +72,9 @@ test('FE-022 dashboard summarizes the shared ticket scene and links into the que
   await expect(page).toHaveURL(/\/app\/gestor\/chamados$/);
   await expect(page.locator('main h1')).toHaveText('Fila de chamados');
   const queue = page.getByRole('table');
+  await expect(
+    page.getByRole('region', { name: 'Indicadores dos chamados' }).locator('svg'),
+  ).toHaveCount(3);
   await expect(queue.getByRole('row')).toHaveCount(7);
   await expect(queue.getByRole('columnheader')).toHaveText([
     'Chamado',

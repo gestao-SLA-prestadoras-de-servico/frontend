@@ -28,7 +28,7 @@ A entrega FRONTEND 04 acrescenta um shell de demonstração para Gestor, Técnic
 
 A entrega FRONTEND 10–12 estende o shell com o portal Cliente: listagem com busca e filtros locais, formulário de abertura, detalhe por ID, três prazos, histórico, evidência ilustrativa e diálogos de validação e reabertura. Os quatro chamados e dois contratos são fictícios, em um cenário fixo de 05/11/2026. As confirmações não criam registros nem alteram estados; não há API ou persistência. Gestor e Técnico mantêm suas telas existentes. O briefing próprio usa o modo Operate, sem alterar o sistema visual global. Os cenários e limites estão em `docs/FRONTEND_10_12_CLIENTE.md`.
 
-A atualização FE-022 reorganiza `/app/gestor` como painel demonstrativo de operações: quatro indicadores derivados dos chamados locais, fila de chamados não finalizados, distribuição por estado, amostra mensal de SLA e carga dos técnicos ativos. A amostra de setembro de 2026 e os limites da demonstração estão registrados em `docs/FRONTEND_022_GESTOR_DASHBOARD.md`. Não há API ou persistência de produto.
+A atualização FE-022 reorganiza `/app/gestor` como painel demonstrativo de operações: quatro indicadores derivados dos chamados locais, fila de chamados não finalizados, distribuição por estado, amostra mensal de SLA e carga dos técnicos ativos. A expansão de 07/11/2026 acrescenta histórico fictício de atendimento e saúde do SLA, detalha a carga da equipe e compartilha indicadores com ícones entre painel e fila. As amostras e os limites da demonstração estão registrados em `docs/FRONTEND_022_GESTOR_DASHBOARD.md`. Não há API ou persistência de produto.
 
 ## Brand Commitments
 

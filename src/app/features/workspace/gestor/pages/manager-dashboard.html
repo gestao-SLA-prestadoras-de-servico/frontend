@@ -1,8 +1,8 @@
-<div class="flex flex-wrap items-start justify-between gap-5">
+﻿<div class="flex flex-wrap items-start justify-between gap-5">
   <div class="max-w-[65ch]">
     <h1
       appPageHeading
-      class="text-ink text-[26px] leading-[1.25] font-semibold tracking-[-.03em] sm:text-[28px]"
+      class="text-[26px] leading-[1.25] font-semibold tracking-[-.03em] sm:text-[28px]"
     >
       Painel de operações
     </h1>
@@ -14,156 +14,130 @@
     routerLink="/app/gestor/chamados"
     class="inline-flex min-h-11 items-center gap-2 rounded-control bg-pri px-4 py-2 text-sm font-semibold text-white no-underline hover:bg-pri-d focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
   >
-    <svg class="size-4" [lucideIcon]="icons.tickets" aria-hidden="true"></svg>
-    Abrir fila de chamados
+    <svg class="size-4" [lucideIcon]="icons.tickets" aria-hidden="true"></svg>Abrir fila de chamados
   </a>
 </div>
-
 <p class="mt-2 flex items-start gap-2 text-[13px] leading-[1.7] text-ink3">
-  <svg class="mt-0.5 size-4 shrink-0" [lucideIcon]="icons.info" aria-hidden="true"></svg>
-  Retrato fictício de 05/11/2026. Indicadores e prazos não consultam uma operação real.
+  <svg class="mt-0.5 size-4 shrink-0" [lucideIcon]="icons.info" aria-hidden="true"></svg>Retrato
+  fictício de 05/11/2026. Indicadores e prazos não consultam uma operação real.
 </p>
 
-<section class="mt-6" role="region" aria-label="Indicadores da fila">
-  <dl class="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+<section class="mt-6" aria-label="Indicadores da fila">
+  <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
     @for (indicator of indicators(); track indicator.label) {
-      <div class="min-w-0 rounded-deadline border border-line bg-sf px-4 py-4 sm:px-5">
-        <dt class="text-sm leading-5 text-ink2">{{ indicator.label }}</dt>
-        <dd class="m-0 mt-1 text-[28px] leading-none font-semibold tabular-nums" [ngClass]="indicator.valueClass">
-          {{ indicator.value }}
-        </dd>
-        <p class="mt-2 text-xs leading-5 text-ink3">{{ indicator.note }}</p>
-      </div>
+      <app-manager-metric-card
+        variant="outlined"
+        [label]="indicator.label"
+        [value]="indicator.value"
+        [icon]="indicator.icon"
+        [tone]="indicator.tone"
+        [note]="indicator.note"
+      />
     }
-  </dl>
+  </div>
 </section>
 
-<div class="mt-6 grid items-start gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(26rem,1fr)]">
-  <section class="min-w-0" aria-labelledby="attention-heading">
-    <div class="flex flex-wrap items-end justify-between gap-3">
+<div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
+  <app-manager-activity-chart />
+  <app-manager-sla-health [total]="nonFinalizedCount()" [violated]="violatedCount()" />
+</div>
+
+<div class="mt-6 grid items-start gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)]">
+  <section
+    class="min-w-0 rounded-deadline border border-line bg-sf"
+    aria-labelledby="attention-heading"
+  >
+    <div class="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
       <div>
-        <h2 id="attention-heading" class="text-base leading-[1.5] font-semibold">
-          Chamados que pedem atenção
-        </h2>
-        <p class="mt-1 text-sm text-ink2">
+        <h2 id="attention-heading" class="text-base font-semibold">Chamados que pedem atenção</h2>
+        <p class="mt-1 text-[13px] text-ink2">
           {{ attentionTickets().length }} chamados não finalizados
         </p>
       </div>
+      <a
+        routerLink="/app/gestor/chamados"
+        class="inline-flex min-h-11 items-center gap-2 rounded-sm text-xs font-semibold text-pri-d underline underline-offset-4"
+        >Ver fila completa<svg class="size-4" [lucideIcon]="icons.arrow" aria-hidden="true"></svg
+      ></a>
     </div>
-
     @if (attentionTickets().length) {
-      <div class="mt-4 hidden overflow-hidden rounded-deadline border border-line bg-sf xl:block">
-        <table class="w-full table-fixed text-left" aria-label="Chamados que pedem atenção">
+      <div class="relative hidden overflow-x-auto xl:block">
+        <table
+          class="w-full min-w-[720px] table-fixed text-left text-sm"
+          aria-label="Chamados que pedem atenção"
+        >
           <colgroup>
-            <col class="w-[38%]" />
-            <col class="w-[21%]" />
-            <col class="w-[17%]" />
-            <col class="w-[24%]" />
+            <col class="w-[37%]" />
+            <col class="w-[22%]" />
+            <col class="w-[16%]" />
+            <col class="w-[25%]" />
           </colgroup>
-          <thead class="border-b border-line bg-bg/60 text-[13px] font-semibold text-ink2">
+          <thead class="bg-bg text-xs font-semibold text-ink2">
             <tr>
               <th class="px-4 py-3" scope="col">Chamado</th>
-              <th class="px-3 py-3" scope="col">Estado</th>
+              <th class="px-3 py-3" scope="col">Estado e prioridade</th>
               <th class="px-3 py-3" scope="col">Técnico</th>
-              <th class="px-3 py-3" scope="col">Próximo prazo</th>
+              <th class="px-3 py-3" scope="col">Relógios</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-line">
             @for (ticket of attentionTickets(); track ticket.id) {
-              <tr class="transition-colors hover:bg-bg/50 motion-reduce:transition-none">
-                <td class="px-4 py-4 align-top">
+              <tr>
+                <th scope="row" class="px-4 py-4 align-top">
                   <a
-                    class="block rounded-sm text-sm leading-5 font-semibold text-ink underline decoration-transparent underline-offset-4 hover:text-pri-d hover:decoration-current focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+                    class="block rounded-sm font-semibold text-pri-d underline-offset-4 hover:underline"
                     [routerLink]="['/app/gestor/chamados', ticket.id]"
+                    ><span class="block text-xs tabular-nums text-ink3">#{{ ticket.id }}</span
+                    ><span class="mt-1 block">{{ ticket.title }}</span></a
                   >
-                    {{ ticket.title }}
-                  </a>
-                  <span class="mt-1 block text-xs leading-5 text-ink3">
-                    #{{ ticket.id }} · {{ ticket.client }}
-                  </span>
-                </td>
+                  <p class="mt-1 text-xs font-normal text-ink2">{{ ticket.client }}</p>
+                </th>
                 <td class="px-3 py-4 align-top">
-                  <span
-                    class="inline-flex min-h-7 max-w-full items-center rounded-sm px-2 py-1 text-[13px] leading-5 font-semibold"
-                    [ngClass]="statusClasses(ticket.status)"
-                  >
-                    {{ statusLabel(ticket.status) }}
-                  </span>
-                  <span
-                    class="mt-1 inline-flex min-h-6 items-center rounded-sm px-2 text-[13px] font-medium"
-                    [ngClass]="priorityClasses(ticket.priority)"
-                  >
-                    {{ ticket.priority }}
-                  </span>
+                  <div class="flex flex-wrap gap-1.5">
+                    <app-manager-ticket-badge [value]="ticket.status" /><app-manager-ticket-badge
+                      [value]="ticket.priority"
+                    />
+                  </div>
                 </td>
-                <td class="px-3 py-4 align-top text-sm leading-5 text-ink2">
-                  {{ ticket.technician ?? 'Sem técnico indicado' }}
+                <td class="px-3 py-4 align-top text-ink2">
+                  {{ ticket.technician ?? 'Sem indicação' }}
                 </td>
-                <td class="px-3 py-4 align-top text-[13px] leading-5" [class.text-danger]="ticket.overdue">
-                  @if (ticket.overdue) {
-                    <span class="mb-1 block font-semibold">Prazo violado</span>
-                  }
-                  {{ ticket.nextDeadline }}
-                </td>
+                <td class="px-3 py-4 align-top"><app-manager-ticket-clocks [ticket]="ticket" /></td>
               </tr>
             }
           </tbody>
         </table>
       </div>
-
-      <ul class="mt-4 divide-y divide-line rounded-deadline border border-line bg-sf p-0 xl:hidden">
+      <ul class="divide-y divide-line xl:hidden">
         @for (ticket of attentionTickets(); track ticket.id) {
-          <li class="list-none p-4 sm:p-5">
+          <li class="p-4 sm:p-5">
             <article>
-              <div class="flex items-start justify-between gap-3">
-                <div class="min-w-0">
-                  <span class="font-mono text-xs text-ink3">#{{ ticket.id }}</span>
-                  <h3 class="mt-1 text-sm leading-5 font-semibold">
-                    <a
-                      class="rounded-sm text-inherit underline decoration-transparent underline-offset-4 hover:text-pri-d hover:decoration-current focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
-                      [routerLink]="['/app/gestor/chamados', ticket.id]"
-                    >
-                      {{ ticket.title }}
-                    </a>
-                  </h3>
-                  <p class="mt-1 text-sm leading-5 text-ink2">{{ ticket.client }}</p>
-                </div>
-                @if (ticket.overdue) {
-                  <span class="inline-flex min-h-7 shrink-0 items-center rounded-sm bg-danger-bg px-2 text-[13px] font-semibold text-danger">
-                    Prazo violado
-                  </span>
-                }
+              <span class="text-xs tabular-nums text-ink3">#{{ ticket.id }}</span>
+              <h3 class="mt-1 text-sm font-semibold">
+                <a
+                  class="rounded-sm text-pri-d underline-offset-4 hover:underline"
+                  [routerLink]="['/app/gestor/chamados', ticket.id]"
+                  >{{ ticket.title }}</a
+                >
+              </h3>
+              <p class="mt-1 text-xs text-ink2">{{ ticket.client }}</p>
+              <div class="mt-3 flex flex-wrap gap-2">
+                <app-manager-ticket-badge [value]="ticket.priority" /><app-manager-ticket-badge
+                  [value]="ticket.status"
+                />
               </div>
-
-              <dl class="mt-4 grid grid-cols-2 gap-x-4 gap-y-4 border-t border-line pt-4">
-                <div class="min-w-0">
-                  <dt class="text-[13px] leading-5 text-ink3">Estado</dt>
-                  <dd class="m-0 mt-1">
-                    <span
-                      class="inline-flex min-h-7 max-w-full items-center rounded-sm px-2 py-1 text-[13px] leading-5 font-semibold"
-                      [ngClass]="statusClasses(ticket.status)"
-                    >
-                      {{ statusLabel(ticket.status) }}
-                    </span>
-                  </dd>
+              <dl class="mt-4 grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <dt class="text-xs text-ink3">Aberto em</dt>
+                  <dd class="m-0 mt-1 tabular-nums">{{ ticket.openedAt }}</dd>
                 </div>
                 <div>
-                  <dt class="text-[13px] leading-5 text-ink3">Prioridade</dt>
-                  <dd class="m-0 mt-1 text-sm font-medium" [ngClass]="priorityClasses(ticket.priority)">
-                    {{ ticket.priority }}
-                  </dd>
+                  <dt class="text-xs text-ink3">Técnico</dt>
+                  <dd class="m-0 mt-1 text-ink2">{{ ticket.technician ?? 'Sem indicação' }}</dd>
                 </div>
-                <div class="min-w-0">
-                  <dt class="text-[13px] leading-5 text-ink3">Técnico</dt>
-                  <dd class="m-0 mt-1 break-words text-sm leading-5 text-ink2">
-                    {{ ticket.technician ?? 'Sem técnico indicado' }}
-                  </dd>
-                </div>
-                <div class="min-w-0">
-                  <dt class="text-[13px] leading-5 text-ink3">Próximo prazo</dt>
-                  <dd class="m-0 mt-1 text-[13px] leading-5" [class.text-danger]="ticket.overdue">
-                    {{ ticket.nextDeadline }}
-                  </dd>
+                <div class="col-span-2">
+                  <dt class="text-xs text-ink3">Relógios</dt>
+                  <dd class="m-0 mt-1.5"><app-manager-ticket-clocks [ticket]="ticket" /></dd>
                 </div>
               </dl>
             </article>
@@ -171,84 +145,63 @@
         }
       </ul>
     } @else {
-      <p class="mt-4 rounded-deadline border border-dashed border-line2 bg-bg px-5 py-7 text-sm text-ink2" role="status">
+      <p class="px-5 py-7 text-sm text-ink2" role="status">
         Nenhum chamado não finalizado pede atenção agora.
       </p>
     }
   </section>
+  <app-manager-team-workload />
+</div>
 
-  <aside class="grid min-w-0 gap-5 md:grid-cols-2 xl:grid-cols-2" aria-label="Resumo da operação">
-    <section class="min-w-0 rounded-deadline border border-line bg-sf p-4 sm:p-5" aria-labelledby="states-heading">
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <h2 id="states-heading" class="text-sm leading-5 font-semibold">Chamados por estados</h2>
-          <p class="mt-1 text-[13px] leading-5 text-ink3">{{ nonFinalizedCount() }} não finalizados</p>
-        </div>
-      </div>
-      <ul class="mt-4 grid grid-cols-2 gap-x-4 gap-y-4 p-0 xl:grid-cols-1">
-        @for (state of statusBreakdown(); track state.status) {
-          <li class="list-none">
-            <div class="flex items-baseline justify-between gap-3">
-              <span class="min-w-0 text-[13px] leading-5 text-ink2">{{ state.label }}</span>
-              <span class="shrink-0 text-sm font-semibold tabular-nums text-ink">{{ state.count }}</span>
-            </div>
-            <div class="mt-2 h-2 overflow-hidden rounded-full bg-bg" aria-hidden="true">
-              <span class="block h-full rounded-full bg-pri" [style.width.%]="state.share"></span>
-            </div>
-          </li>
-        }
-      </ul>
-    </section>
-
-    <section class="min-w-0 rounded-deadline border border-line bg-sf p-4 sm:p-5" aria-labelledby="workload-heading">
-      <h2 id="workload-heading" class="text-sm leading-5 font-semibold">Carga por técnico</h2>
-      <p class="mt-1 text-[13px] leading-5 text-ink3">Atribuídos + em atendimento</p>
-      <ul class="mt-4 space-y-3 p-0">
-        @for (technician of activeTechnicians(); track technician.id) {
-          <li class="list-none">
-            <div class="flex items-baseline justify-between gap-3">
-              <span class="min-w-0 truncate text-[13px] leading-5 text-ink2">{{ technician.name }}</span>
-              <span class="shrink-0 text-[13px] font-semibold tabular-nums text-ink">
-                {{ technician.activeTickets }} de {{ technician.workloadLimit }}
-              </span>
-            </div>
-            <div class="mt-2 h-2 overflow-hidden rounded-full bg-bg" aria-hidden="true">
-              <span
-                class="block h-full rounded-full bg-pri"
-                [class.bg-danger]="technician.activeTickets > technician.workloadLimit"
-                [style.width.%]="technician.loadShare"
-              ></span>
-            </div>
-          </li>
-        } @empty {
-          <li class="list-none text-sm text-ink2">Nenhum técnico ativo.</li>
-        }
-      </ul>
-    </section>
-
-    <section class="min-w-0 rounded-deadline border border-line bg-sf p-4 sm:p-5 md:col-span-2" aria-labelledby="sla-heading">
-      <h2 id="sla-heading" class="text-sm leading-5 font-semibold">Cumprimentos SLA do mês</h2>
-      <p class="mt-1 text-[13px] leading-5 text-ink3">
-        Amostra demonstrativa · setembro de 2026 · 56 chamados encerrados
-      </p>
-      <ul class="mt-4 space-y-4 p-0">
-        @for (metric of monthlySla; track metric.label) {
-          <li class="list-none">
-            <div class="flex items-baseline justify-between gap-3">
-              <span class="min-w-0 text-[13px] leading-5 text-ink2">{{ metric.label }}</span>
-              <span class="shrink-0 text-sm font-semibold tabular-nums text-ink">{{ metric.percentage }}%</span>
-            </div>
-            <div class="mt-2 h-2 overflow-hidden rounded-full bg-bg" aria-hidden="true">
-              <span class="block h-full rounded-full bg-grn" [style.width.%]="metric.percentage"></span>
-            </div>
-            <p class="mt-1 text-[13px] leading-5">
-              <span class="text-grn-t">{{ metric.fulfilled }} cumpridos</span>
-              <span class="text-ink3"> · </span>
-              <span class="text-danger">{{ metric.violated }} violados</span>
-            </p>
-          </li>
-        }
-      </ul>
-    </section>
-  </aside>
+<div class="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(280px,1fr)_minmax(0,2fr)]">
+  <section
+    class="min-w-0 rounded-deadline border border-line bg-sf p-4 sm:p-5"
+    aria-labelledby="states-heading"
+  >
+    <h2 id="states-heading" class="text-base font-semibold">Chamados por estados</h2>
+    <p class="mt-1 text-[13px] leading-5 text-ink3">{{ nonFinalizedCount() }} não finalizados</p>
+    <ul class="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-1">
+      @for (state of statusBreakdown(); track state.status) {
+        <li>
+          <div class="flex items-baseline justify-between gap-3">
+            <span class="min-w-0 text-[13px] leading-5 text-ink2">{{ state.label }}</span
+            ><span class="text-sm font-semibold tabular-nums">{{ state.count }}</span>
+          </div>
+          <div class="mt-2 h-2 overflow-hidden rounded-full bg-bg" aria-hidden="true">
+            <span class="block h-full rounded-full bg-pri" [style.width.%]="state.share"></span>
+          </div>
+        </li>
+      }
+    </ul>
+  </section>
+  <section
+    class="min-w-0 rounded-deadline border border-line bg-sf p-4 sm:p-5"
+    aria-labelledby="sla-heading"
+  >
+    <h2 id="sla-heading" class="text-base font-semibold">Cumprimentos SLA do mês</h2>
+    <p class="mt-1 text-[13px] leading-5 text-ink3">
+      Amostra demonstrativa · setembro de 2026 · 56 chamados encerrados
+    </p>
+    <ul class="mt-4 space-y-4">
+      @for (metric of monthlySla; track metric.label) {
+        <li>
+          <div class="flex items-baseline justify-between gap-3">
+            <span class="text-[13px] leading-5 text-ink2">{{ metric.label }}</span
+            ><span class="text-sm font-semibold tabular-nums">{{ metric.percentage }}%</span>
+          </div>
+          <div class="mt-2 h-2 overflow-hidden rounded-full bg-bg" aria-hidden="true">
+            <span
+              class="block h-full rounded-full bg-grn"
+              [style.width.%]="metric.percentage"
+            ></span>
+          </div>
+          <p class="mt-1 text-[13px] leading-5">
+            <span class="text-grn-t">{{ metric.fulfilled }} cumpridos</span
+            ><span class="text-ink3"> · </span
+            ><span class="text-danger">{{ metric.violated }} violados</span>
+          </p>
+        </li>
+      }
+    </ul>
+  </section>
 </div>

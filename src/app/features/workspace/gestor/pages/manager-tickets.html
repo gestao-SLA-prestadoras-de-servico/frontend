@@ -16,20 +16,21 @@
   </p>
 </div>
 
-<dl class="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
-  <div class="rounded-deadline bg-pri-bg p-3 sm:p-4">
-    <dt class="text-xs text-pri-d sm:text-sm">Em aberto</dt>
-    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums text-pri-d">{{ openCount() }}</dd>
-  </div>
-  <div class="rounded-deadline bg-grn-bg p-3 sm:p-4">
-    <dt class="text-xs text-grn-t sm:text-sm">Resolvidos</dt>
-    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums text-grn-t">{{ resolvedCount() }}</dd>
-  </div>
-  <div class="rounded-deadline bg-danger-bg p-3 sm:p-4">
-    <dt class="text-xs text-danger sm:text-sm">Atrasados</dt>
-    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums text-danger">{{ overdueCount() }}</dd>
-  </div>
-</dl>
+<section aria-label="Indicadores dos chamados" class="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
+  <app-manager-metric-card label="Em aberto" [value]="openCount()" icon="open" tone="blue" />
+  <app-manager-metric-card
+    label="Resolvidos"
+    [value]="resolvedCount()"
+    icon="resolved"
+    tone="green"
+  />
+  <app-manager-metric-card
+    label="Atrasados"
+    [value]="overdueCount()"
+    icon="overdue"
+    tone="danger"
+  />
+</section>
 
 <section class="mt-6" aria-label="Filtros de chamados">
   <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
