@@ -1,3 +1,13 @@
+import { ManagerPageHeader } from '../components/manager-page-header';
+import {
+  ManagerPanel,
+  ManagerDialog,
+  ManagerSectionHeading,
+  ManagerLabel,
+  ManagerTextAction,
+} from '../components/manager-surface.directive';
+import { Input } from '@app/shared/ui/input/input.directive';
+import { Select } from '@app/shared/ui/input/select.directive';
 import { DOCUMENT, DatePipe } from '@angular/common';
 import {
   afterNextRender,
@@ -15,7 +25,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { ButtonPrimary, ButtonSecondary } from '@app/shared/ui/button';
-import { PageHeading } from '@app/shared/ui/page-heading/page-heading.directive';
 import { preventDefaultUnlessReplayed } from '../../../../shared/utils/event-replay';
 import { CompanyDemoStore, DemoCompany } from '../data/company-demo-store';
 import {
@@ -39,9 +48,16 @@ import { WORKSPACE_ICONS } from '../../data/workspace-icons';
     ReactiveFormsModule,
     ButtonPrimary,
     ButtonSecondary,
-    PageHeading,
     DatePipe,
     LucideDynamicIcon,
+    Select,
+    Input,
+    ManagerPanel,
+    ManagerDialog,
+    ManagerSectionHeading,
+    ManagerLabel,
+    ManagerTextAction,
+    ManagerPageHeader,
   ],
   templateUrl: './manager-contract-new.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

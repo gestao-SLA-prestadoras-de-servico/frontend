@@ -1,36 +1,19 @@
 @if (ticket(); as item) {
-  <div class="flex flex-wrap items-start justify-between gap-5">
-    <div class="min-w-0">
-      <a
-        routerLink="/app/gestor/chamados"
-        class="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-pri-d underline underline-offset-4"
+  <app-manager-page-header
+    title="{{ item.title }}"
+    description="{{ item.client }} · {{ item.location }}"
+    demo="Detalhes fictícios · 05/11/2026"
+    ><div managerHeaderContext>
+      <a appManagerTextAction routerLink="/app/gestor/chamados"
         ><svg class="size-4" [lucideIcon]="icons.back" aria-hidden="true"></svg>Voltar à fila</a
       >
       <div class="mt-4 flex flex-wrap items-center gap-2">
-        <span class="font-mono text-xs text-ink3">#{{ item.id }}</span
-        ><span
-          class="inline-flex min-h-7 items-center rounded-sm px-2.5 text-xs font-semibold"
-          [ngClass]="statusClasses(item.status)"
-          >{{ statusLabel(item.status) }}</span
-        ><span
-          class="inline-flex min-h-7 items-center rounded-sm px-2.5 text-xs font-semibold"
-          [ngClass]="priorityClasses(item.priority)"
-          >{{ item.priority }}</span
-        >
-      </div>
-      <h1
-        appPageHeading
-        class="mt-2 text-[26px] leading-[1.25] font-semibold tracking-[-.03em] sm:text-[28px]"
-      >
-        {{ item.title }}
-      </h1>
-      <p class="mt-2 text-sm text-ink2">{{ item.client }} · {{ item.location }}</p>
-    </div>
-    <p class="flex items-start gap-2 text-xs leading-[1.7] text-ink3">
-      <svg class="mt-0.5 size-4 shrink-0" [lucideIcon]="icons.info" aria-hidden="true"></svg
-      >Detalhes fictícios · 05/11/2026
-    </p>
-  </div>
+        <span class="text-xs tabular-nums text-ink3">#{{ item.id }}</span
+        ><app-manager-ticket-badge [value]="item.status" /><app-manager-ticket-badge
+          [value]="item.priority"
+        />
+      </div></div
+  ></app-manager-page-header>
   @if (item.overdue) {
     <div
       class="mt-5 flex items-start gap-3 rounded-deadline bg-danger-bg p-4 text-danger"
@@ -48,8 +31,8 @@
   }
   <div class="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
     <div class="min-w-0 space-y-4">
-      <section class="rounded-deadline border border-line p-4 sm:p-5">
-        <h2 class="text-base font-semibold leading-[1.5] tracking-normal">Prazos do chamado</h2>
+      <section appManagerPanel>
+        <h2 appManagerSectionHeading>Prazos do chamado</h2>
         <dl class="mt-4 grid gap-3 sm:grid-cols-3">
           <div class="rounded-deadline p-3" [ngClass]="deadlineClasses(item.responseClock)">
             <dt class="text-xs text-ink2">Resposta</dt>
@@ -67,24 +50,19 @@
           </div>
         </dl>
       </section>
-      <section class="rounded-deadline border border-line p-4 sm:p-5">
-        <h2 class="text-base font-semibold leading-[1.5] tracking-normal">Descrição</h2>
+      <section appManagerPanel>
+        <h2 appManagerSectionHeading>Descrição</h2>
         <p class="mt-3 max-w-[70ch] text-sm leading-[1.7] text-ink2">{{ item.description }}</p>
       </section>
       @if (item.evidences.length) {
         <section
-          class="rounded-deadline border border-line p-4 sm:p-5"
+          appManagerPanel
           aria-labelledby="ticket-evidence-title"
           [attr.aria-busy]="hasProcessingEvidence(item.evidences)"
         >
           <div class="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h2
-                id="ticket-evidence-title"
-                class="text-base font-semibold leading-[1.5] tracking-normal"
-              >
-                Evidências do atendimento
-              </h2>
+              <h2 appManagerSectionHeading id="ticket-evidence-title">Evidências do atendimento</h2>
               <p class="mt-1 text-sm text-ink2">Arquivos e processamento da demonstração.</p>
             </div>
             <span class="text-xs text-ink3"
@@ -176,16 +154,8 @@
           </p>
         </section>
       } @else {
-        <section
-          class="rounded-deadline border border-line p-4 sm:p-5"
-          aria-labelledby="ticket-evidence-title"
-        >
-          <h2
-            id="ticket-evidence-title"
-            class="text-base font-semibold leading-[1.5] tracking-normal"
-          >
-            Evidências do atendimento
-          </h2>
+        <section appManagerPanel aria-labelledby="ticket-evidence-title">
+          <h2 appManagerSectionHeading id="ticket-evidence-title">Evidências do atendimento</h2>
           <div
             class="mt-4 flex min-h-32 flex-col items-center justify-center rounded-deadline border border-dashed border-line2 bg-bg px-4 py-6 text-center"
           >
@@ -197,8 +167,8 @@
           </div>
         </section>
       }
-      <section class="rounded-deadline border border-line p-4 sm:p-5">
-        <h2 class="text-base font-semibold leading-[1.5] tracking-normal">Linha do tempo</h2>
+      <section appManagerPanel>
+        <h2 appManagerSectionHeading>Linha do tempo</h2>
         <ol class="mt-4 space-y-4">
           @for (event of item.timeline; track event.at + event.title) {
             <li
@@ -218,8 +188,8 @@
         </ol>
       </section>
     </div>
-    <aside class="h-fit rounded-deadline border border-line bg-sf p-4 sm:p-5">
-      <h2 class="text-base font-semibold leading-[1.5] tracking-normal">Responsabilidade</h2>
+    <aside appManagerPanel class="h-fit">
+      <h2 appManagerSectionHeading>Responsabilidade</h2>
       <dl class="mt-4 grid gap-4 text-sm">
         <div>
           <dt class="text-xs text-ink3">Técnico</dt>
@@ -247,9 +217,7 @@
         <section class="mt-4 border-t border-line pt-4" aria-labelledby="triage-heading">
           <div class="flex flex-wrap items-start justify-between gap-2">
             <div>
-              <h2 id="triage-heading" class="text-base font-semibold leading-[1.5] tracking-normal">
-                Triagem
-              </h2>
+              <h2 appManagerSectionHeading id="triage-heading">Triagem</h2>
               <p class="mt-1 text-sm text-ink2">Defina a prioridade e envie a primeira posição.</p>
             </div>
             <span class="rounded-sm bg-pri-bg px-2 py-1 text-xs font-semibold text-pri-d"
@@ -308,13 +276,14 @@
             </div>
           </fieldset>
           <div class="mt-4">
-            <label for="first-position" class="block text-sm font-semibold"
+            <label appManagerLabel for="first-position"
               >Primeiro posicionamento
               <span class="text-xs font-normal text-ink2">(obrigatório)</span></label
             ><textarea
+              appTextarea
               #firstPositionField
               id="first-position"
-              class="mt-2 min-h-32 w-full resize-y rounded-[10px] border border-ink3/80 bg-sf px-3.5 py-3 text-base text-ink placeholder:text-ink3 focus-visible:border-pri focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+              class="mt-2"
               [value]="firstPosition()"
               aria-required="true"
               [attr.aria-invalid]="invalidFirstPosition()"
@@ -337,9 +306,10 @@
             </p>
           </div>
           <button
+            appButtonPrimary
             #triageTrigger
             type="button"
-            class="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-control bg-pri px-4 py-2 text-sm font-semibold text-white hover:bg-pri-d focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri disabled:cursor-not-allowed disabled:opacity-50"
+            class="mt-4 min-h-11 w-full px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
             [disabled]="!ready()"
             (click)="submitTriage(triageTrigger)"
           >
@@ -353,9 +323,7 @@
       }
       @if (canAssign()) {
         <section class="mt-4 border-t border-line pt-4" aria-labelledby="assignment-heading">
-          <h2 id="assignment-heading" class="text-base font-semibold leading-[1.5] tracking-normal">
-            Técnico responsável
-          </h2>
+          <h2 appManagerSectionHeading id="assignment-heading">Técnico responsável</h2>
           @if (assignmentNotice()) {
             <div
               #assignmentNoticeTarget
@@ -408,10 +376,7 @@
       >
         <div class="flex items-start justify-between gap-3">
           <div>
-            <h2
-              id="completion-notifications-heading"
-              class="text-base font-semibold leading-[1.5] tracking-normal"
-            >
+            <h2 appManagerSectionHeading id="completion-notifications-heading">
               Avisos de conclusão
             </h2>
             <p class="mt-1 text-sm text-ink2">Receba um aviso quando o chamado for concluído.</p>
@@ -490,12 +455,7 @@
         </p>
       </section>
       <section class="mt-4 border-t border-danger/20 pt-4" aria-labelledby="cancel-section-heading">
-        <h2
-          id="cancel-section-heading"
-          class="text-base font-semibold leading-[1.5] tracking-normal"
-        >
-          Cancelar chamado
-        </h2>
+        <h2 appManagerSectionHeading id="cancel-section-heading">Cancelar chamado</h2>
         @if (cancelNotice()) {
           <div
             #cancelNoticeTarget
@@ -536,9 +496,10 @@
     </aside>
   </div>
   <dialog
+    appManagerDialog
     #triageDialog
     tabindex="-1"
-    class="m-auto w-[min(520px,calc(100vw-24px))] max-h-[calc(100dvh-24px)] overflow-y-auto rounded-deadline border border-line bg-sf p-0 text-ink shadow-dialog backdrop:bg-navy/45"
+    class="w-[min(520px,calc(100vw-24px))]"
     aria-labelledby="triage-review-title"
     (close)="onTriageDialogClose()"
     (keydown)="trapTriageFocus($event)"
@@ -588,8 +549,9 @@
         >
           Voltar e revisar</button
         ><button
+          appButtonPrimary
           type="button"
-          class="min-h-11 rounded-control bg-pri px-4 py-2 text-sm font-semibold text-white hover:bg-pri-d focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+          class="min-h-11 px-4 py-2"
           (click)="confirmTriage()"
         >
           Concluir triagem demonstrativa
@@ -598,9 +560,10 @@
     </div>
   </dialog>
   <dialog
+    appManagerDialog
     #assignmentDialog
     tabindex="-1"
-    class="m-auto w-[min(560px,calc(100vw-24px))] max-h-[calc(100dvh-24px)] overflow-y-auto rounded-deadline border border-line bg-sf p-0 text-ink shadow-dialog backdrop:bg-navy/45"
+    class="w-[min(560px,calc(100vw-24px))]"
     aria-labelledby="assignment-title"
     (close)="onAssignmentDialogClose()"
     (keydown)="trapAssignmentFocus($event)"
@@ -634,12 +597,13 @@
           </div>
         }
         <div class="mt-5">
-          <label for="assignment-technician" class="block text-sm font-semibold">{{
+          <label appManagerLabel for="assignment-technician">{{
             mode === 'initial' ? 'Técnico responsável' : 'Novo técnico responsável'
           }}</label
           ><select
+            appSelect
             id="assignment-technician"
-            class="mt-2 min-h-[52px] w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 text-base focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+            class="mt-2"
             [value]="selectedTechnicianId()"
             (change)="updateTechnician($event)"
           >
@@ -702,8 +666,9 @@
           >
             Voltar</button
           ><button
+            appButtonPrimary
             type="button"
-            class="min-h-11 rounded-control bg-pri px-4 py-2 text-sm font-semibold text-white hover:bg-pri-d focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri disabled:cursor-not-allowed disabled:opacity-50"
+            class="min-h-11 px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
             [disabled]="!selectedTechnicianId() || assignmentConflict()"
             (click)="confirmAssignment()"
           >
@@ -714,9 +679,10 @@
     }
   </dialog>
   <dialog
+    appManagerDialog
     #cancelDialog
     tabindex="-1"
-    class="m-auto w-[min(560px,calc(100vw-24px))] max-h-[calc(100dvh-24px)] overflow-y-auto rounded-deadline border border-line bg-sf p-0 text-ink shadow-dialog backdrop:bg-navy/45"
+    class="w-[min(560px,calc(100vw-24px))]"
     aria-labelledby="cancel-dialog-title"
     (close)="onCancelDialogClose()"
     (keydown)="trapCancelFocus($event)"
@@ -747,12 +713,13 @@
         </p>
       </div>
       <div class="mt-5">
-        <label for="cancel-reason" class="block text-sm font-semibold"
+        <label appManagerLabel for="cancel-reason"
           >Motivo <span class="text-xs font-normal text-ink2">(obrigatório)</span></label
         ><textarea
+          appTextarea
           #cancelReasonField
           id="cancel-reason"
-          class="mt-2 min-h-32 w-full resize-y rounded-[10px] border border-ink3/80 bg-sf px-3.5 py-3 text-base text-ink placeholder:text-ink3 focus-visible:border-pri focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+          class="mt-2"
           [value]="cancelReason()"
           aria-required="true"
           [attr.aria-invalid]="cancelError()"
@@ -791,9 +758,10 @@
     </div>
   </dialog>
   <dialog
+    appManagerDialog
     #evidenceDialog
     tabindex="-1"
-    class="m-auto w-[min(520px,calc(100vw-24px))] max-h-[calc(100dvh-24px)] overflow-y-auto rounded-deadline border border-line bg-sf p-0 text-ink shadow-dialog backdrop:bg-navy/45"
+    class="w-[min(520px,calc(100vw-24px))]"
     aria-labelledby="evidence-dialog-title"
     (close)="onEvidenceDialogClose()"
     (keydown)="trapEvidenceFocus($event)"
@@ -825,12 +793,11 @@
           </p>
         </div>
         <div class="mt-5">
-          <label for="evidence-outcome" class="block text-sm font-semibold">
-            Resultado simulado
-          </label>
+          <label appManagerLabel for="evidence-outcome"> Resultado simulado </label>
           <select
+            appSelect
             id="evidence-outcome"
-            class="mt-2 min-h-[52px] w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 text-base focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+            class="mt-2"
             [value]="reprocessOutcome()"
             (change)="updateReprocessOutcome($event)"
           >
@@ -852,8 +819,9 @@
             Voltar
           </button>
           <button
+            appButtonPrimary
             type="button"
-            class="min-h-11 rounded-control bg-pri px-4 py-2 text-sm font-semibold text-white hover:bg-pri-d focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+            class="min-h-11 px-4 py-2"
             (click)="confirmEvidenceReprocess()"
           >
             Confirmar reprocessamento
@@ -865,10 +833,6 @@
 } @else {
   <div class="rounded-deadline border border-line p-6">
     <h1 appPageHeading class="text-xl font-semibold">Chamado não encontrado</h1>
-    <a
-      routerLink="/app/gestor/chamados"
-      class="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-pri-d underline underline-offset-4"
-      >Voltar à fila</a
-    >
+    <a appManagerTextAction routerLink="/app/gestor/chamados" class="mt-3">Voltar à fila</a>
   </div>
 }

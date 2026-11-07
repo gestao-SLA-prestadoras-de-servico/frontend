@@ -42,44 +42,55 @@ export const WORKSPACE_ROUTES: Routes = [
             title: `${page.title} | ${profile.label} | NIVELO`,
             data: { profile: profile.key, page: page.key },
             loadComponent:
-              profile.key === 'gestor' && page.key === 'politicas'
-                ? () =>
-                    import('./gestor/pages/manager-sla-policies').then((m) => m.ManagerSlaPolicies)
-                : profile.key === 'gestor' && page.key === 'contratos'
-                  ? () => import('./gestor/pages/manager-contracts').then((m) => m.ManagerContracts)
-                  : profile.key === 'gestor' && page.key === 'empresas'
+              profile.key === 'gestor' && ['relatorios', 'auditoria'].includes(page.key)
+                ? () => import('./gestor/pages/manager-preview').then((m) => m.ManagerPreview)
+                : profile.key === 'gestor' && page.key === 'politicas'
+                  ? () =>
+                      import('./gestor/pages/manager-sla-policies').then(
+                        (m) => m.ManagerSlaPolicies,
+                      )
+                  : profile.key === 'gestor' && page.key === 'contratos'
                     ? () =>
-                        import('./gestor/pages/manager-companies').then((m) => m.ManagerCompanies)
-                    : profile.key === 'gestor' && page.key === 'usuarios'
-                      ? () => import('./gestor/pages/manager-users').then((m) => m.ManagerUsers)
-                      : profile.key === 'gestor' && page.key === 'painel'
-                        ? () =>
-                            import('./gestor/pages/manager-dashboard').then(
-                              (m) => m.ManagerDashboard,
-                            )
-                        : profile.key === 'gestor' && page.key === 'chamados'
+                        import('./gestor/pages/manager-contracts').then((m) => m.ManagerContracts)
+                    : profile.key === 'gestor' && page.key === 'empresas'
+                      ? () =>
+                          import('./gestor/pages/manager-companies').then((m) => m.ManagerCompanies)
+                      : profile.key === 'gestor' && page.key === 'usuarios'
+                        ? () => import('./gestor/pages/manager-users').then((m) => m.ManagerUsers)
+                        : profile.key === 'gestor' && page.key === 'painel'
                           ? () =>
-                              import('./gestor/pages/manager-tickets').then((m) => m.ManagerTickets)
-                          : profile.key === 'cliente' && page.key === 'chamados'
+                              import('./gestor/pages/manager-dashboard').then(
+                                (m) => m.ManagerDashboard,
+                              )
+                          : profile.key === 'gestor' && page.key === 'chamados'
                             ? () =>
-                                import('./client/pages/client-tickets').then((m) => m.ClientTickets)
-                            : profile.key === 'cliente' && page.key === 'novo-chamado'
+                                import('./gestor/pages/manager-tickets').then(
+                                  (m) => m.ManagerTickets,
+                                )
+                            : profile.key === 'cliente' && page.key === 'chamados'
                               ? () =>
-                                  import('./client/pages/client-new-ticket').then(
-                                    (m) => m.ClientNewTicket,
+                                  import('./client/pages/client-tickets').then(
+                                    (m) => m.ClientTickets,
                                   )
-                              : profile.key === 'tecnico' && page.key === 'chamados'
+                              : profile.key === 'cliente' && page.key === 'novo-chamado'
                                 ? () =>
-                                    import('./technician/pages/technician-tickets').then(
-                                      (m) => m.TechnicianTickets,
+                                    import('./client/pages/client-new-ticket').then(
+                                      (m) => m.ClientNewTicket,
                                     )
-                                : profile.key === 'tecnico' && page.key === 'atendimento'
+                                : profile.key === 'tecnico' && page.key === 'chamados'
                                   ? () =>
-                                      import('./technician/pages/technician-ticket').then(
-                                        (m) => m.TechnicianTicketPage,
+                                      import('./technician/pages/technician-tickets').then(
+                                        (m) => m.TechnicianTickets,
                                       )
-                                  : () =>
-                                      import('./pages/workspace-page').then((m) => m.WorkspacePage),
+                                  : profile.key === 'tecnico' && page.key === 'atendimento'
+                                    ? () =>
+                                        import('./technician/pages/technician-ticket').then(
+                                          (m) => m.TechnicianTicketPage,
+                                        )
+                                    : () =>
+                                        import('./pages/workspace-page').then(
+                                          (m) => m.WorkspacePage,
+                                        ),
           })),
           ...(profile.key === 'gestor'
             ? [

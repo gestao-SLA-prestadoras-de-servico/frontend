@@ -1,22 +1,11 @@
-<a
-  routerLink="/app/gestor/contratos"
-  class="mb-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-pri-d underline underline-offset-4"
->
+<a appManagerTextAction routerLink="/app/gestor/contratos" class="mb-4">
   <svg class="size-4" [lucideIcon]="icons.back" aria-hidden="true"></svg>Contratos
 </a>
-<h1
-  appPageHeading
-  class="text-[26px] leading-[1.25] font-semibold tracking-[-.03em] sm:text-[28px]"
->
-  Novo contrato
-</h1>
-<p class="mt-2 text-sm leading-[1.7] text-ink2">
-  Defina a empresa, o período de vigência e a política que orienta o atendimento.
-</p>
-<p class="mt-4 flex items-start gap-2 text-xs leading-[1.7] text-ink3">
-  <svg class="mt-0.5 size-4 shrink-0" [lucideIcon]="icons.info" aria-hidden="true"></svg>
-  Demonstração com dados fictícios. A revisão não envia nem salva informações.
-</p>
+<app-manager-page-header
+  title="Novo contrato"
+  description="Defina a empresa, o período de vigência e a política que orienta o atendimento."
+  demo="Demonstração com dados fictícios. A revisão não envia nem salva informações."
+></app-manager-page-header>
 
 @if (created(); as contract) {
   <section
@@ -61,20 +50,16 @@
     </a>
   </section>
 } @else {
-  <section
-    class="mt-7 max-w-[760px] rounded-deadline bg-bg p-5 sm:p-7"
-    aria-labelledby="contract-form-title"
-  >
-    <h2 id="contract-form-title" class="text-base font-semibold leading-[1.5] tracking-normal">
-      Dados do contrato
-    </h2>
+  <section appManagerPanel class="mt-7 max-w-[760px]" aria-labelledby="contract-form-title">
+    <h2 appManagerSectionHeading id="contract-form-title">Dados do contrato</h2>
     <p class="mt-2 text-xs text-ink3">Todos os campos são obrigatórios.</p>
     <form class="mt-6 space-y-5" [formGroup]="form" (ngSubmit)="openReview()" novalidate>
       <div>
-        <label for="contract-companyId" class="block text-sm font-semibold">Empresa</label>
+        <label appManagerLabel for="contract-companyId">Empresa</label>
         <select
+          appSelect
           id="contract-companyId"
-          class="mt-2 min-h-[52px] w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 py-2 text-base text-ink hover:border-ink2 focus-visible:border-pri focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri aria-invalid:border-danger aria-invalid:focus-visible:outline-danger"
+          class="mt-2"
           formControlName="companyId"
           required
           [attr.aria-invalid]="invalid('companyId')"
@@ -103,8 +88,9 @@
           <div>
             <label for="contract-startDate" class="block text-sm text-ink2">Data de início</label>
             <input
+              appInput
               id="contract-startDate"
-              class="mt-2 block min-h-[52px] w-full min-w-0 rounded-[10px] border border-ink3/80 bg-sf px-3.5 py-2 text-base text-ink focus-visible:border-pri focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri aria-invalid:border-danger aria-invalid:focus-visible:outline-danger"
+              class="mt-2"
               type="date"
               formControlName="startDate"
               required
@@ -122,8 +108,9 @@
           <div>
             <label for="contract-endDate" class="block text-sm text-ink2">Data de fim</label>
             <input
+              appInput
               id="contract-endDate"
-              class="mt-2 block min-h-[52px] w-full min-w-0 rounded-[10px] border border-ink3/80 bg-sf px-3.5 py-2 text-base text-ink focus-visible:border-pri focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri aria-invalid:border-danger aria-invalid:focus-visible:outline-danger"
+              class="mt-2"
               type="date"
               formControlName="endDate"
               required
@@ -149,12 +136,11 @@
       </fieldset>
 
       <div>
-        <label for="contract-policyId" class="block text-sm font-semibold"
-          >Política vinculada</label
-        >
+        <label appManagerLabel for="contract-policyId">Política vinculada</label>
         <select
+          appSelect
           id="contract-policyId"
-          class="mt-2 min-h-[52px] w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 py-2 text-base text-ink hover:border-ink2 focus-visible:border-pri focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri aria-invalid:border-danger aria-invalid:focus-visible:outline-danger"
+          class="mt-2"
           formControlName="policyId"
           required
           [attr.aria-invalid]="invalid('policyId')"
@@ -196,9 +182,10 @@
 }
 
 <dialog
+  appManagerDialog
   #reviewDialog
   tabindex="-1"
-  class="m-auto max-h-[calc(100dvh-32px)] w-[min(600px,calc(100%-24px))] overflow-y-auto rounded-surface border border-line bg-sf p-0 text-ink shadow-dialog backdrop:bg-navy/50"
+  class="w-[min(600px,calc(100%-24px))]"
   aria-labelledby="contract-review-title"
   (close)="onReviewClose()"
   (click)="onReviewBackdrop($event)"

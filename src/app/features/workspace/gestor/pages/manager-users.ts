@@ -1,3 +1,22 @@
+import {
+  ManagerTable,
+  ManagerTableHead,
+  ManagerTableBody,
+} from '../components/manager-table.directive';
+import { ManagerEmptyState } from '../components/manager-empty-state';
+import { ManagerMetricCard } from '../components/manager-metric-card';
+import { ManagerStatusBadge } from '../components/manager-status-badge';
+import { ManagerPageHeader } from '../components/manager-page-header';
+import {
+  ManagerPanel,
+  ManagerCollection,
+  ManagerDialog,
+  ManagerSectionHeading,
+  ManagerLabel,
+  ManagerTextAction,
+} from '../components/manager-surface.directive';
+import { Input } from '@app/shared/ui/input/input.directive';
+import { Select } from '@app/shared/ui/input/select.directive';
 import { DOCUMENT } from '@angular/common';
 import {
   afterNextRender,
@@ -12,8 +31,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LucideDynamicIcon } from '@lucide/angular';
-import { ButtonSecondary } from '@app/shared/ui/button';
-import { PageHeading } from '@app/shared/ui/page-heading/page-heading.directive';
+import { ButtonSecondary, ButtonPrimary } from '@app/shared/ui/button';
 import { preventDefaultUnlessReplayed } from '../../../../shared/utils/event-replay';
 import { WORKSPACE_ICONS } from '../../data/workspace-icons';
 import { ManagerUser, UserDemoStore } from '../data/user-demo-store';
@@ -31,7 +49,27 @@ function normalize(value: string): string {
 
 @Component({
   selector: 'app-manager-users',
-  imports: [RouterLink, ButtonSecondary, PageHeading, LucideDynamicIcon],
+  imports: [
+    RouterLink,
+    ButtonSecondary,
+    LucideDynamicIcon,
+    Select,
+    Input,
+    ButtonPrimary,
+    ManagerPanel,
+    ManagerCollection,
+    ManagerDialog,
+    ManagerSectionHeading,
+    ManagerLabel,
+    ManagerTextAction,
+    ManagerPageHeader,
+    ManagerStatusBadge,
+    ManagerMetricCard,
+    ManagerEmptyState,
+    ManagerTable,
+    ManagerTableHead,
+    ManagerTableBody,
+  ],
   templateUrl: './manager-users.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },

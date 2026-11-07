@@ -1,3 +1,20 @@
+import {
+  ManagerTable,
+  ManagerTableHead,
+  ManagerTableBody,
+} from '../components/manager-table.directive';
+import { ManagerEmptyState } from '../components/manager-empty-state';
+import { ManagerMetricCard } from '../components/manager-metric-card';
+import { ManagerStatusBadge } from '../components/manager-status-badge';
+import { ManagerPageHeader } from '../components/manager-page-header';
+import {
+  ManagerCollection,
+  ManagerDialog,
+  ManagerSectionHeading,
+  ManagerLabel,
+  ManagerTextAction,
+} from '../components/manager-surface.directive';
+import { Select } from '@app/shared/ui/input/select.directive';
 import { DatePipe } from '@angular/common';
 import {
   afterNextRender,
@@ -14,7 +31,6 @@ import { RouterLink } from '@angular/router';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { ButtonPrimary } from '@app/shared/ui/button';
 import { Input } from '@app/shared/ui/input/input.directive';
-import { PageHeading } from '@app/shared/ui/page-heading/page-heading.directive';
 import { preventDefaultUnlessReplayed } from '../../../../shared/utils/event-replay';
 import { CompanyDemoStore } from '../data/company-demo-store';
 import {
@@ -46,7 +62,26 @@ function normalize(value: string): string {
 
 @Component({
   selector: 'app-manager-contracts',
-  imports: [RouterLink, ButtonPrimary, Input, PageHeading, DatePipe, LucideDynamicIcon],
+  imports: [
+    RouterLink,
+    ButtonPrimary,
+    Input,
+    DatePipe,
+    LucideDynamicIcon,
+    Select,
+    ManagerCollection,
+    ManagerDialog,
+    ManagerSectionHeading,
+    ManagerLabel,
+    ManagerTextAction,
+    ManagerPageHeader,
+    ManagerStatusBadge,
+    ManagerMetricCard,
+    ManagerEmptyState,
+    ManagerTable,
+    ManagerTableHead,
+    ManagerTableBody,
+  ],
   templateUrl: './manager-contracts.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },

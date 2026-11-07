@@ -8,6 +8,14 @@ import {
   LucideInbox,
   LucideTriangleAlert,
   LucideWrench,
+  LucideBuilding2,
+  LucideUsers,
+  LucideUserRoundCheck,
+  LucideCircleMinus,
+  LucideFileText,
+  LucideCalendarCheck,
+  LucideCalendarClock,
+  LucideCalendarX,
 } from '@lucide/angular';
 
 const METRIC_ICONS = {
@@ -18,6 +26,15 @@ const METRIC_ICONS = {
   open: LucideFolderOpen,
   resolved: LucideCircleCheck,
   overdue: LucideAlarmClock,
+  companies: LucideBuilding2,
+  users: LucideUsers,
+  technicians: LucideUserRoundCheck,
+  active: LucideCircleCheck,
+  inactive: LucideCircleMinus,
+  contracts: LucideFileText,
+  current: LucideCalendarCheck,
+  future: LucideCalendarClock,
+  expired: LucideCalendarX,
 };
 
 export type ManagerMetricIcon = keyof typeof METRIC_ICONS;

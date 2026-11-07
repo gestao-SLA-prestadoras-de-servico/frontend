@@ -1,10 +1,21 @@
+import {
+  ManagerTable,
+  ManagerTableHead,
+  ManagerTableBody,
+} from '../components/manager-table.directive';
+import { ManagerPageHeader } from '../components/manager-page-header';
+import {
+  ManagerPanel,
+  ManagerCollection,
+  ManagerSectionHeading,
+  ManagerLabel,
+  ManagerTextAction,
+} from '../components/manager-surface.directive';
+import { Select } from '@app/shared/ui/input/select.directive';
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { LucideDynamicIcon } from '@lucide/angular';
 import { ButtonPrimary } from '@app/shared/ui/button';
-import { PageHeading } from '@app/shared/ui/page-heading/page-heading.directive';
-import { WORKSPACE_ICONS } from '../../data/workspace-icons';
 import {
   currentPolicyVersion,
   DemoSlaPolicy,
@@ -63,7 +74,21 @@ const INCONSISTENCY_EXAMPLE = ALL_VERSIONS.find(
 
 @Component({
   selector: 'app-manager-sla-policies',
-  imports: [RouterLink, DatePipe, ButtonPrimary, PageHeading, LucideDynamicIcon],
+  imports: [
+    RouterLink,
+    DatePipe,
+    ButtonPrimary,
+    Select,
+    ManagerPanel,
+    ManagerCollection,
+    ManagerSectionHeading,
+    ManagerLabel,
+    ManagerTextAction,
+    ManagerPageHeader,
+    ManagerTable,
+    ManagerTableHead,
+    ManagerTableBody,
+  ],
   templateUrl: './manager-sla-policies.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
@@ -72,7 +97,6 @@ export class ManagerSlaPolicies {
   private readonly route = inject(ActivatedRoute);
   private readonly initialPolicyId =
     policyById(this.route.snapshot.queryParamMap.get('policy') ?? '')?.id ?? DEFAULT_POLICY_ID;
-  protected readonly icons = WORKSPACE_ICONS;
   protected readonly policies = SLA_POLICY_DEMOS;
   protected readonly clocks = SLA_CLOCKS;
   protected readonly priorities = SLA_PRIORITIES;

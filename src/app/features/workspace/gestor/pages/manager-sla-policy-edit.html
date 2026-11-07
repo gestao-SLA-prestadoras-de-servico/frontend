@@ -1,25 +1,13 @@
-<a
-  routerLink="/app/gestor/politicas"
-  class="mb-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-pri-d underline underline-offset-4"
->
+<a appManagerTextAction routerLink="/app/gestor/politicas" class="mb-4">
   <svg class="size-4" [lucideIcon]="icons.back" aria-hidden="true"></svg>Políticas SLA
 </a>
-<h1
-  appPageHeading
-  class="text-[26px] leading-[1.25] font-semibold tracking-[-.03em] sm:text-[28px]"
->
-  Revisar prazos
-</h1>
-<p class="mt-2 text-sm leading-[1.7] text-ink2">
-  {{ selectedPolicy().code }} · {{ selectedPolicy().name }} · versão atual v{{
+<app-manager-page-header
+  title="Revisar prazos"
+  description="{{ selectedPolicy().code }} · {{ selectedPolicy().name }} · versão atual v{{
     currentVersion().version
-  }}
-</p>
-<p class="mt-4 flex items-start gap-2 text-xs leading-[1.7] text-ink3">
-  <svg class="mt-0.5 size-4 shrink-0" [lucideIcon]="icons.info" aria-hidden="true"></svg>
-  Prévia demonstrativa: os prazos usam minutos de janela (09h–18h, dias úteis). Nenhum SLA é
-  calculado e nenhuma versão será criada.
-</p>
+  }}"
+  demo="Prévia demonstrativa: os prazos usam minutos de janela (09h–18h, dias úteis). Nenhum SLA é calculado e nenhuma versão será criada."
+></app-manager-page-header>
 
 @if (previewNotice(); as notice) {
   <section
@@ -40,20 +28,19 @@
 }
 
 <div class="mt-6 grid items-start gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(280px,.85fr)]">
-  <section class="min-w-0 rounded-deadline bg-bg p-4 sm:p-6" aria-labelledby="sla-edit-form-title">
-    <h2 id="sla-edit-form-title" class="text-base font-semibold leading-[1.5] tracking-normal">
-      Prazos da política
-    </h2>
+  <section appManagerPanel aria-labelledby="sla-edit-form-title">
+    <h2 appManagerSectionHeading id="sla-edit-form-title">Prazos da política</h2>
     <p class="mt-1 text-xs text-ink3">
       Informe minutos inteiros de janela. 540 min correspondem a 1 dia útil no exemplo fixo.
     </p>
 
     <form class="mt-5" [formGroup]="form" (ngSubmit)="reviewPreview()" novalidate>
       <div>
-        <label for="sla-edit-policy" class="block text-sm font-semibold">Política</label>
+        <label appManagerLabel for="sla-edit-policy">Política</label>
         <select
+          appSelect
           id="sla-edit-policy"
-          class="mt-2 min-h-12 w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 py-2 text-base text-ink hover:border-ink2 focus-visible:border-pri focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+          class="mt-2"
           formControlName="policyId"
           (change)="onPolicyChange($event)"
           aria-describedby="sla-edit-policy-help"
@@ -109,14 +96,13 @@
                     {{ clock.label }} · {{ priority.label }}
                     <span class="font-normal text-ink2">(min)</span>
                   </label>
-                  <div
-                    class="flex min-w-0 items-center rounded-[10px] border border-ink3/80 bg-sf focus-within:border-pri focus-within:outline-3 focus-within:outline-offset-2 focus-within:outline-pri"
-                  >
+                  <div class="relative min-w-0">
                     <input
+                      appInput
                       [id]="controlId(priority.key, clock.key)"
                       [formControlName]="fieldFor(priority.key, clock.key)"
                       (input)="refreshWarnings()"
-                      class="min-h-12 min-w-0 flex-1 rounded-l-[10px] bg-transparent px-3 text-right text-base tabular-nums text-ink focus:outline-none aria-invalid:text-danger"
+                      class="pr-12 text-right tabular-nums"
                       type="number"
                       min="1"
                       step="1"
@@ -132,7 +118,10 @@
                           : controlId(priority.key, clock.key) + '-help'
                       "
                     />
-                    <span class="pr-3 text-xs text-ink2">min</span>
+                    <span
+                      class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-ink2"
+                      >min</span
+                    >
                   </div>
                   <p
                     [id]="controlId(priority.key, clock.key) + '-help'"
@@ -170,8 +159,8 @@
     </form>
   </section>
 
-  <aside class="min-w-0 border-t border-line pt-4 xl:border-t-0 xl:pt-0">
-    <h2 class="text-sm font-semibold leading-normal tracking-normal">Como ler a matriz</h2>
+  <aside appManagerPanel>
+    <h2 appManagerSectionHeading>Como ler a matriz</h2>
     <p class="mt-2 text-sm leading-[1.65] text-ink2">
       Cada valor representa minutos dentro da janela útil de atendimento. O texto auxiliar usa uma
       equivalência fixa apenas para alguns valores de exemplo.
@@ -193,9 +182,10 @@
 </div>
 
 <dialog
+  appManagerDialog
   #reviewDialog
   tabindex="-1"
-  class="m-auto max-h-[calc(100dvh-32px)] w-[min(680px,calc(100%-24px))] overflow-y-auto rounded-surface border border-line bg-sf p-0 text-ink shadow-dialog backdrop:bg-navy/50"
+  class="w-[min(680px,calc(100%-24px))]"
   aria-labelledby="sla-review-title"
   (close)="onReviewClose()"
   (click)="onReviewBackdrop($event)"

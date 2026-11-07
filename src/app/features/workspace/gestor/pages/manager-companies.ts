@@ -1,3 +1,21 @@
+import {
+  ManagerTable,
+  ManagerTableHead,
+  ManagerTableBody,
+} from '../components/manager-table.directive';
+import { ManagerEmptyState } from '../components/manager-empty-state';
+import { ManagerMetricCard } from '../components/manager-metric-card';
+import { ManagerStatusBadge } from '../components/manager-status-badge';
+import { ManagerPageHeader } from '../components/manager-page-header';
+import {
+  ManagerCollection,
+  ManagerDialog,
+  ManagerSectionHeading,
+  ManagerLabel,
+  ManagerTextAction,
+} from '../components/manager-surface.directive';
+import { Textarea } from '@app/shared/ui/input/textarea.directive';
+import { Select } from '@app/shared/ui/input/select.directive';
 import { DOCUMENT } from '@angular/common';
 import {
   afterNextRender,
@@ -15,7 +33,6 @@ import { RouterLink } from '@angular/router';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { ButtonPrimary, ButtonSecondary } from '@app/shared/ui/button';
 import { Input } from '@app/shared/ui/input/input.directive';
-import { PageHeading } from '@app/shared/ui/page-heading/page-heading.directive';
 import { preventDefaultUnlessReplayed } from '../../../../shared/utils/event-replay';
 import { CompanyDemoStore, CompanySituation, DemoCompany } from '../data/company-demo-store';
 import {
@@ -45,8 +62,21 @@ function normalize(value: string): string {
     ButtonPrimary,
     ButtonSecondary,
     Input,
-    PageHeading,
     LucideDynamicIcon,
+    Select,
+    Textarea,
+    ManagerCollection,
+    ManagerDialog,
+    ManagerSectionHeading,
+    ManagerLabel,
+    ManagerTextAction,
+    ManagerPageHeader,
+    ManagerStatusBadge,
+    ManagerMetricCard,
+    ManagerEmptyState,
+    ManagerTable,
+    ManagerTableHead,
+    ManagerTableBody,
   ],
   templateUrl: './manager-companies.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -84,11 +114,11 @@ export class ManagerCompanies {
       return matchesTerm && matchesSituation;
     });
   });
-  protected readonly activeCompanies = computed(() =>
-    this.companies().filter((company) => company.situation === 'active').length,
+  protected readonly activeCompanies = computed(
+    () => this.companies().filter((company) => company.situation === 'active').length,
   );
-  protected readonly inactiveCompanies = computed(() =>
-    this.companies().filter((company) => company.situation === 'inactive').length,
+  protected readonly inactiveCompanies = computed(
+    () => this.companies().filter((company) => company.situation === 'inactive').length,
   );
 
   constructor() {

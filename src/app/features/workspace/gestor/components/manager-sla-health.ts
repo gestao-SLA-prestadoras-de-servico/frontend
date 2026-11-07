@@ -1,15 +1,17 @@
+import {
+  ManagerPanel,
+  ManagerSectionHeading,
+  ManagerTextAction,
+} from './manager-surface.directive';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-manager-sla-health',
-  imports: [RouterLink],
+  imports: [RouterLink, ManagerPanel, ManagerSectionHeading, ManagerTextAction],
   template: `
-    <section
-      class="h-full rounded-deadline border border-line bg-sf p-4 sm:p-5"
-      aria-labelledby="health-heading"
-    >
-      <h2 id="health-heading" class="text-base font-semibold">Saúde do SLA</h2>
+    <section appManagerPanel class="h-full" aria-labelledby="health-heading">
+      <h2 appManagerSectionHeading id="health-heading">Saúde do SLA</h2>
       <p class="mt-1 text-[13px] leading-5 text-ink3">
         {{ total() }} chamados não finalizados · cenário atual
       </p>
@@ -52,9 +54,7 @@ import { RouterLink } from '@angular/router';
           <dd class="m-0 font-semibold tabular-nums text-danger">{{ violated() }}</dd>
         </div>
       </dl>
-      <a
-        routerLink="/app/gestor/chamados"
-        class="mt-4 inline-flex min-h-11 items-center rounded-sm text-xs font-semibold text-pri-d underline underline-offset-4"
+      <a appManagerTextAction routerLink="/app/gestor/chamados" class="mt-4 text-xs"
         >Acompanhar prazos na fila</a
       >
     </section>

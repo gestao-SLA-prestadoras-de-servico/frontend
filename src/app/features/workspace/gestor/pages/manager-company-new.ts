@@ -1,3 +1,11 @@
+import { ManagerPageHeader } from '../components/manager-page-header';
+import {
+  ManagerPanel,
+  ManagerSectionHeading,
+  ManagerLabel,
+  ManagerTextAction,
+} from '../components/manager-surface.directive';
+import { Textarea } from '@app/shared/ui/input/textarea.directive';
 import { DOCUMENT } from '@angular/common';
 import {
   afterNextRender,
@@ -14,7 +22,6 @@ import { RouterLink } from '@angular/router';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { ButtonPrimary, ButtonSecondary } from '@app/shared/ui/button';
 import { Input } from '@app/shared/ui/input/input.directive';
-import { PageHeading } from '@app/shared/ui/page-heading/page-heading.directive';
 import { CompanyDemoStore, DemoCompany } from '../data/company-demo-store';
 import {
   COMPANY_FIELD_ERRORS,
@@ -32,8 +39,13 @@ import { WORKSPACE_ICONS } from '../../data/workspace-icons';
     ButtonPrimary,
     ButtonSecondary,
     Input,
-    PageHeading,
     LucideDynamicIcon,
+    Textarea,
+    ManagerPanel,
+    ManagerSectionHeading,
+    ManagerLabel,
+    ManagerTextAction,
+    ManagerPageHeader,
   ],
   templateUrl: './manager-company-new.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

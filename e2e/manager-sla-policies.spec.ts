@@ -56,11 +56,13 @@ test('FE-020 shows SLA matrices, immutable history, and cross-policy comparisons
 
 test('FE-020 validates inputs, warns without blocking, and keeps the history unchanged', async ({
   page,
+  baseURL,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   const externalRequests: string[] = [];
   page.on('request', (request) => {
-    if (!request.url().startsWith('http://localhost:4200/')) externalRequests.push(request.url());
+    if (new URL(request.url()).origin !== new URL(baseURL!).origin)
+      externalRequests.push(request.url());
   });
   await gotoAndWaitForHydration(page, '/app/gestor/politicas/editar?policy=policy-building');
   await expect(page.locator('main h1')).toHaveText('Revisar prazos');

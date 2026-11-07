@@ -1,11 +1,15 @@
 import { expect, test } from '@playwright/test';
 import { gotoAndWaitForHydration } from './helpers/hydration';
 
-test('FE-023 reviews a triage locally without changing the open ticket', async ({ page }) => {
+test('FE-023 reviews a triage locally without changing the open ticket', async ({
+  page,
+  baseURL,
+}) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   const externalRequests: string[] = [];
   page.on('request', (request) => {
-    if (!request.url().startsWith('http://localhost:4200/')) externalRequests.push(request.url());
+    if (new URL(request.url()).origin !== new URL(baseURL!).origin)
+      externalRequests.push(request.url());
   });
 
   await gotoAndWaitForHydration(page, '/app/gestor/chamados/1043');

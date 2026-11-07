@@ -1,7 +1,20 @@
+import {
+  ManagerTable,
+  ManagerTableHead,
+  ManagerTableBody,
+} from '../components/manager-table.directive';
+import { ManagerEmptyState } from '../components/manager-empty-state';
+import { ManagerPageHeader } from '../components/manager-page-header';
+import {
+  ManagerCollection,
+  ManagerSectionHeading,
+  ManagerLabel,
+  ManagerTextAction,
+} from '../components/manager-surface.directive';
+import { Select } from '@app/shared/ui/input/select.directive';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LucideDynamicIcon } from '@lucide/angular';
-import { PageHeading } from '@app/shared/ui/page-heading/page-heading.directive';
 import { WORKSPACE_ICONS } from '../../data/workspace-icons';
 import {
   ManagerTicketDemoStore,
@@ -19,11 +32,20 @@ type PriorityFilter = 'Todas' | ManagerTicketPriority;
   selector: 'app-manager-tickets',
   imports: [
     RouterLink,
-    PageHeading,
     LucideDynamicIcon,
     ManagerTicketBadge,
     ManagerTicketClocks,
     ManagerMetricCard,
+    Select,
+    ManagerCollection,
+    ManagerSectionHeading,
+    ManagerLabel,
+    ManagerTextAction,
+    ManagerPageHeader,
+    ManagerEmptyState,
+    ManagerTable,
+    ManagerTableHead,
+    ManagerTableBody,
   ],
   templateUrl: './manager-tickets.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

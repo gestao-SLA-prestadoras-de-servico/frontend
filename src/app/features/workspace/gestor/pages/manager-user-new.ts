@@ -1,3 +1,10 @@
+import { ManagerPageHeader } from '../components/manager-page-header';
+import {
+  ManagerPanel,
+  ManagerSectionHeading,
+  ManagerLabel,
+} from '../components/manager-surface.directive';
+import { Select } from '@app/shared/ui/input/select.directive';
 import {
   afterNextRender,
   ChangeDetectionStrategy,
@@ -9,11 +16,8 @@ import {
 import { DOCUMENT } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { LucideDynamicIcon } from '@lucide/angular';
 import { ButtonPrimary, ButtonSecondary } from '@app/shared/ui/button';
 import { Input } from '@app/shared/ui/input/input.directive';
-import { PageHeading } from '@app/shared/ui/page-heading/page-heading.directive';
-import { WORKSPACE_ICONS } from '../../data/workspace-icons';
 import { ManagerUserRole, UserDemoStore } from '../data/user-demo-store';
 
 type UserForm = FormGroup<{
@@ -31,8 +35,12 @@ type UserForm = FormGroup<{
     ButtonPrimary,
     ButtonSecondary,
     Input,
-    PageHeading,
-    LucideDynamicIcon,
+
+    Select,
+    ManagerPanel,
+    ManagerSectionHeading,
+    ManagerLabel,
+    ManagerPageHeader,
   ],
   templateUrl: './manager-user-new.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,7 +51,6 @@ export class ManagerUserNew {
   private readonly store = inject(UserDemoStore);
   private readonly document = inject(DOCUMENT);
   private readonly injector = inject(Injector);
-  protected readonly icons = WORKSPACE_ICONS;
   protected readonly submitted = signal(false);
   protected readonly form: UserForm = new FormGroup({
     name: new FormControl('', {

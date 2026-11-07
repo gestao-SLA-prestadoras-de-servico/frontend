@@ -1,10 +1,14 @@
 import { expect, test } from '@playwright/test';
 import { gotoAndWaitForHydration } from './helpers/hydration';
 
-test('FE-026 retries evidence processing locally and shows both outcomes', async ({ page }) => {
+test('FE-026 retries evidence processing locally and shows both outcomes', async ({
+  page,
+  baseURL,
+}) => {
   const externalRequests: string[] = [];
   page.on('request', (request) => {
-    if (!request.url().startsWith('http://localhost:4200/')) externalRequests.push(request.url());
+    if (new URL(request.url()).origin !== new URL(baseURL!).origin)
+      externalRequests.push(request.url());
   });
 
   await page.setViewportSize({ width: 1440, height: 1000 });

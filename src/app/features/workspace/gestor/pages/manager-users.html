@@ -1,35 +1,25 @@
-<div class="flex flex-wrap items-start justify-between gap-5">
-  <div class="max-w-[65ch]">
-    <h1
-      appPageHeading
-      class="text-[26px] leading-[1.25] font-semibold tracking-[-.03em] sm:text-[28px]"
-    >
-      Usuários
-    </h1>
-    <p class="mt-2 text-sm leading-[1.7] text-ink2">
-      Consulte perfis e situação da equipe que participa dos atendimentos.
-    </p>
-  </div>
-  <a
+<app-manager-page-header
+  title="Usuários"
+  description="Consulte perfis e situação da equipe que participa dos atendimentos."
+  demo="Dados fictícios. Cadastros e inativações desta tela não acessam o Keycloak e não são persistidos."
+  ><a
+    appButtonPrimary
+    managerHeaderActions
     routerLink="/app/gestor/usuarios/novo"
-    class="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-pri px-4 py-2 text-sm font-semibold text-white no-underline hover:bg-pri-d focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+    class="min-h-11 px-4 py-2"
   >
     <svg class="size-4" [lucideIcon]="icons.add" aria-hidden="true"></svg>Novo usuário
-  </a>
-</div>
-
-<p class="mt-4 flex items-start gap-2 text-xs leading-[1.7] text-ink3">
-  <svg class="mt-0.5 size-4 shrink-0" [lucideIcon]="icons.info" aria-hidden="true"></svg>
-  Dados fictícios. Cadastros e inativações desta tela não acessam o Keycloak e não são persistidos.
-</p>
+  </a></app-manager-page-header
+>
 
 @if (notice(); as message) {
   <section
+    appManagerPanel
     #noticeTarget
     tabindex="-1"
     [attr.role]="message.tone === 'error' ? 'alert' : 'status'"
     aria-live="polite"
-    class="mt-6 flex flex-wrap items-start justify-between gap-4 rounded-deadline p-4 sm:p-5"
+    class="mt-6 flex flex-wrap items-start justify-between gap-4"
     [class.bg-grn-bg]="message.tone === 'success'"
     [class.text-grn-t]="message.tone === 'success'"
     [class.bg-danger-bg]="message.tone === 'error'"
@@ -50,28 +40,39 @@
   </section>
 }
 
-<dl class="mt-7 grid grid-cols-3 gap-3 rounded-deadline bg-bg px-4 py-4 sm:px-6 sm:py-5">
-  <div>
-    <dt class="text-xs text-ink2 sm:text-sm">Usuários ativos</dt>
-    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums">{{ activeCount() }}</dd>
-  </div>
-  <div>
-    <dt class="text-xs text-ink2 sm:text-sm">Técnicos ativos</dt>
-    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums">{{ technicalCount() }}</dd>
-  </div>
-  <div>
-    <dt class="text-xs text-ink2 sm:text-sm">Inativos</dt>
-    <dd class="m-0 mt-1 text-2xl font-semibold tabular-nums">{{ inactiveCount() }}</dd>
-  </div>
-</dl>
+<section class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3" aria-label="Indicadores de users">
+  <app-manager-metric-card
+    variant="outlined"
+    label="Usuários ativos"
+    [value]="activeCount()"
+    icon="users"
+    tone="blue"
+  />
+  <app-manager-metric-card
+    variant="outlined"
+    label="Técnicos ativos"
+    [value]="technicalCount()"
+    icon="technicians"
+    tone="green"
+  />
+  <app-manager-metric-card
+    variant="outlined"
+    label="Inativos"
+    [value]="inactiveCount()"
+    icon="inactive"
+    tone="neutral"
+    class="col-span-2 sm:col-span-1"
+  />
+</section>
 
 <section class="mt-7" aria-label="Busca e filtros de usuários">
   <div class="grid gap-4 md:grid-cols-[minmax(0,1fr)_190px_190px]">
     <div>
-      <label for="user-search" class="block text-sm font-semibold">Buscar usuário</label
+      <label appManagerLabel for="user-search">Buscar usuário</label
       ><input
+        appInput
         id="user-search"
-        class="mt-2 block h-[52px] w-full min-w-0 rounded-[10px] border border-ink3/80 bg-sf px-3.5 text-base text-ink placeholder:text-ink3 focus-visible:border-pri focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+        class="mt-2"
         type="search"
         placeholder="Nome, e-mail ou empresa"
         [value]="search()"
@@ -79,10 +80,11 @@
       />
     </div>
     <div>
-      <label for="user-role" class="block text-sm font-semibold">Perfil</label
+      <label appManagerLabel for="user-role">Perfil</label
       ><select
+        appSelect
         id="user-role"
-        class="mt-2 min-h-[52px] w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 text-base focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+        class="mt-2"
         [value]="roleFilter()"
         (change)="updateRole($event)"
       >
@@ -93,10 +95,11 @@
       </select>
     </div>
     <div>
-      <label for="user-situation" class="block text-sm font-semibold">Situação</label
+      <label appManagerLabel for="user-situation">Situação</label
       ><select
+        appSelect
         id="user-situation"
-        class="mt-2 min-h-[52px] w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 text-base focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+        class="mt-2"
         [value]="situationFilter()"
         (change)="updateSituation($event)"
       >
@@ -110,20 +113,18 @@
 
 <section class="mt-7" aria-labelledby="user-list-heading">
   <div class="flex flex-wrap items-baseline justify-between gap-3">
-    <h2 id="user-list-heading" class="text-base font-semibold leading-[1.5] tracking-normal">
-      Equipe e contatos
-    </h2>
+    <h2 appManagerSectionHeading id="user-list-heading">Equipe e contatos</h2>
     <p class="text-xs text-ink3" aria-live="polite">
       {{ filteredUsers().length }} {{ filteredUsers().length === 1 ? 'resultado' : 'resultados' }}
     </p>
   </div>
   @if (filteredUsers().length) {
-    <div class="mt-3 hidden overflow-x-auto rounded-deadline border border-line md:block">
-      <table class="w-full min-w-[760px] border-collapse text-left text-sm">
+    <div appManagerCollection class="mt-3 hidden overflow-x-auto md:block">
+      <table appManagerTable class="min-w-[760px]">
         <caption class="sr-only">
           Usuários fictícios, seus perfis e situações
         </caption>
-        <thead class="bg-bg text-xs font-semibold text-ink2">
+        <thead appManagerTableHead>
           <tr>
             <th scope="col" class="px-4 py-3">Usuário</th>
             <th scope="col" class="px-4 py-3">Perfil</th>
@@ -132,7 +133,7 @@
             <th scope="col" class="px-4 py-3">Ações</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-line">
+        <tbody appManagerTableBody>
           @for (user of filteredUsers(); track user.id) {
             <tr>
               <th scope="row" class="px-4 py-4 align-top font-semibold">
@@ -144,21 +145,17 @@
               <td class="px-4 py-4 align-top">{{ user.role }}</td>
               <td class="px-4 py-4 align-top text-ink2">{{ user.company ?? '—' }}</td>
               <td class="px-4 py-4 align-top">
-                <span
-                  class="inline-flex min-h-7 items-center rounded-sm px-2.5 text-xs font-semibold"
-                  [class.bg-grn-bg]="user.situation === 'Ativo'"
-                  [class.text-grn-t]="user.situation === 'Ativo'"
-                  [class.bg-bg]="user.situation === 'Inativo'"
-                  [class.text-ink2]="user.situation === 'Inativo'"
-                  >{{ user.situation }}</span
-                >
+                <app-manager-status-badge
+                  [value]="user.situation === 'Ativo' ? 'active' : 'inactive'"
+                  [label]="user.situation"
+                />
               </td>
               <td class="px-4 py-3 align-top">
                 @if (user.role === 'Técnico' && user.situation === 'Ativo') {
                   <button
+                    appManagerTextAction="danger"
                     #desktopTrigger
                     type="button"
-                    class="min-h-10 rounded-sm px-2 text-sm font-semibold text-danger underline underline-offset-4 hover:opacity-80"
                     [disabled]="!ready()"
                     [attr.aria-label]="'Inativar ' + user.name"
                     (click)="openDeactivate(user, desktopTrigger)"
@@ -174,7 +171,7 @@
         </tbody>
       </table>
     </div>
-    <div class="mt-3 divide-y divide-line rounded-deadline border border-line md:hidden">
+    <div appManagerCollection class="mt-3 divide-y divide-line md:hidden">
       @for (user of filteredUsers(); track user.id) {
         <article class="p-4 first:rounded-t-deadline last:rounded-b-deadline">
           <div class="flex items-start justify-between gap-3">
@@ -182,14 +179,10 @@
               <h3 class="text-sm font-semibold">{{ user.name }}</h3>
               <p class="mt-1 wrap-anywhere text-sm text-ink2">{{ user.email }}</p>
             </div>
-            <span
-              class="inline-flex min-h-7 shrink-0 items-center rounded-sm px-2.5 text-xs font-semibold"
-              [class.bg-grn-bg]="user.situation === 'Ativo'"
-              [class.text-grn-t]="user.situation === 'Ativo'"
-              [class.bg-bg]="user.situation === 'Inativo'"
-              [class.text-ink2]="user.situation === 'Inativo'"
-              >{{ user.situation }}</span
-            >
+            <app-manager-status-badge
+              [value]="user.situation === 'Ativo' ? 'active' : 'inactive'"
+              [label]="user.situation"
+            />
           </div>
           <dl class="mt-4 grid grid-cols-2 gap-3 text-sm">
             <div>
@@ -220,24 +213,22 @@
       }
     </div>
   } @else {
-    <div class="mt-3 rounded-deadline border border-dashed border-ink3 p-6 text-center sm:p-8">
-      <h3 class="font-semibold">Nenhum usuário encontrado</h3>
-      <p class="mt-2 text-sm text-ink2">Ajuste a busca ou os filtros para ver outros perfis.</p>
-      <button
-        type="button"
-        class="mt-3 min-h-11 px-3 text-sm font-semibold text-pri-d underline underline-offset-4"
-        (click)="clearFilters()"
-      >
+    <app-manager-empty-state
+      class="mt-3"
+      title="Nenhum usuário encontrado"
+      description="Ajuste a busca ou os filtros para ver outros perfis."
+      ><button appManagerTextAction type="button" class="mt-3" (click)="clearFilters()">
         Limpar filtros
-      </button>
-    </div>
+      </button></app-manager-empty-state
+    >
   }
 </section>
 
 <dialog
+  appManagerDialog
   #deactivateDialog
   tabindex="-1"
-  class="m-auto w-[min(640px,calc(100vw-24px))] max-h-[calc(100dvh-24px)] overflow-y-auto rounded-deadline border border-line bg-sf p-0 text-ink shadow-dialog backdrop:bg-navy/45"
+  class="w-[min(640px,calc(100vw-24px))]"
   aria-labelledby="deactivate-title"
   (close)="onDialogClose()"
   (keydown)="trapFocus($event)"
@@ -247,10 +238,7 @@
     <div class="p-5 sm:p-7">
       <div class="flex items-start justify-between gap-4">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-[.08em] text-danger">
-            Ação demonstrativa
-          </p>
-          <h2 id="deactivate-title" class="mt-2 text-xl font-semibold tracking-[-.02em]">
+          <h2 id="deactivate-title" class="text-xl font-semibold tracking-[-.02em]">
             Inativar {{ user.name }}
           </h2>
           <p class="mt-2 text-sm leading-[1.6] text-ink2">
@@ -266,10 +254,7 @@
           <svg class="size-5" [lucideIcon]="icons.close" aria-hidden="true"></svg>
         </button>
       </div>
-      <section
-        class="mt-5 rounded-deadline border border-line bg-bg p-4"
-        aria-label="Chamados relacionados ao técnico"
-      >
+      <section appManagerPanel class="mt-5" aria-label="Chamados relacionados ao técnico">
         <h3 class="text-sm font-semibold">Chamados no cenário</h3>
         <dl class="mt-3 grid grid-cols-3 gap-2 text-center">
           <div class="rounded-control bg-sf p-3">
@@ -296,10 +281,11 @@
         </p>
       </section>
       <div class="mt-5">
-        <label for="user-substitute" class="block text-sm font-semibold">Técnico substituto</label
+        <label appManagerLabel for="user-substitute">Técnico substituto</label
         ><select
+          appSelect
           id="user-substitute"
-          class="mt-2 min-h-[52px] w-full rounded-[10px] border border-ink3/80 bg-sf px-3.5 text-base focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+          class="mt-2"
           [value]="selectedSubstituteId()"
           (change)="updateSubstitute($event)"
         >

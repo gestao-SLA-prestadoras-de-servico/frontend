@@ -1,7 +1,18 @@
+import {
+  ManagerTable,
+  ManagerTableHead,
+  ManagerTableBody,
+} from '../components/manager-table.directive';
+import { ManagerPageHeader } from '../components/manager-page-header';
+import {
+  ManagerPanel,
+  ManagerSectionHeading,
+  ManagerTextAction,
+} from '../components/manager-surface.directive';
+import { ButtonPrimary } from '@app/shared/ui/button';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LucideDynamicIcon } from '@lucide/angular';
-import { PageHeading } from '@app/shared/ui/page-heading/page-heading.directive';
 import { WORKSPACE_ICONS } from '../../data/workspace-icons';
 import { ManagerTicketDemoStore, ManagerTicketStatus } from '../data/manager-ticket-demo-store';
 import { ManagerActivityChart } from '../components/manager-activity-chart';
@@ -36,7 +47,6 @@ const MONTHLY_SLA_SAMPLE = [
   selector: 'app-manager-dashboard',
   imports: [
     RouterLink,
-    PageHeading,
     LucideDynamicIcon,
     ManagerActivityChart,
     ManagerMetricCard,
@@ -44,6 +54,14 @@ const MONTHLY_SLA_SAMPLE = [
     ManagerTeamWorkload,
     ManagerTicketBadge,
     ManagerTicketClocks,
+    ButtonPrimary,
+    ManagerPanel,
+    ManagerSectionHeading,
+    ManagerTextAction,
+    ManagerPageHeader,
+    ManagerTable,
+    ManagerTableHead,
+    ManagerTableBody,
   ],
   templateUrl: './manager-dashboard.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

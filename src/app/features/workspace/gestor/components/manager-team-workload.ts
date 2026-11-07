@@ -1,16 +1,18 @@
+import {
+  ManagerPanel,
+  ManagerSectionHeading,
+  ManagerTextAction,
+} from './manager-surface.directive';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { UserDemoStore } from '../data/user-demo-store';
 
 @Component({
   selector: 'app-manager-team-workload',
-  imports: [RouterLink],
+  imports: [RouterLink, ManagerPanel, ManagerSectionHeading, ManagerTextAction],
   template: `
-    <section
-      class="rounded-deadline border border-line bg-sf p-4 sm:p-5"
-      aria-labelledby="workload-heading"
-    >
-      <h2 id="workload-heading" class="text-base font-semibold">Carga da equipe</h2>
+    <section appManagerPanel aria-labelledby="workload-heading">
+      <h2 appManagerSectionHeading id="workload-heading">Carga da equipe</h2>
       <p class="mt-1 text-[13px] leading-5 text-ink3">Atribuídos + em atendimento por técnico</p>
       <ul class="mt-5 divide-y divide-line">
         @for (technician of technicians(); track technician.id) {
@@ -55,9 +57,7 @@ import { UserDemoStore } from '../data/user-demo-store';
         }
       </ul>
       <p class="mt-1 text-xs leading-5 text-ink3">Carga fictícia de toda a carteira da equipe.</p>
-      <a
-        routerLink="/app/gestor/usuarios"
-        class="mt-3 inline-flex min-h-11 items-center rounded-sm text-xs font-semibold text-pri-d underline underline-offset-4"
+      <a appManagerTextAction routerLink="/app/gestor/usuarios" class="mt-3 text-xs"
         >Ver equipe e disponibilidade</a
       >
     </section>

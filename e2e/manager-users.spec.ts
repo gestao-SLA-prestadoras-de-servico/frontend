@@ -45,7 +45,9 @@ test('FE-021 filters profiles and simulates technician replacement with load blo
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
   await page.screenshot({ path: 'tmp/fe021-deactivate-modal-mobile.png' });
   await dialog.evaluate((element) => element.scrollTo(0, element.scrollHeight));
-  await expect(page.getByRole('button', { name: 'Inativar e indicar substituto' })).toBeInViewport();
+  await expect(
+    page.getByRole('button', { name: 'Inativar e indicar substituto' }),
+  ).toBeInViewport();
   await page.screenshot({ path: 'tmp/fe021-deactivate-modal-actions-mobile.png' });
   await page.getByRole('button', { name: 'Inativar e indicar substituto' }).click();
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -69,10 +71,12 @@ test('FE-021 filters profiles and simulates technician replacement with load blo
 
 test('FE-021 validates the visual user form for each role and confirms a local demo', async ({
   page,
+  baseURL,
 }) => {
   const externalRequests: string[] = [];
   page.on('request', (request) => {
-    if (!request.url().startsWith('http://localhost:4200/')) externalRequests.push(request.url());
+    if (new URL(request.url()).origin !== new URL(baseURL!).origin)
+      externalRequests.push(request.url());
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   await gotoAndWaitForHydration(page, '/app/gestor/usuarios/novo');

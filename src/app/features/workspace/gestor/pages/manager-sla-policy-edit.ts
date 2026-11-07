@@ -1,3 +1,13 @@
+import { ManagerPageHeader } from '../components/manager-page-header';
+import {
+  ManagerPanel,
+  ManagerDialog,
+  ManagerSectionHeading,
+  ManagerLabel,
+  ManagerTextAction,
+} from '../components/manager-surface.directive';
+import { Input } from '@app/shared/ui/input/input.directive';
+import { Select } from '@app/shared/ui/input/select.directive';
 import { DOCUMENT } from '@angular/common';
 import {
   afterNextRender,
@@ -16,7 +26,6 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { ButtonPrimary, ButtonSecondary } from '@app/shared/ui/button';
 import { preventDefaultUnlessReplayed } from '../../../../shared/utils/event-replay';
-import { PageHeading } from '@app/shared/ui/page-heading/page-heading.directive';
 import { WORKSPACE_ICONS } from '../../data/workspace-icons';
 import {
   currentPolicyVersion,
@@ -45,8 +54,15 @@ import {
     ReactiveFormsModule,
     ButtonPrimary,
     ButtonSecondary,
-    PageHeading,
     LucideDynamicIcon,
+    Select,
+    Input,
+    ManagerPanel,
+    ManagerDialog,
+    ManagerSectionHeading,
+    ManagerLabel,
+    ManagerTextAction,
+    ManagerPageHeader,
   ],
   templateUrl: './manager-sla-policy-edit.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

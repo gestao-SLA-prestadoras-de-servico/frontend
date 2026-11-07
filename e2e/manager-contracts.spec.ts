@@ -54,11 +54,12 @@ test('FE-019 lists contract terms and opens an accessible details dialog', async
   await page.screenshot({ path: 'tmp/fe019-contracts-mobile.png', fullPage: true });
 });
 
-test('FE-019 validates, reviews, and adds a session-only contract', async ({ page }) => {
+test('FE-019 validates, reviews, and adds a session-only contract', async ({ page, baseURL }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   const externalRequests: string[] = [];
   page.on('request', (request) => {
-    if (!request.url().startsWith('http://localhost:4200/')) externalRequests.push(request.url());
+    if (new URL(request.url()).origin !== new URL(baseURL!).origin)
+      externalRequests.push(request.url());
   });
   await gotoAndWaitForHydration(page, '/app/gestor/contratos/nova');
   await page.screenshot({ path: 'tmp/fe019-contract-new-desktop.png', fullPage: true });

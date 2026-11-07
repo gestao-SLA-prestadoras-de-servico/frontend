@@ -1,3 +1,14 @@
+import { ManagerTicketBadge } from '../components/manager-ticket-badge';
+import { ManagerPageHeader } from '../components/manager-page-header';
+import {
+  ManagerPanel,
+  ManagerDialog,
+  ManagerSectionHeading,
+  ManagerLabel,
+  ManagerTextAction,
+} from '../components/manager-surface.directive';
+import { Textarea } from '@app/shared/ui/input/textarea.directive';
+import { Select } from '@app/shared/ui/input/select.directive';
 import { DOCUMENT, NgClass } from '@angular/common';
 import {
   afterNextRender,
@@ -14,7 +25,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { LucideDynamicIcon } from '@lucide/angular';
-import { ButtonSecondary } from '@app/shared/ui/button';
+import { ButtonSecondary, ButtonPrimary } from '@app/shared/ui/button';
 import { PageHeading } from '@app/shared/ui/page-heading/page-heading.directive';
 import { WORKSPACE_ICONS } from '../../data/workspace-icons';
 import { preventDefaultUnlessReplayed } from '../../../../shared/utils/event-replay';
@@ -24,11 +35,7 @@ import {
   ManagerTicketPriority,
 } from '../data/manager-ticket-demo-store';
 import { UserDemoStore } from '../data/user-demo-store';
-import {
-  managerDeadlineClasses,
-  managerTicketPriorityClasses,
-  managerTicketStatusClasses,
-} from '../data/manager-ticket-presentation';
+import { managerDeadlineClasses } from '../data/manager-ticket-presentation';
 
 const PRIORITY_REFERENCE = {
   Alta: [
@@ -47,7 +54,23 @@ type AssignmentMode = 'initial' | 'reassign' | null;
 
 @Component({
   selector: 'app-manager-ticket-detail',
-  imports: [NgClass, RouterLink, ButtonSecondary, PageHeading, LucideDynamicIcon],
+  imports: [
+    NgClass,
+    RouterLink,
+    ButtonSecondary,
+    PageHeading,
+    LucideDynamicIcon,
+    Select,
+    Textarea,
+    ButtonPrimary,
+    ManagerPanel,
+    ManagerDialog,
+    ManagerSectionHeading,
+    ManagerLabel,
+    ManagerTextAction,
+    ManagerPageHeader,
+    ManagerTicketBadge,
+  ],
   templateUrl: './manager-ticket-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
@@ -93,8 +116,6 @@ export class ManagerTicketDetail {
     },
   );
   protected readonly icons = WORKSPACE_ICONS;
-  protected readonly statusClasses = managerTicketStatusClasses;
-  protected readonly priorityClasses = managerTicketPriorityClasses;
   protected readonly deadlineClasses = managerDeadlineClasses;
   protected readonly ticket = computed(() => this.store.byId(this.routeId()));
   protected readonly selectedEvidence = computed(
@@ -584,17 +605,5 @@ export class ManagerTicketDetail {
 
   protected invalidFirstPosition(): boolean {
     return this.submitted() && this.firstPosition().trim().length < 12;
-  }
-  protected statusLabel(status: string): string {
-    return (
-      {
-        ABERTO: 'Aberto',
-        ATRIBUIDO: 'Atribuído',
-        EM_ATENDIMENTO: 'Em atendimento',
-        RESOLVIDO: 'Resolvido',
-        CANCELADO: 'Cancelado',
-        ENCERRADO: 'Encerrado',
-      }[status] ?? status
-    );
   }
 }

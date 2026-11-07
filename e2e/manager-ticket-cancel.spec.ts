@@ -1,10 +1,11 @@
 import { expect, test } from '@playwright/test';
 import { gotoAndWaitForHydration } from './helpers/hydration';
 
-test('FE-025 requires a reason and keeps the ticket state unchanged', async ({ page }) => {
+test('FE-025 requires a reason and keeps the ticket state unchanged', async ({ page, baseURL }) => {
   const externalRequests: string[] = [];
   page.on('request', (request) => {
-    if (!request.url().startsWith('http://localhost:4200/')) externalRequests.push(request.url());
+    if (new URL(request.url()).origin !== new URL(baseURL!).origin)
+      externalRequests.push(request.url());
   });
   await page.setViewportSize({ width: 1440, height: 900 });
   await gotoAndWaitForHydration(page, '/app/gestor/chamados/1042');
@@ -41,7 +42,9 @@ test('FE-025 requires a reason and keeps the ticket state unchanged', async ({ p
   await page.getByRole('link', { name: 'Voltar à fila' }).click();
   const row = page.getByRole('row').filter({ hasText: 'Falha no sistema de climatização' });
   await expect(row).toContainText('Em atendimento');
-  await expect(row).toContainText('Resolução · hoje às 16h');
+  await expect(row.getByRole('list', { name: 'Relógios de SLA' })).toContainText(
+    'Resolução: Hoje · 16h',
+  );
 
   await gotoAndWaitForHydration(page, '/app/gestor/chamados/1038');
   const resolvedAction = page.getByRole('button', { name: 'Cancelar chamado' });

@@ -1,14 +1,14 @@
+import { ManagerTable, ManagerTableHead, ManagerTableBody } from './manager-table.directive';
+import { ManagerPanel, ManagerSectionHeading } from './manager-surface.directive';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MANAGER_ACTIVITY_SAMPLE } from '../data/manager-dashboard-demo-data';
 
 @Component({
   selector: 'app-manager-activity-chart',
+  imports: [ManagerPanel, ManagerSectionHeading, ManagerTable, ManagerTableHead, ManagerTableBody],
   template: `
-    <section
-      class="h-full rounded-deadline border border-line bg-sf p-4 sm:p-5"
-      aria-labelledby="activity-heading"
-    >
-      <h2 id="activity-heading" class="text-base font-semibold">Atendimento ao longo do tempo</h2>
+    <section appManagerPanel class="h-full" aria-labelledby="activity-heading">
+      <h2 appManagerSectionHeading id="activity-heading">Atendimento ao longo do tempo</h2>
       <p class="mt-1 text-[13px] leading-5 text-ink3">
         Histórico fictício · 30 out a 05 nov de 2026
       </p>
@@ -71,18 +71,18 @@ import { MANAGER_ACTIVITY_SAMPLE } from '../data/manager-dashboard-demo-data';
         >
           Ver dados do gráfico
         </summary>
-        <table class="mt-2 w-full text-left text-xs tabular-nums">
+        <table appManagerTable class="mt-2 text-xs tabular-nums">
           <caption class="sr-only">
             Chamados recebidos e resolvidos por dia na amostra fictícia
           </caption>
-          <thead class="text-ink2">
+          <thead appManagerTableHead>
             <tr>
               <th class="py-2" scope="col">Data</th>
               <th class="py-2 text-right" scope="col">Recebidos</th>
               <th class="py-2 text-right" scope="col">Resolvidos</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody appManagerTableBody>
             @for (day of days; track day.date) {
               <tr class="border-t border-line">
                 <th scope="row" class="py-2 font-normal">{{ day.date }}</th>
