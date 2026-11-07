@@ -3,10 +3,12 @@ import { gotoAndWaitForHydration } from './helpers/hydration';
 
 test('FE-024 assigns and reassigns technicians with local availability conflicts', async ({
   page,
+  baseURL,
 }) => {
   const externalRequests: string[] = [];
   page.on('request', (request) => {
-    if (!request.url().startsWith('http://localhost:4200/')) externalRequests.push(request.url());
+    if (new URL(request.url()).origin !== new URL(baseURL!).origin)
+      externalRequests.push(request.url());
   });
   await page.setViewportSize({ width: 1440, height: 900 });
   await gotoAndWaitForHydration(page, '/app/gestor/chamados/1043');
@@ -46,7 +48,7 @@ test('FE-024 assigns and reassigns technicians with local availability conflicts
   const queueRow = page.getByRole('row').filter({ hasText: 'Instabilidade no ponto de rede' });
   await expect(queueRow).toContainText('Atribuído');
   await expect(queueRow).toContainText('Juliana Pires');
-  await page.getByRole('link', { name: /#1042 · Falha no sistema de climatização/ }).click();
+  await page.getByRole('link', { name: /#1042\s+Falha no sistema de climatização/ }).click();
   await expect(page.locator('main h1')).toHaveText('Falha no sistema de climatização');
   await expect(page.getByText('Atendimento em andamento', { exact: true })).toBeVisible();
 

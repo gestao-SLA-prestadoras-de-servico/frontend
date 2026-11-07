@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { PageHeading } from '@app/shared/ui/page-heading/page-heading.directive';
@@ -9,17 +8,15 @@ import {
   ManagerTicketPriority,
   ManagerTicketStatus,
 } from '../data/manager-ticket-demo-store';
-import {
-  managerTicketPriorityClasses,
-  managerTicketStatusClasses,
-} from '../data/manager-ticket-presentation';
+import { ManagerTicketBadge } from '../components/manager-ticket-badge';
+import { ManagerTicketClocks } from '../components/manager-ticket-clocks';
 
 type TicketFilter = 'Todas' | ManagerTicketStatus;
 type PriorityFilter = 'Todas' | ManagerTicketPriority;
 
 @Component({
   selector: 'app-manager-tickets',
-  imports: [NgClass, RouterLink, PageHeading, LucideDynamicIcon],
+  imports: [RouterLink, PageHeading, LucideDynamicIcon, ManagerTicketBadge, ManagerTicketClocks],
   templateUrl: './manager-tickets.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
@@ -27,8 +24,6 @@ type PriorityFilter = 'Todas' | ManagerTicketPriority;
 export class ManagerTickets {
   private readonly store = inject(ManagerTicketDemoStore);
   protected readonly icons = WORKSPACE_ICONS;
-  protected readonly statusClasses = managerTicketStatusClasses;
-  protected readonly priorityClasses = managerTicketPriorityClasses;
   protected readonly allTickets = this.store.tickets;
   protected readonly clientFilter = signal('Todas');
   protected readonly technicianFilter = signal('Todos');
@@ -91,15 +86,5 @@ export class ManagerTickets {
     this.technicianFilter.set('Todos');
     this.statusFilter.set('Todas');
     this.priorityFilter.set('Todas');
-  }
-  protected statusLabel(status: ManagerTicketStatus): string {
-    return {
-      ABERTO: 'Aberto',
-      ATRIBUIDO: 'Atribuído',
-      EM_ATENDIMENTO: 'Em atendimento',
-      RESOLVIDO: 'Resolvido',
-      CANCELADO: 'Cancelado',
-      ENCERRADO: 'Encerrado',
-    }[status];
   }
 }

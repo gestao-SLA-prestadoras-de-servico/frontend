@@ -47,7 +47,36 @@ test('FE-022 dashboard summarizes the shared ticket scene and links into the que
   await page.getByRole('link', { name: 'Abrir fila de chamados' }).click();
   await expect(page).toHaveURL(/\/app\/gestor\/chamados$/);
   await expect(page.locator('main h1')).toHaveText('Fila de chamados');
-  await expect(page.getByRole('table').getByRole('row')).toHaveCount(7);
+  const queue = page.getByRole('table');
+  await expect(queue.getByRole('row')).toHaveCount(7);
+  await expect(queue.getByRole('columnheader')).toHaveText([
+    'Chamado',
+    'Prioridade',
+    'Estado',
+    'Técnico',
+    'Aberto em',
+    'Relógios',
+  ]);
+  const openTicket = queue.getByRole('row').filter({ hasText: '#1043' });
+  await expect(openTicket.getByRole('rowheader')).toContainText('Instabilidade no ponto de rede');
+  await expect(openTicket.getByRole('rowheader')).toContainText('Clínica Horizonte');
+  await expect(openTicket.getByRole('cell').nth(3)).toContainText('05 nov');
+  await expect(openTicket.getByRole('cell').nth(3)).toContainText('08h40');
+  const clocks = openTicket.getByRole('list', { name: 'Relógios de SLA' });
+  await expect(clocks.getByRole('listitem')).toHaveCount(3);
+  await expect(clocks).toContainText('Resp');
+  await expect(clocks).toContainText('Violado');
+  await expect(clocks).toContainText('Campo');
+  await expect(clocks).toContainText('Resol');
+  await expect(queue.getByRole('row').filter({ hasText: '#1036' })).toContainText(
+    'Sem apuração de SLA',
+  );
+  const statusIcons = await queue
+    .locator('tbody tr')
+    .evaluateAll((rows) =>
+      rows.map((row) => row.querySelector('td:nth-of-type(2) svg')?.innerHTML),
+    );
+  expect(new Set(statusIcons).size).toBe(6);
   await page.screenshot({ path: 'tmp/fe022-queue-desktop.png', fullPage: true });
 
   await page.getByLabel('Cliente').selectOption('Clínica Horizonte');
@@ -71,6 +100,10 @@ test('FE-022 dashboard summarizes the shared ticket scene and links into the que
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
   }
   await page.setViewportSize({ width: 390, height: 844 });
+  const mobileTicket = page.locator('article').filter({ hasText: '#1043' });
+  await expect(mobileTicket).toContainText('Clínica Horizonte');
+  await expect(mobileTicket).toContainText('Aberto em');
+  await expect(mobileTicket.getByRole('list', { name: 'Relógios de SLA' })).toBeVisible();
   await page.screenshot({ path: 'tmp/fe022-queue-mobile.png', fullPage: true });
 
   await page.getByRole('link', { name: 'Abrir detalhes' }).first().click();
