@@ -8,17 +8,42 @@ test('FE-022 dashboard summarizes the shared ticket scene and links into the que
   await gotoAndWaitForHydration(page, '/app/gestor');
 
   await expect(page.locator('main h1')).toHaveText('Painel de operações');
-  const indicators = page
-    .getByRole('region', { name: 'Indicadores da fila' })
-    .getByRole('definition');
-  await expect(indicators.nth(0)).toHaveText('3');
-  await expect(indicators.nth(1)).toHaveText('2');
-  await expect(indicators.nth(2)).toHaveText('1');
+  const indicators = page.getByRole('region', { name: 'Indicadores da fila' }).locator('dd');
+  await expect(indicators).toHaveText(['1', '1', '1', '1']);
   await expect(page.getByRole('link', { name: /Abrir fila de chamados/ })).toBeVisible();
-  await expect(page.getByText('Falha no sistema de climatização')).toBeVisible();
-  await expect(page.getByText('Oscilação no quadro elétrico')).toBeVisible();
+  const attentionTable = page.getByRole('table', { name: 'Chamados que pedem atenção' });
+  await expect(attentionTable.getByRole('row')).toHaveCount(5);
+  await expect(attentionTable).toContainText('Falha no sistema de climatização');
+  await expect(attentionTable).toContainText('Oscilação no quadro elétrico');
+  await expect(attentionTable).toContainText('Ajuste da bomba de circulação');
+  await expect(attentionTable).toContainText('Prazo violado');
+  await expect(page.getByRole('heading', { name: 'Chamados por estados' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Cumprimentos SLA do mês' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Carga por técnico' })).toBeVisible();
+  const slaSummary = page.getByRole('region', { name: 'Cumprimentos SLA do mês' });
+  await expect(slaSummary).toContainText('96%');
+  await expect(slaSummary).toContainText('54 cumpridos · 2 violados');
+  await expect(slaSummary).toContainText('91%');
+  await expect(slaSummary).toContainText('51 cumpridos · 5 violados');
+  await expect(slaSummary).toContainText('88%');
+  await expect(slaSummary).toContainText('49 cumpridos · 7 violados');
+  const workload = page.getByRole('region', { name: 'Carga por técnico' });
+  await expect(workload).toContainText('Bruno Prado');
+  await expect(workload).toContainText('4 de 4');
+  await expect(workload).toContainText('Rafael Costa');
+  await expect(workload).toContainText('2 de 4');
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('link', { name: /Abrir fila de chamados/ })).toBeFocused();
   await page.screenshot({ path: 'tmp/fe022-dashboard-desktop.png', fullPage: true });
 
+  for (const width of [320, 390, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 844 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({ path: 'tmp/fe022-dashboard-mobile.png', fullPage: true });
+
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.getByRole('link', { name: 'Abrir fila de chamados' }).click();
   await expect(page).toHaveURL(/\/app\/gestor\/chamados$/);
   await expect(page.locator('main h1')).toHaveText('Fila de chamados');

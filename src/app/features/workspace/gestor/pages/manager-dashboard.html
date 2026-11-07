@@ -2,7 +2,7 @@
   <div class="max-w-[65ch]">
     <h1
       appPageHeading
-      class="text-[26px] leading-[1.25] font-semibold tracking-[-.03em] sm:text-[28px]"
+      class="text-ink text-[26px] leading-[1.25] font-semibold tracking-[-.03em] sm:text-[28px]"
     >
       Painel de operações
     </h1>
@@ -13,125 +13,242 @@
   <a
     routerLink="/app/gestor/chamados"
     class="inline-flex min-h-11 items-center gap-2 rounded-control bg-pri px-4 py-2 text-sm font-semibold text-white no-underline hover:bg-pri-d focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
-    ><svg class="size-4" [lucideIcon]="icons.tickets" aria-hidden="true"></svg>Abrir fila de
-    chamados</a
   >
+    <svg class="size-4" [lucideIcon]="icons.tickets" aria-hidden="true"></svg>
+    Abrir fila de chamados
+  </a>
 </div>
 
-<p class="mt-4 flex items-start gap-2 text-xs leading-[1.7] text-ink3">
-  <svg class="mt-0.5 size-4 shrink-0" [lucideIcon]="icons.info" aria-hidden="true"></svg>Retrato
-  fictício de 05/11/2026. Os indicadores e prazos não consultam uma operação real.
+<p class="mt-2 flex items-start gap-2 text-[13px] leading-[1.7] text-ink3">
+  <svg class="mt-0.5 size-4 shrink-0" [lucideIcon]="icons.info" aria-hidden="true"></svg>
+  Retrato fictício de 05/11/2026. Indicadores e prazos não consultam uma operação real.
 </p>
 
-<section class="mt-7" aria-label="Indicadores da fila">
-  <dl class="grid gap-3 sm:grid-cols-3">
-    <div class="rounded-deadline bg-pri-bg p-4 sm:p-5">
-      <dt class="text-sm text-ink2">Em aberto</dt>
-      <dd class="m-0 mt-2 text-3xl font-semibold tabular-nums text-pri-d">{{ openCount() }}</dd>
-      <p class="mt-1 text-xs text-pri-d">Abertos, atribuídos ou em atendimento</p>
-    </div>
-    <div class="rounded-deadline bg-grn-bg p-4 sm:p-5">
-      <dt class="text-sm text-ink2">Resolvidos</dt>
-      <dd class="m-0 mt-2 text-3xl font-semibold tabular-nums text-grn-t">{{ resolvedCount() }}</dd>
-      <p class="mt-1 text-xs text-grn-t">Inclui atendimentos encerrados</p>
-    </div>
-    <div class="rounded-deadline bg-danger-bg p-4 sm:p-5 text-danger">
-      <dt class="text-sm">Prazos violados</dt>
-      <dd class="m-0 mt-2 text-3xl font-semibold tabular-nums">{{ overdueCount() }}</dd>
-      <p class="mt-1 text-xs">Exemplos que pedem triagem</p>
-    </div>
+<section class="mt-6" role="region" aria-label="Indicadores da fila">
+  <dl class="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+    @for (indicator of indicators(); track indicator.label) {
+      <div class="min-w-0 rounded-deadline border border-line bg-sf px-4 py-4 sm:px-5">
+        <dt class="text-sm leading-5 text-ink2">{{ indicator.label }}</dt>
+        <dd class="m-0 mt-1 text-[28px] leading-none font-semibold tabular-nums" [ngClass]="indicator.valueClass">
+          {{ indicator.value }}
+        </dd>
+        <p class="mt-2 text-xs leading-5 text-ink3">{{ indicator.note }}</p>
+      </div>
+    }
   </dl>
 </section>
 
-<section class="mt-8" aria-labelledby="priority-heading">
-  <div class="flex flex-wrap items-end justify-between gap-3">
-    <div>
-      <h2 id="priority-heading" class="text-base leading-[1.5] font-semibold tracking-normal">
-        Para olhar agora
-      </h2>
-      <p class="mt-1 text-sm text-ink2">Chamados abertos ou com prazo sinalizado no exemplo.</p>
+<div class="mt-6 grid items-start gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(26rem,1fr)]">
+  <section class="min-w-0" aria-labelledby="attention-heading">
+    <div class="flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <h2 id="attention-heading" class="text-base leading-[1.5] font-semibold">
+          Chamados que pedem atenção
+        </h2>
+        <p class="mt-1 text-sm text-ink2">
+          {{ attentionTickets().length }} chamados não finalizados
+        </p>
+      </div>
     </div>
-    <a
-      routerLink="/app/gestor/chamados"
-      class="inline-flex min-h-11 items-center text-sm font-semibold text-pri-d underline underline-offset-4"
-      >Ver todos os chamados</a
-    >
-  </div>
-  <div class="mt-4 divide-y divide-line rounded-deadline border border-line">
-    @for (ticket of priorityTickets(); track ticket.id) {
-      <article
-        class="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5"
-      >
-        <div class="min-w-0">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="font-mono text-xs text-ink3">#{{ ticket.id }}</span
-            ><span
-              class="inline-flex min-h-7 items-center rounded-sm px-2.5 text-xs font-semibold"
-              [ngClass]="statusClasses(ticket.status)"
-              >{{
-                ticket.status === 'ABERTO'
-                  ? 'Em triagem'
-                  : ticket.status === 'EM_ATENDIMENTO'
-                    ? 'Em atendimento'
-                    : 'Atribuído'
-              }}</span
-            >
-            <span
-              class="inline-flex min-h-7 items-center rounded-sm px-2.5 text-xs font-semibold"
-              [ngClass]="priorityClasses(ticket.priority)"
-              >{{ ticket.priority }}</span
-            >
-            @if (ticket.overdue) {
-              <span
-                class="inline-flex min-h-7 items-center rounded-sm bg-danger-bg px-2.5 text-xs font-semibold text-danger"
-                >Prazo violado</span
-              >
-            }
-          </div>
-          <h3 class="mt-2 text-sm leading-[1.5] font-semibold">
-            <a
-              class="text-inherit underline decoration-transparent underline-offset-4 hover:text-pri-d hover:decoration-current"
-              [routerLink]="['/app/gestor/chamados', ticket.id]"
-              >{{ ticket.title }}</a
-            >
-          </h3>
-          <p class="mt-1 text-sm text-ink2">
-            {{ ticket.client }} · {{ ticket.technician ?? 'Sem técnico indicado' }}
-          </p>
-        </div>
-        <div
-          class="flex items-center justify-between gap-3 border-t border-line pt-3 sm:border-0 sm:pt-0"
-        >
-          <p class="text-sm" [class.text-danger]="ticket.overdue">
-            <span class="block text-xs text-ink3">Próximo prazo</span
-            ><span class="mt-1 block font-medium">{{ ticket.nextDeadline }}</span>
-          </p>
-          <a
-            [routerLink]="['/app/gestor/chamados', ticket.id]"
-            class="grid size-11 shrink-0 place-items-center rounded-lg text-pri-d hover:bg-pri-bg"
-            [attr.aria-label]="'Abrir chamado ' + ticket.id"
-            ><svg class="size-4" [lucideIcon]="icons.arrow" aria-hidden="true"></svg
-          ></a>
-        </div>
-      </article>
-    }
-  </div>
-</section>
 
-<aside
-  class="mt-7 flex flex-col gap-3 rounded-deadline border border-line p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5"
->
-  <div>
-    <h2 class="text-sm font-semibold leading-[1.5] tracking-normal">
-      Organize o próximo atendimento
-    </h2>
-    <p class="mt-1 text-sm text-ink2">
-      Use os filtros da fila para separar prioridade, situação e responsável.
-    </p>
-  </div>
-  <a
-    routerLink="/app/gestor/chamados"
-    class="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-control border border-line2 px-4 py-2 text-sm font-semibold text-ink no-underline hover:bg-bg"
-    ><svg class="size-4" [lucideIcon]="icons.tickets" aria-hidden="true"></svg>Consultar fila</a
-  >
-</aside>
+    @if (attentionTickets().length) {
+      <div class="mt-4 hidden overflow-hidden rounded-deadline border border-line bg-sf xl:block">
+        <table class="w-full table-fixed text-left" aria-label="Chamados que pedem atenção">
+          <colgroup>
+            <col class="w-[38%]" />
+            <col class="w-[21%]" />
+            <col class="w-[17%]" />
+            <col class="w-[24%]" />
+          </colgroup>
+          <thead class="border-b border-line bg-bg/60 text-[13px] font-semibold text-ink2">
+            <tr>
+              <th class="px-4 py-3" scope="col">Chamado</th>
+              <th class="px-3 py-3" scope="col">Estado</th>
+              <th class="px-3 py-3" scope="col">Técnico</th>
+              <th class="px-3 py-3" scope="col">Próximo prazo</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-line">
+            @for (ticket of attentionTickets(); track ticket.id) {
+              <tr class="transition-colors hover:bg-bg/50 motion-reduce:transition-none">
+                <td class="px-4 py-4 align-top">
+                  <a
+                    class="block rounded-sm text-sm leading-5 font-semibold text-ink underline decoration-transparent underline-offset-4 hover:text-pri-d hover:decoration-current focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+                    [routerLink]="['/app/gestor/chamados', ticket.id]"
+                  >
+                    {{ ticket.title }}
+                  </a>
+                  <span class="mt-1 block text-xs leading-5 text-ink3">
+                    #{{ ticket.id }} · {{ ticket.client }}
+                  </span>
+                </td>
+                <td class="px-3 py-4 align-top">
+                  <span
+                    class="inline-flex min-h-7 max-w-full items-center rounded-sm px-2 py-1 text-[13px] leading-5 font-semibold"
+                    [ngClass]="statusClasses(ticket.status)"
+                  >
+                    {{ statusLabel(ticket.status) }}
+                  </span>
+                  <span
+                    class="mt-1 inline-flex min-h-6 items-center rounded-sm px-2 text-[13px] font-medium"
+                    [ngClass]="priorityClasses(ticket.priority)"
+                  >
+                    {{ ticket.priority }}
+                  </span>
+                </td>
+                <td class="px-3 py-4 align-top text-sm leading-5 text-ink2">
+                  {{ ticket.technician ?? 'Sem técnico indicado' }}
+                </td>
+                <td class="px-3 py-4 align-top text-[13px] leading-5" [class.text-danger]="ticket.overdue">
+                  @if (ticket.overdue) {
+                    <span class="mb-1 block font-semibold">Prazo violado</span>
+                  }
+                  {{ ticket.nextDeadline }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <ul class="mt-4 divide-y divide-line rounded-deadline border border-line bg-sf p-0 xl:hidden">
+        @for (ticket of attentionTickets(); track ticket.id) {
+          <li class="list-none p-4 sm:p-5">
+            <article>
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <span class="font-mono text-xs text-ink3">#{{ ticket.id }}</span>
+                  <h3 class="mt-1 text-sm leading-5 font-semibold">
+                    <a
+                      class="rounded-sm text-inherit underline decoration-transparent underline-offset-4 hover:text-pri-d hover:decoration-current focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
+                      [routerLink]="['/app/gestor/chamados', ticket.id]"
+                    >
+                      {{ ticket.title }}
+                    </a>
+                  </h3>
+                  <p class="mt-1 text-sm leading-5 text-ink2">{{ ticket.client }}</p>
+                </div>
+                @if (ticket.overdue) {
+                  <span class="inline-flex min-h-7 shrink-0 items-center rounded-sm bg-danger-bg px-2 text-[13px] font-semibold text-danger">
+                    Prazo violado
+                  </span>
+                }
+              </div>
+
+              <dl class="mt-4 grid grid-cols-2 gap-x-4 gap-y-4 border-t border-line pt-4">
+                <div class="min-w-0">
+                  <dt class="text-[13px] leading-5 text-ink3">Estado</dt>
+                  <dd class="m-0 mt-1">
+                    <span
+                      class="inline-flex min-h-7 max-w-full items-center rounded-sm px-2 py-1 text-[13px] leading-5 font-semibold"
+                      [ngClass]="statusClasses(ticket.status)"
+                    >
+                      {{ statusLabel(ticket.status) }}
+                    </span>
+                  </dd>
+                </div>
+                <div>
+                  <dt class="text-[13px] leading-5 text-ink3">Prioridade</dt>
+                  <dd class="m-0 mt-1 text-sm font-medium" [ngClass]="priorityClasses(ticket.priority)">
+                    {{ ticket.priority }}
+                  </dd>
+                </div>
+                <div class="min-w-0">
+                  <dt class="text-[13px] leading-5 text-ink3">Técnico</dt>
+                  <dd class="m-0 mt-1 break-words text-sm leading-5 text-ink2">
+                    {{ ticket.technician ?? 'Sem técnico indicado' }}
+                  </dd>
+                </div>
+                <div class="min-w-0">
+                  <dt class="text-[13px] leading-5 text-ink3">Próximo prazo</dt>
+                  <dd class="m-0 mt-1 text-[13px] leading-5" [class.text-danger]="ticket.overdue">
+                    {{ ticket.nextDeadline }}
+                  </dd>
+                </div>
+              </dl>
+            </article>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="mt-4 rounded-deadline border border-dashed border-line2 bg-bg px-5 py-7 text-sm text-ink2" role="status">
+        Nenhum chamado não finalizado pede atenção agora.
+      </p>
+    }
+  </section>
+
+  <aside class="grid min-w-0 gap-5 md:grid-cols-2 xl:grid-cols-2" aria-label="Resumo da operação">
+    <section class="min-w-0 rounded-deadline border border-line bg-sf p-4 sm:p-5" aria-labelledby="states-heading">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h2 id="states-heading" class="text-sm leading-5 font-semibold">Chamados por estados</h2>
+          <p class="mt-1 text-[13px] leading-5 text-ink3">{{ nonFinalizedCount() }} não finalizados</p>
+        </div>
+      </div>
+      <ul class="mt-4 grid grid-cols-2 gap-x-4 gap-y-4 p-0 xl:grid-cols-1">
+        @for (state of statusBreakdown(); track state.status) {
+          <li class="list-none">
+            <div class="flex items-baseline justify-between gap-3">
+              <span class="min-w-0 text-[13px] leading-5 text-ink2">{{ state.label }}</span>
+              <span class="shrink-0 text-sm font-semibold tabular-nums text-ink">{{ state.count }}</span>
+            </div>
+            <div class="mt-2 h-2 overflow-hidden rounded-full bg-bg" aria-hidden="true">
+              <span class="block h-full rounded-full bg-pri" [style.width.%]="state.share"></span>
+            </div>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <section class="min-w-0 rounded-deadline border border-line bg-sf p-4 sm:p-5" aria-labelledby="workload-heading">
+      <h2 id="workload-heading" class="text-sm leading-5 font-semibold">Carga por técnico</h2>
+      <p class="mt-1 text-[13px] leading-5 text-ink3">Atribuídos + em atendimento</p>
+      <ul class="mt-4 space-y-3 p-0">
+        @for (technician of activeTechnicians(); track technician.id) {
+          <li class="list-none">
+            <div class="flex items-baseline justify-between gap-3">
+              <span class="min-w-0 truncate text-[13px] leading-5 text-ink2">{{ technician.name }}</span>
+              <span class="shrink-0 text-[13px] font-semibold tabular-nums text-ink">
+                {{ technician.activeTickets }} de {{ technician.workloadLimit }}
+              </span>
+            </div>
+            <div class="mt-2 h-2 overflow-hidden rounded-full bg-bg" aria-hidden="true">
+              <span
+                class="block h-full rounded-full bg-pri"
+                [class.bg-danger]="technician.activeTickets > technician.workloadLimit"
+                [style.width.%]="technician.loadShare"
+              ></span>
+            </div>
+          </li>
+        } @empty {
+          <li class="list-none text-sm text-ink2">Nenhum técnico ativo.</li>
+        }
+      </ul>
+    </section>
+
+    <section class="min-w-0 rounded-deadline border border-line bg-sf p-4 sm:p-5 md:col-span-2" aria-labelledby="sla-heading">
+      <h2 id="sla-heading" class="text-sm leading-5 font-semibold">Cumprimentos SLA do mês</h2>
+      <p class="mt-1 text-[13px] leading-5 text-ink3">
+        Amostra demonstrativa · setembro de 2026 · 56 chamados encerrados
+      </p>
+      <ul class="mt-4 space-y-4 p-0">
+        @for (metric of monthlySla; track metric.label) {
+          <li class="list-none">
+            <div class="flex items-baseline justify-between gap-3">
+              <span class="min-w-0 text-[13px] leading-5 text-ink2">{{ metric.label }}</span>
+              <span class="shrink-0 text-sm font-semibold tabular-nums text-ink">{{ metric.percentage }}%</span>
+            </div>
+            <div class="mt-2 h-2 overflow-hidden rounded-full bg-bg" aria-hidden="true">
+              <span class="block h-full rounded-full bg-grn" [style.width.%]="metric.percentage"></span>
+            </div>
+            <p class="mt-1 text-[13px] leading-5">
+              <span class="text-grn-t">{{ metric.fulfilled }} cumpridos</span>
+              <span class="text-ink3"> · </span>
+              <span class="text-danger">{{ metric.violated }} violados</span>
+            </p>
+          </li>
+        }
+      </ul>
+    </section>
+  </aside>
+</div>

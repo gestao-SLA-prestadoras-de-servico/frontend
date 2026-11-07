@@ -17,7 +17,7 @@ const profiles = [
       'Usuários',
       'Auditoria',
     ],
-    count: 3,
+    count: 4,
   },
   {
     key: 'tecnico',
@@ -50,7 +50,9 @@ for (const profile of profiles) {
     if (profile.key === 'tecnico') {
       await expect(page.locator('app-technician-ticket-card')).toHaveCount(profile.count);
     } else if (profile.key === 'gestor') {
-      await expect(page.locator('app-manager-dashboard article')).toHaveCount(profile.count);
+      await expect(
+        page.getByRole('table', { name: 'Chamados que pedem atenção' }).locator('tbody tr'),
+      ).toHaveCount(profile.count);
     } else {
       await expect(page.getByRole('table').locator('tbody tr')).toHaveCount(profile.count);
     }
