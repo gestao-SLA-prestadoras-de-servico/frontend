@@ -1,0 +1,51 @@
+<app-manager-page-header
+  title="Relatórios"
+  [description]="'Cumprimento dos três prazos de SLA · ' + report.period + '.'"
+  demo="Dados fictícios de chamados encerrados. Esta amostra é independente da fila atual."
+>
+  <a managerHeaderActions appButtonSecondary routerLink="/app/gestor" class="min-h-11 px-4 py-2.5">
+    Voltar ao painel
+  </a>
+</app-manager-page-header>
+
+<section
+  class="mt-6 grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 xl:grid-cols-4"
+  aria-label="Indicadores do relatório"
+>
+  <app-manager-metric-card
+    label="Chamados apurados"
+    [value]="report.total"
+    icon="validation"
+    variant="outlined"
+    note="Encerrados no período"
+  />
+  @for (clock of report.clocks; track clock.key) {
+    <app-manager-metric-card
+      [label]="'SLA de ' + clock.label.toLocaleLowerCase('pt-BR')"
+      [value]="clock.percentage"
+      suffix="%"
+      [icon]="clockIcons[clock.key]"
+      [tone]="clock.percentage >= 90 ? 'green' : 'danger'"
+      variant="outlined"
+      [note]="clock.fulfilled + ' cumpridos · ' + clock.violated + ' violados'"
+    />
+  }
+</section>
+
+<div class="mt-6 space-y-6">
+  <app-manager-sla-report-table kind="client" [rows]="report.clients" />
+  <app-manager-sla-report-table kind="technician" [rows]="report.technicians" />
+</div>
+
+<div
+  class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs leading-relaxed text-ink3"
+  aria-label="Legenda dos percentuais"
+>
+  <p class="inline-flex items-center gap-2">
+    <span class="h-1.5 w-6 rounded-full bg-grn" aria-hidden="true"></span>90% ou mais
+  </p>
+  <p class="inline-flex items-center gap-2">
+    <span class="h-1.5 w-6 rounded-full bg-danger" aria-hidden="true"></span>Abaixo de 90%
+  </p>
+  <p>Um prazo cumprido após a violação continua contado como violado.</p>
+</div>

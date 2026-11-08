@@ -21,6 +21,7 @@ import { ManagerSlaHealth } from '../components/manager-sla-health';
 import { ManagerTeamWorkload } from '../components/manager-team-workload';
 import { ManagerTicketBadge } from '../components/manager-ticket-badge';
 import { ManagerTicketClocks } from '../components/manager-ticket-clocks';
+import { MANAGER_REPORT_SAMPLE } from '../data/manager-report-demo-data';
 
 const NON_FINAL_STATUSES: readonly ManagerTicketStatus[] = [
   'ABERTO',
@@ -28,20 +29,6 @@ const NON_FINAL_STATUSES: readonly ManagerTicketStatus[] = [
   'EM_ATENDIMENTO',
   'RESOLVIDO',
 ];
-
-const MONTHLY_SLA_SAMPLE = [
-  { label: 'Resposta', fulfilled: 54, violated: 2 },
-  { label: 'Atendimento em campo', fulfilled: 51, violated: 5 },
-  { label: 'Resolução', fulfilled: 49, violated: 7 },
-].map((metric) => {
-  const total = metric.fulfilled + metric.violated;
-
-  return {
-    ...metric,
-    total,
-    percentage: Math.round((metric.fulfilled / total) * 100),
-  };
-});
 
 @Component({
   selector: 'app-manager-dashboard',
@@ -138,7 +125,8 @@ export class ManagerDashboard {
     () => this.tickets().filter((ticket) => NON_FINAL_STATUSES.includes(ticket.status)).length,
   );
 
-  protected readonly monthlySla = MONTHLY_SLA_SAMPLE;
+  protected readonly monthlyReport = MANAGER_REPORT_SAMPLE;
+  protected readonly monthlySla = MANAGER_REPORT_SAMPLE.clocks;
 
   protected readonly violatedCount = computed(
     () => this.attentionTickets().filter((ticket) => ticket.overdue).length,

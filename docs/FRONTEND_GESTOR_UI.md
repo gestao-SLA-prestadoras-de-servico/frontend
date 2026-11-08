@@ -8,7 +8,7 @@ Este documento registra as APIs reutilizáveis e o alcance da padronização. [D
 
 As páginas compartilham Manrope local, títulos de página de 26–28 px, superfícies brancas, contornos de 1 px e cantos do token `deadline` (12 px). Azul indica ações; estados mantêm texto e ícones Lucide, sem depender somente da cor. Os painéis são planos; a sombra de diálogo fica nas superfícies modais.
 
-Os indicadores do painel, de empresas, de contratos e de usuários usam `ManagerMetricCard` com a variante `outlined`. Os indicadores da fila preservam a variante `tinted`. Essas variantes conservam as referências existentes.
+Os indicadores do painel, de relatórios, de empresas, de contratos e de usuários usam `ManagerMetricCard` com a variante `outlined`. Os indicadores da fila preservam a variante `tinted`. Essas variantes conservam as referências existentes.
 
 As diretivas concentram a aparência recorrente. Os templates continuam responsáveis pela composição, largura, espaçamento, densidade, pontos de quebra e semântica. A padronização não acrescentou CSS por página.
 
@@ -101,6 +101,8 @@ Fonte: [manager-table.directive.ts](../src/app/features/workspace/gestor/compone
 
 Colunas, recuos das células, `caption`, cabeçalhos, largura mínima e contêineres focáveis pertencem ao template. As páginas preservam suas listas compactas e pontos de quebra existentes; contratos, por exemplo, trocam de composição em uma largura diferente de chamados e usuários. Quando a tabela larga permanece, a rolagem fica no seu contêiner, sem ampliar a página.
 
+Os relatórios usam [ManagerSlaReportTable](../src/app/features/workspace/gestor/components/manager-sla-report-table.ts) (`app-manager-sla-report-table`), com os inputs obrigatórios `kind: 'client' | 'technician'` e `rows: readonly ReportRow[]`. O componente compõe as diretivas acima e troca a tabela por fichas com listas de definição abaixo de 768 px. [ManagerSlaRate](../src/app/features/workspace/gestor/components/manager-sla-rate.ts) (`app-manager-sla-rate`) recebe `rate: ReportRate | null` obrigatório para exibir barra decorativa, percentual e contagem acessível; `null` apresenta “—” e a explicação de que a resposta pertence ao gestor. Os campos dos tipos, a origem dos dados e os exemplos de uso estão em [FRONTEND_GESTOR_RELATORIOS.md](FRONTEND_GESTOR_RELATORIOS.md).
+
 ## Estados e ausência de resultados
 
 Fontes: [manager-status-badge.ts](../src/app/features/workspace/gestor/components/manager-status-badge.ts) e [manager-empty-state.ts](../src/app/features/workspace/gestor/components/manager-empty-state.ts).
@@ -134,7 +136,7 @@ Os componentes abaixo continuam sendo reutilizados; a padronização não substi
 
 | Componente | API |
 | --- | --- |
-| `ManagerMetricCard` / `app-manager-metric-card` | `label: string`, `value: number` e `icon: ManagerMetricIcon` obrigatórios; `tone: 'blue' \| 'green' \| 'danger' \| 'neutral'` (padrão `blue`), `variant: 'tinted' \| 'outlined'` (padrão `tinted`) e `note: string` (padrão vazio). |
+| `ManagerMetricCard` / `app-manager-metric-card` | `label: string`, `value: number` e `icon: ManagerMetricIcon` obrigatórios; `tone: 'blue' \| 'green' \| 'danger' \| 'neutral'` (padrão `blue`), `variant: 'tinted' \| 'outlined'` (padrão `tinted`), `note: string` e `suffix: string` (ambos com padrão vazio). `suffix` é concatenado ao valor, como `%` nos relatórios. |
 | `ManagerTicketBadge` / `app-manager-ticket-badge` | `value` obrigatório do tipo `ManagerTicketStatus \| ManagerTicketPriority`. O mapa existente fornece ícone, texto e cor. |
 | `ManagerTicketClocks` / `app-manager-ticket-clocks` | `ticket: ManagerTicket` obrigatório. Apresenta resposta, atendimento em campo e resolução, com descrição completa acessível; cancelados mostram “Sem apuração de SLA”. |
 | `ButtonPrimary` / `[appButtonPrimary]` | Ação principal azul, com a base compartilhada de botão. Aplicável a botão ou link. |
@@ -184,7 +186,7 @@ Importar cada classe utilizada no `imports` do componente standalone. O exemplo 
 | `/app/gestor` | Painel de operações. |
 | `/app/gestor/chamados` | Fila de chamados. |
 | `/app/gestor/chamados/1043` | Detalhe representativo do chamado. |
-| `/app/gestor/relatorios` | Prévia de relatórios. |
+| `/app/gestor/relatorios` | Relatórios demonstrativos de SLA, com quatro indicadores e recortes por cliente e técnico. |
 | `/app/gestor/contratos` | Contratos. |
 | `/app/gestor/contratos/nova` | Cadastro demonstrativo de contrato. |
 | `/app/gestor/politicas` | Políticas SLA. |
@@ -195,7 +197,7 @@ Importar cada classe utilizada no `imports` do componente standalone. O exemplo 
 | `/app/gestor/usuarios/novo` | Cadastro demonstrativo de usuário. |
 | `/app/gestor/auditoria` | Prévia de auditoria. |
 
-O detalhe continua usando a rota parametrizada `chamados/:id`; `1043` é o cenário capturado. [workspace.routes.ts](../src/app/features/workspace/workspace.routes.ts) encaminha relatórios e auditoria para `ManagerPreview`, que lê o mesmo metadata de [workspace-data.ts](../src/app/features/workspace/data/workspace-data.ts). A apresentação compartilhada conserva as informações e a semântica dessas prévias: não acrescenta apuração, exportação nem operações de auditoria.
+O detalhe continua usando a rota parametrizada `chamados/:id`; `1043` é o cenário capturado. [workspace.routes.ts](../src/app/features/workspace/workspace.routes.ts) encaminha relatórios para `ManagerReports`, com apuração local de uma amostra fictícia de setembro de 2026 compartilhada com o painel e independente da fila atual. O escopo e a validação dessa extensão estão em [FRONTEND_GESTOR_RELATORIOS.md](FRONTEND_GESTOR_RELATORIOS.md). Auditoria continua em `ManagerPreview`, que lê o metadata de [workspace-data.ts](../src/app/features/workspace/data/workspace-data.ts), sem acrescentar operações de auditoria. Os relatórios não incluem filtros ou exportação.
 
 ## Limites da demonstração
 

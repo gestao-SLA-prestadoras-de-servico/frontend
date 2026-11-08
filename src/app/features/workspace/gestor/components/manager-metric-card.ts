@@ -78,7 +78,9 @@ export type ManagerMetricTone = 'blue' | 'green' | 'danger' | 'neutral';
         </span>
       </dt>
       <dd class="m-0 mt-2">
-        <span class="block text-[28px] leading-none font-semibold tabular-nums">{{ value() }}</span>
+        <span class="block text-[28px] leading-none font-semibold tabular-nums"
+          >{{ value() }}{{ suffix() }}</span
+        >
         @if (note()) {
           <span
             class="mt-2 block text-xs leading-5"
@@ -97,6 +99,7 @@ export type ManagerMetricTone = 'blue' | 'green' | 'danger' | 'neutral';
 export class ManagerMetricCard {
   readonly label = input.required<string>();
   readonly value = input.required<number>();
+  readonly suffix = input('');
   readonly icon = input.required<ManagerMetricIcon>();
   readonly tone = input<ManagerMetricTone>('blue');
   readonly variant = input<'tinted' | 'outlined'>('tinted');

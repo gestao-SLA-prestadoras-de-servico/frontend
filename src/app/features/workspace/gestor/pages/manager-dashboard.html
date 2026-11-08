@@ -160,7 +160,8 @@
   <section appManagerPanel aria-labelledby="sla-heading">
     <h2 appManagerSectionHeading id="sla-heading">Cumprimentos SLA do mês</h2>
     <p class="mt-1 text-[13px] leading-5 text-ink3">
-      Amostra demonstrativa · setembro de 2026 · 56 chamados encerrados
+      Amostra demonstrativa · {{ monthlyReport.period.toLocaleLowerCase('pt-BR') }} ·
+      {{ monthlyReport.total }} chamados encerrados
     </p>
     <ul class="mt-4 space-y-4">
       @for (metric of monthlySla; track metric.label) {
