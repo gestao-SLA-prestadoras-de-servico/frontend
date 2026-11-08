@@ -88,7 +88,14 @@ export class WorkspaceShell {
     while (snapshot?.firstChild) snapshot = snapshot.firstChild;
     const data = snapshot?.data;
     const profile = profileByKey(data?.['profile']);
-    return { profile, page: profile.pages.find((page) => page.key === data?.['page']) };
+    return {
+      profile,
+      page:
+        profile.pages.find((page) => page.key === data?.['page']) ??
+        (data?.['breadcrumb']
+          ? { key: data['page'] as string, title: data['breadcrumb'] as string }
+          : undefined),
+    };
   }
 
   protected switchProfile(event: Event): void {

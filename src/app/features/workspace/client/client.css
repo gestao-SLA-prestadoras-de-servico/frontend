@@ -1,0 +1,214 @@
+:host {
+  display: block;
+  min-width: 0;
+  --client-status-open-bg: #edf1f5;
+  --client-status-open-ink: #405368;
+  --client-status-assigned-bg: var(--color-pri-bg);
+  --client-status-assigned-ink: var(--color-pri-d);
+  --client-status-progress-bg: #d8f1f2;
+  --client-status-progress-ink: #005b63;
+  --client-status-validation-bg: #fff1d6;
+  --client-status-validation-ink: #754500;
+  --client-status-closed-bg: var(--color-grn-bg);
+  --client-status-closed-ink: var(--color-grn-t);
+  --client-priority-low-bg: #e7f3eb;
+  --client-priority-low-ink: #315a3e;
+  --client-priority-normal-bg: #eef1f5;
+  --client-priority-normal-ink: #46576b;
+  --client-priority-high-bg: #fff0d6;
+  --client-priority-high-ink: #754400;
+  --client-priority-critical-bg: var(--color-danger-bg);
+  --client-priority-critical-ink: var(--color-danger);
+}
+.client-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+}
+.client-heading {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.45;
+  letter-spacing: -0.02em;
+}
+.client-panel {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-deadline);
+  padding: 24px;
+}
+.client-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.client-control {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  border: 1px solid var(--color-ink3);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: var(--color-sf);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 1rem;
+  caret-color: var(--color-pri);
+}
+.client-control::placeholder {
+  color: var(--color-ink3);
+}
+.client-control:hover {
+  border-color: var(--color-ink2);
+}
+.client-control[aria-invalid='true'] {
+  border-color: var(--color-danger);
+}
+.client-control:focus-visible {
+  outline-offset: 2px;
+}
+.client-control[aria-invalid='true']:focus-visible {
+  outline-color: var(--color-danger);
+}
+.client-error {
+  margin-top: 6px;
+  color: var(--color-danger);
+  font-size: 0.8125rem;
+}
+.client-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 8px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-pri-d);
+  text-decoration: underline;
+}
+.client-link:hover {
+  color: var(--color-ink);
+}
+.ticket-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+.ticket-table th {
+  padding: 0 16px 14px 0;
+  color: var(--color-ink3);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.ticket-table td {
+  border-top: 1px solid var(--color-line);
+  padding: 20px 16px 20px 0;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+.ticket-table tr:hover td {
+  background: var(--color-bg);
+}
+.ticket-table td:last-child,
+.ticket-table th:last-child {
+  padding-right: 0;
+}
+.ticket-table .ticket-name {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  color: var(--color-ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--color-line2);
+}
+.ticket-table .ticket-name:hover {
+  color: var(--color-pri-d);
+  text-decoration-color: currentColor;
+}
+.client-dialog {
+  position: fixed;
+  inset: 0;
+  width: min(540px, calc(100% - 40px));
+  max-height: calc(100dvh - 40px);
+  margin: auto;
+  padding: 28px;
+  border: 0;
+  border-radius: var(--radius-surface);
+  background: var(--color-sf);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-dialog);
+  overflow-y: auto;
+}
+.client-dialog::backdrop {
+  background: rgb(16 36 58 / 40%);
+}
+.client-dialog textarea {
+  resize: vertical;
+}
+.client-success:focus {
+  outline: none;
+}
+/* Badge styles cross the tiny status and priority components, scoped to Client pages. */
+:host ::ng-deep .client-badge {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  border-radius: var(--radius-status);
+  padding: 3px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+:host ::ng-deep .client-status--open {
+  background: var(--client-status-open-bg);
+  color: var(--client-status-open-ink);
+}
+:host ::ng-deep .client-status--assigned {
+  background: var(--client-status-assigned-bg);
+  color: var(--client-status-assigned-ink);
+}
+:host ::ng-deep .client-status--progress {
+  background: var(--client-status-progress-bg);
+  color: var(--client-status-progress-ink);
+}
+:host ::ng-deep .client-status--validation {
+  background: var(--client-status-validation-bg);
+  color: var(--client-status-validation-ink);
+}
+:host ::ng-deep .client-status--closed {
+  background: var(--client-status-closed-bg);
+  color: var(--client-status-closed-ink);
+}
+:host ::ng-deep .client-priority--low {
+  background: var(--client-priority-low-bg);
+  color: var(--client-priority-low-ink);
+}
+:host ::ng-deep .client-priority--normal {
+  background: var(--client-priority-normal-bg);
+  color: var(--client-priority-normal-ink);
+}
+:host ::ng-deep .client-priority--high {
+  background: var(--client-priority-high-bg);
+  color: var(--client-priority-high-ink);
+}
+:host ::ng-deep .client-priority--critical {
+  background: var(--client-priority-critical-bg);
+  color: var(--client-priority-critical-ink);
+}
+@media (max-width: 639px) {
+  .client-title {
+    font-size: 1.5rem;
+  }
+  .client-panel {
+    padding: 18px;
+  }
+  .client-dialog {
+    width: calc(100% - 32px);
+    padding: 22px;
+  }
+}
