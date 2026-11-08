@@ -45,7 +45,7 @@ export const WORKSPACE_ROUTES: Routes = [
               profile.key === 'gestor' && page.key === 'relatorios'
                 ? () => import('./gestor/pages/manager-reports').then((m) => m.ManagerReports)
                 : profile.key === 'gestor' && page.key === 'auditoria'
-                  ? () => import('./gestor/pages/manager-preview').then((m) => m.ManagerPreview)
+                  ? () => import('./gestor/pages/manager-audit').then((m) => m.ManagerAudit)
                   : profile.key === 'gestor' && page.key === 'politicas'
                     ? () =>
                         import('./gestor/pages/manager-sla-policies').then(

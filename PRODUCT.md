@@ -32,6 +32,8 @@ A atualização FE-022 reorganiza `/app/gestor` como painel demonstrativo de ope
 
 A rota `/app/gestor/relatorios` apresenta quatro indicadores e recortes de cumprimento dos três prazos por cliente e técnico, com tabelas adaptadas a fichas no celular. A amostra fictícia de setembro de 2026 reúne 56 chamados encerrados, compartilha o resumo mensal com o painel e é independente da fila atual; a resposta permanece sob responsabilidade do gestor. A consulta é local, sem filtros, exportação, integração ou persistência. O escopo, os componentes e as evidências estão em [FRONTEND_GESTOR_RELATORIOS.md](docs/FRONTEND_GESTOR_RELATORIOS.md).
 
+A rota `/app/gestor/auditoria` oferece uma trilha demonstrativa com filtros locais, paginação e detalhes de 12 eventos fictícios até 05/11/2026. A consulta não altera entidades nem persiste dados; retenção por cinco anos e expurgo permanecem políticas previstas, sem implementação. O escopo e as evidências estão em [FRONTEND_GESTOR_AUDITORIA.md](docs/FRONTEND_GESTOR_AUDITORIA.md).
+
 ## Brand Commitments
 
 Nome Nivelo, em substituição a FlowSLA na apresentação atual. Português brasileiro, linguagem direta e concreta. Preservar a identidade estabelecida na opção C — Faixa de luz: Manrope, azul-noite, azul corporativo, verde operacional, turquesa do símbolo e superfícies claras. A referência Isoline substitui a composição da landing, preservando essa identidade, o símbolo original e os links, a aparência e o comportamento da navbar. O vídeo de luz e seu poster continuam em uma pequena janela da abertura. `DESIGN.md` é a fonte da verdade visual implementada, com valores extraídos do código; `docs/NIVELO_BRAND.md` registra a relação entre os ativos e a prancha.

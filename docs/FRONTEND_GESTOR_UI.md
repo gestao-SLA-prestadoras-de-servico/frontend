@@ -130,6 +130,8 @@ Fontes: [manager-status-badge.ts](../src/app/features/workspace/gestor/component
 
 `ManagerEmptyState` (`app-manager-empty-state`) exige `title` e `description` e projeta conteúdo livre para a recuperação. O bloco tem `role="status"`, borda tracejada e texto centralizado. A página continua responsável por decidir quando exibi-lo e por implementar a ação projetada.
 
+`ManagerAuditOperationBadge` ([fonte](../src/app/features/workspace/gestor/components/manager-audit-operation-badge.ts), seletor `app-manager-audit-operation-badge`) recebe **`value: AuditOperation` obrigatório**. O tipo e o mapa `AUDIT_OPERATIONS` vêm de [manager-audit-demo-data.ts](../src/app/features/workspace/gestor/data/manager-audit-demo-data.ts); o componente centraliza rótulo visível, ícone decorativo e tom da operação. Tabela, fichas e detalhes da auditoria compartilham `<app-manager-audit-operation-badge [value]="record.operation" />`. Transições de estado continuam usando `ManagerTicketBadge`.
+
 ## Indicadores, chamados e botões existentes
 
 Os componentes abaixo continuam sendo reutilizados; a padronização não substitui suas APIs.
@@ -195,9 +197,11 @@ Importar cada classe utilizada no `imports` do componente standalone. O exemplo 
 | `/app/gestor/empresas/nova` | Cadastro demonstrativo de empresa. |
 | `/app/gestor/usuarios` | Usuários e diálogos locais. |
 | `/app/gestor/usuarios/novo` | Cadastro demonstrativo de usuário. |
-| `/app/gestor/auditoria` | Prévia de auditoria. |
+| `/app/gestor/auditoria` | Trilha demonstrativa de auditoria com filtros, paginação e detalhes do registro selecionado. |
 
-O detalhe continua usando a rota parametrizada `chamados/:id`; `1043` é o cenário capturado. [workspace.routes.ts](../src/app/features/workspace/workspace.routes.ts) encaminha relatórios para `ManagerReports`, com apuração local de uma amostra fictícia de setembro de 2026 compartilhada com o painel e independente da fila atual. O escopo e a validação dessa extensão estão em [FRONTEND_GESTOR_RELATORIOS.md](FRONTEND_GESTOR_RELATORIOS.md). Auditoria continua em `ManagerPreview`, que lê o metadata de [workspace-data.ts](../src/app/features/workspace/data/workspace-data.ts), sem acrescentar operações de auditoria. Os relatórios não incluem filtros ou exportação.
+O detalhe continua usando a rota parametrizada `chamados/:id`; `1043` é o cenário capturado. [workspace.routes.ts](../src/app/features/workspace/workspace.routes.ts) encaminha relatórios para `ManagerReports`, com apuração local de uma amostra fictícia de setembro de 2026 compartilhada com o painel e independente da fila atual. O escopo e a validação dessa extensão estão em [FRONTEND_GESTOR_RELATORIOS.md](FRONTEND_GESTOR_RELATORIOS.md). Os relatórios não incluem filtros ou exportação.
+
+Auditoria agora carrega `ManagerAudit`, com quatro colunas, filtros combinados e seis registros por página, em um snapshot fictício até 05/11/2026. Reutiliza os primitivos acima, troca a tabela por fichas abaixo de 768 px e empilha os detalhes abaixo de 1280 px, com transferência e retorno do foco. A consulta não modifica stores ou registros. A retenção de cinco anos é apenas uma política prevista na proposta; escopo, limites e evidências próprios estão em [FRONTEND_GESTOR_AUDITORIA.md](FRONTEND_GESTOR_AUDITORIA.md).
 
 ## Limites da demonstração
 
@@ -208,6 +212,8 @@ A revisão de políticas apresenta os números digitados, sem calcular SLA, cria
 ## Evidências e sequência de validação
 
 O pacote de evidências fica em `tmp/manager-standardization/`, conforme [review-packet.md](../tmp/manager-standardization/review-packet.md). Esta documentação registra as verificações existentes; não inicia outra rodada de testes ou inspeção.
+
+O histórico abaixo corresponde à padronização anterior, quando auditoria ainda era uma prévia. A extensão posterior tem sequência própria em [FRONTEND_GESTOR_AUDITORIA.md](FRONTEND_GESTOR_AUDITORIA.md#evidências); seus resultados não substituem as verificações históricas.
 
 1. Passaram 39 testes unitários em 11 arquivos **antes do lote exclusivamente visual de links e campos descrito abaixo**. Não houve nova rodada unitária após os ajustes visuais.
 2. A rodada de E2E manager/workspace executou 46 casos em Chromium e Firefox: 44 passaram e 2 falharam na expectativa antiga da coluna de próximo prazo. A expectativa foi atualizada para a lista atual dos três relógios.
