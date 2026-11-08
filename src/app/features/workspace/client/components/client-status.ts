@@ -5,7 +5,7 @@ import { ClientStatus, CLIENT_STATUS_LABELS } from '../data/client-data';
 @Component({
   selector: 'app-client-status',
   imports: [ClientBadge],
-  template: `<app-client-badge [label]="labels[status()]" [tone]="tones[status()]" />`,
+  template: `<span appClientBadge [tone]="tones[status()]">{{ labels[status()] }}</span>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClientStatusBadge {

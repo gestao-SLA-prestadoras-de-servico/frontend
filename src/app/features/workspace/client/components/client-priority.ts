@@ -5,7 +5,7 @@ import { ClientPriority } from '../data/client-data';
 @Component({
   selector: 'app-client-priority',
   imports: [ClientBadge],
-  template: `<app-client-badge [label]="priority()" [tone]="tones[priority()]" />`,
+  template: `<span appClientBadge [tone]="tones[priority()]">{{ priority() }}</span>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClientPriorityBadge {

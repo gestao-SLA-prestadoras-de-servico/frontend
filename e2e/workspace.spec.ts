@@ -45,7 +45,11 @@ for (const profile of profiles) {
     const nav = page.getByRole('navigation', { name: `Navegação da área de ${profile.label}` });
     await expect(nav.getByRole('link')).toHaveCount(profile.links.length);
     await expect(nav.getByRole('link').first()).toHaveAttribute('aria-current', 'page');
-    await expect(page.getByRole('table').locator('tbody tr')).toHaveCount(profile.count);
+    if (profile.key === 'tecnico') {
+      await expect(page.locator('app-technician-ticket-card')).toHaveCount(profile.count);
+    } else {
+      await expect(page.getByRole('table').locator('tbody tr')).toHaveCount(profile.count);
+    }
     for (const label of profile.links.slice(1)) {
       await nav.getByRole('link', { name: label, exact: true }).click();
       await expect(nav.getByRole('link', { name: label, exact: true })).toHaveAttribute(
