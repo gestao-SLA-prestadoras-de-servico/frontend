@@ -3,9 +3,10 @@
   [description]="'Cumprimento dos três prazos de SLA · ' + report.period + '.'"
   demo="Dados fictícios de chamados encerrados. Esta amostra é independente da fila atual."
 >
-  <a managerHeaderActions appButtonSecondary routerLink="/app/gestor" class="min-h-11 px-4 py-2.5">
-    Voltar ao painel
-  </a>
+  <div managerHeaderActions class="flex flex-wrap items-center gap-3">
+    <a appButtonSecondary routerLink="/app/gestor" class="min-h-11 px-4 py-2.5">Voltar ao painel</a>
+    <app-manager-report-export [disabled]="!report.total" [context]="exportContext" />
+  </div>
 </app-manager-page-header>
 
 <section
