@@ -1,13 +1,83 @@
 <app-manager-page-header
   title="Relatórios"
-  [description]="'Cumprimento dos três prazos de SLA · ' + report.period + '.'"
+  [description]="'Cumprimento dos três prazos de SLA · ' + periodLabel() + '.'"
   demo="Dados fictícios de chamados encerrados. Esta amostra é independente da fila atual."
 >
   <div managerHeaderActions class="flex flex-wrap items-center gap-3">
     <a appButtonSecondary routerLink="/app/gestor" class="min-h-11 px-4 py-2.5">Voltar ao painel</a>
-    <app-manager-report-export [disabled]="!report.total" [context]="exportContext" />
+    <app-manager-report-export [disabled]="!report().total" [context]="exportContext()" />
   </div>
 </app-manager-page-header>
+
+<section appManagerPanel class="mt-6" aria-label="Filtros do relatório">
+  <div class="grid gap-4 sm:grid-cols-3">
+    <div>
+      <label appManagerLabel for="report-period">Período</label>
+      <select
+        appSelect
+        id="report-period"
+        class="mt-2"
+        [value]="filters().period"
+        (change)="changeFilter('period', $event)"
+        aria-describedby="report-filter-help"
+      >
+        @for (period of periods; track period.key) {
+          <option [value]="period.key">{{ period.label }}</option>
+        }
+      </select>
+    </div>
+    <div>
+      <label appManagerLabel for="report-client">Cliente</label>
+      <select
+        appSelect
+        id="report-client"
+        class="mt-2"
+        [value]="filters().client"
+        (change)="changeFilter('client', $event)"
+      >
+        <option value="all">Todos os clientes</option>
+        @for (client of clients; track client) {
+          <option [value]="client">{{ client }}</option>
+        }
+      </select>
+    </div>
+    <div>
+      <label appManagerLabel for="report-technician">Técnico</label>
+      <select
+        appSelect
+        id="report-technician"
+        class="mt-2"
+        [value]="filters().technician"
+        (change)="changeFilter('technician', $event)"
+      >
+        <option value="all">Todos os técnicos</option>
+        @for (technician of technicians; track technician) {
+          <option [value]="technician">{{ technician }}</option>
+        }
+      </select>
+    </div>
+  </div>
+  <p id="report-filter-help" class="mt-3 text-xs leading-relaxed text-ink2">
+    Amostra disponível em setembro. Outubro demonstra um período sem registros.
+  </p>
+  <div
+    class="mt-4 flex flex-wrap items-center justify-between gap-x-5 gap-y-2 border-t border-line pt-3"
+  >
+    <p class="min-w-0 text-[13px] leading-relaxed text-ink2" role="status" aria-atomic="true">
+      <span class="font-semibold">Filtros aplicados:</span> {{ filterSummary() }} ·
+      {{ report().total }} chamados
+    </p>
+    <button
+      appManagerTextAction
+      type="button"
+      class="disabled:cursor-not-allowed disabled:opacity-45"
+      [disabled]="!hasFilters()"
+      (click)="clearFilters()"
+    >
+      Limpar filtros
+    </button>
+  </div>
+</section>
 
 <section
   class="mt-6 grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 xl:grid-cols-4"
@@ -15,38 +85,64 @@
 >
   <app-manager-metric-card
     label="Chamados apurados"
-    [value]="report.total"
+    [value]="report().total"
     icon="validation"
     variant="outlined"
     note="Encerrados no período"
   />
-  @for (clock of report.clocks; track clock.key) {
+  @for (clock of report().clocks; track clock.key) {
     <app-manager-metric-card
       [label]="'SLA de ' + clock.label.toLocaleLowerCase('pt-BR')"
-      [value]="clock.percentage"
-      suffix="%"
+      [value]="report().total ? clock.percentage : '—'"
+      [suffix]="report().total ? '%' : ''"
       [icon]="clockIcons[clock.key]"
-      [tone]="clock.percentage >= 90 ? 'green' : 'danger'"
+      [tone]="!report().total ? 'neutral' : clock.percentage >= 90 ? 'green' : 'danger'"
       variant="outlined"
-      [note]="clock.fulfilled + ' cumpridos · ' + clock.violated + ' violados'"
+      [note]="
+        report().total
+          ? clock.fulfilled + ' cumpridos · ' + clock.violated + ' violados'
+          : 'Sem base para apuração'
+      "
     />
   }
 </section>
 
-<div class="mt-6 space-y-6">
-  <app-manager-sla-report-table kind="client" [rows]="report.clients" />
-  <app-manager-sla-report-table kind="technician" [rows]="report.technicians" />
-</div>
-
-<div
-  class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs leading-relaxed text-ink3"
-  aria-label="Legenda dos percentuais"
->
-  <p class="inline-flex items-center gap-2">
-    <span class="h-1.5 w-6 rounded-full bg-grn" aria-hidden="true"></span>90% ou mais
-  </p>
-  <p class="inline-flex items-center gap-2">
-    <span class="h-1.5 w-6 rounded-full bg-danger" aria-hidden="true"></span>Abaixo de 90%
-  </p>
-  <p>Um prazo cumprido após a violação continua contado como violado.</p>
-</div>
+@if (report().total) {
+  <app-manager-sla-summary
+    class="mt-6"
+    [clocks]="report().clocks"
+    [context]="report().total + ' chamados · ' + periodLabel()"
+  />
+  <div class="mt-6 space-y-6">
+    <app-manager-sla-report-table kind="client" [rows]="report().clients" />
+    <app-manager-sla-report-table kind="technician" [rows]="report().technicians" />
+  </div>
+  <div
+    class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs leading-relaxed text-ink2"
+    aria-label="Legenda dos percentuais"
+  >
+    <p class="inline-flex items-center gap-2">
+      <span class="h-1.5 w-6 rounded-full bg-grn" aria-hidden="true"></span>90% ou mais
+    </p>
+    <p class="inline-flex items-center gap-2">
+      <span class="h-1.5 w-6 rounded-full bg-danger" aria-hidden="true"></span>Abaixo de 90%
+    </p>
+    <p>Um prazo cumprido após a violação continua contado como violado.</p>
+  </div>
+} @else {
+  <app-manager-empty-state
+    class="mt-6"
+    title="Nenhum chamado encontrado"
+    description="Não há registros na amostra para esta combinação de período, cliente e técnico. Os percentuais não foram apurados."
+  >
+    <p class="mt-3 text-sm text-ink2">Exportação indisponível sem chamados apurados.</p>
+    <button
+      appButtonSecondary
+      type="button"
+      class="mt-4 min-h-11 px-4 py-2.5"
+      (click)="clearFilters()"
+    >
+      Restaurar amostra
+    </button>
+  </app-manager-empty-state>
+}

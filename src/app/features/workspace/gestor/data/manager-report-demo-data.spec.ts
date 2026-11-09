@@ -3,9 +3,35 @@ import {
   buildManagerReport,
   MANAGER_REPORT_SAMPLE,
   ReportTicket,
+  filterManagerReport,
 } from './manager-report-demo-data';
 
 describe('manager report demonstration', () => {
+  it('combines period, client and technician without changing the shared monthly sample', () => {
+    const filtered = filterManagerReport({
+      period: '2026-09',
+      client: 'Edifício Aurora',
+      technician: 'Rafael Costa',
+    });
+    expect(filtered.total).toBe(10);
+    expect(filtered.clients.map((row) => row.name)).toEqual(['Edifício Aurora']);
+    expect(filtered.technicians.map((row) => row.name)).toEqual(['Rafael Costa']);
+    expect(filtered.clocks.map((clock) => [clock.fulfilled, clock.violated])).toEqual([
+      [9, 1],
+      [8, 2],
+      [8, 2],
+    ]);
+    expect(MANAGER_REPORT_SAMPLE.total).toBe(56);
+    for (const filters of [
+      { period: '2026-10', client: 'all', technician: 'all' },
+      { period: '2026-09', client: 'Clínica Horizonte', technician: 'Rafael Costa' },
+    ]) {
+      const empty = filterManagerReport(filters);
+      expect(empty.total).toBe(0);
+      expect(empty.clients).toEqual([]);
+      expect(empty.technicians).toEqual([]);
+    }
+  });
   it('reconciles both groupings with the shared monthly summary', () => {
     const sample = MANAGER_REPORT_SAMPLE;
     expect(sample.total).toBe(56);

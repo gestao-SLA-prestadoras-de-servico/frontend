@@ -75,7 +75,7 @@ const SAMPLE_ASSIGNMENTS = [
   ['Residencial Alameda', 'Bianca Lopes', 3],
 ] as const;
 
-const REPORT_TICKETS: readonly ReportTicket[] = SAMPLE_ASSIGNMENTS.flatMap(
+export const REPORT_TICKETS: readonly ReportTicket[] = SAMPLE_ASSIGNMENTS.flatMap(
   ([client, technician, count]) => Array.from({ length: count }, () => ({ client, technician })),
 ).map((ticket, index) => ({
   ...ticket,
@@ -88,3 +88,27 @@ export const MANAGER_REPORT_SAMPLE = {
   period: 'Setembro de 2026',
   ...buildManagerReport(REPORT_TICKETS),
 };
+
+export const REPORT_PERIODS = [
+  { key: '2026-09', label: 'Setembro de 2026' },
+  { key: '2026-10', label: 'Outubro de 2026' },
+] as const;
+export const REPORT_CLIENTS = [...new Set(REPORT_TICKETS.map((ticket) => ticket.client))];
+export const REPORT_TECHNICIANS = [...new Set(REPORT_TICKETS.map((ticket) => ticket.technician))];
+export interface ReportFilters {
+  readonly period: string;
+  readonly client: string;
+  readonly technician: string;
+}
+
+// A amostra disponível pertence a setembro; outubro demonstra um período sem registros.
+export function filterManagerReport(filters: ReportFilters) {
+  return buildManagerReport(
+    REPORT_TICKETS.filter(
+      (ticket) =>
+        filters.period === '2026-09' &&
+        (filters.client === 'all' || ticket.client === filters.client) &&
+        (filters.technician === 'all' || ticket.technician === filters.technician),
+    ),
+  );
+}

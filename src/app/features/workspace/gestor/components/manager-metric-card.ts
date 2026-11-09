@@ -98,7 +98,7 @@ export type ManagerMetricTone = 'blue' | 'green' | 'danger' | 'neutral';
 })
 export class ManagerMetricCard {
   readonly label = input.required<string>();
-  readonly value = input.required<number>();
+  readonly value = input.required<number | string>();
   readonly suffix = input('');
   readonly icon = input.required<ManagerMetricIcon>();
   readonly tone = input<ManagerMetricTone>('blue');
