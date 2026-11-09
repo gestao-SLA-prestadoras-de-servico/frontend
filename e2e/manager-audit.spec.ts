@@ -96,7 +96,7 @@ test('audit records and the selected detail render without JavaScript', async ({
     viewport: { width: 1440, height: 900 },
   });
   const page = await context.newPage();
-  await page.goto(`${baseURL}/app/gestor/auditoria`);
+  await page.goto('/app/gestor/auditoria');
   await expect(page.getByRole('table', { name: /^Trilha de auditoria/ })).toContainText(
     'Envio de evidência',
   );

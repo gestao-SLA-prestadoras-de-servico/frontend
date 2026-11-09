@@ -127,12 +127,11 @@ test('FE-028 panel fits viewports and supports keyboard dismissal without trappi
 
 test('FE-028 server HTML shows the bell only for manager and technician profiles', async ({
   browser,
-  baseURL,
 }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   for (const profile of ['gestor', 'tecnico', 'cliente']) {
-    await page.goto(`${baseURL}/app/${profile}`);
+    await page.goto(`/app/${profile}`);
     const bell = page.getByRole('button', { name: /^Notificações de demonstração/ });
     if (profile === 'cliente') await expect(bell).toHaveCount(0);
     else await expect(bell).toHaveAccessibleName('Notificações de demonstração, 2 não lidas');

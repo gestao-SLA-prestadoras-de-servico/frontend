@@ -161,17 +161,16 @@ test('FE-029 to 033 fit phone, tablet, desktop and short viewports', async ({ pa
 
 test('FE-033 metadata is prerendered and invalid identifiers return no metadata', async ({
   browser,
-  baseURL,
 }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
-  const response = await page.goto(`${baseURL}/app/gestor/auditoria/evidencias/EV-4310`);
+  const response = await page.goto('/app/gestor/auditoria/evidencias/EV-4310');
   expect(response?.status()).toBe(200);
   await expect(page.getByRole('region', { name: 'Rastreabilidade da evidência' })).toContainText(
     'EXPURGADA',
   );
   await expect(page.locator('main time')).toHaveCount(2);
-  const missing = await page.goto(`${baseURL}/app/gestor/auditoria/evidencias/EV-inexistente`);
+  const missing = await page.goto('/app/gestor/auditoria/evidencias/EV-inexistente');
   expect(missing?.status()).toBe(404);
   await expect(page.getByRole('region', { name: 'Rastreabilidade da evidência' })).toHaveCount(0);
   await context.close();
