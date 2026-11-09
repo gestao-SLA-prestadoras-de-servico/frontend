@@ -138,7 +138,7 @@ Os componentes abaixo continuam sendo reutilizados; a padronização não substi
 
 | Componente | API |
 | --- | --- |
-| `ManagerMetricCard` / `app-manager-metric-card` | `label: string`, `value: number` e `icon: ManagerMetricIcon` obrigatórios; `tone: 'blue' \| 'green' \| 'danger' \| 'neutral'` (padrão `blue`), `variant: 'tinted' \| 'outlined'` (padrão `tinted`), `note: string` e `suffix: string` (ambos com padrão vazio). `suffix` é concatenado ao valor, como `%` nos relatórios. |
+| `ManagerMetricCard` / `app-manager-metric-card` | `label: string`, `value: number \| string` e `icon: ManagerMetricIcon` obrigatórios; `tone: 'blue' \| 'green' \| 'danger' \| 'neutral'` (padrão `blue`), `variant: 'tinted' \| 'outlined'` (padrão `tinted`), `note: string` e `suffix: string` (ambos com padrão vazio). `suffix` é concatenado ao valor, como `%` nos relatórios; `string` admite “—” sem apuração. |
 | `ManagerTicketBadge` / `app-manager-ticket-badge` | `value` obrigatório do tipo `ManagerTicketStatus \| ManagerTicketPriority`. O mapa existente fornece ícone, texto e cor. |
 | `ManagerTicketClocks` / `app-manager-ticket-clocks` | `ticket: ManagerTicket` obrigatório. Apresenta resposta, atendimento em campo e resolução, com descrição completa acessível; cancelados mostram “Sem apuração de SLA”. |
 | `ButtonPrimary` / `[appButtonPrimary]` | Ação principal azul, com a base compartilhada de botão. Aplicável a botão ou link. |
@@ -199,7 +199,7 @@ Importar cada classe utilizada no `imports` do componente standalone. O exemplo 
 | `/app/gestor/usuarios/novo` | Cadastro demonstrativo de usuário. |
 | `/app/gestor/auditoria` | Trilha demonstrativa de auditoria com filtros, paginação e detalhes do registro selecionado. |
 
-O detalhe continua usando a rota parametrizada `chamados/:id`; `1043` é o cenário capturado. [workspace.routes.ts](../src/app/features/workspace/workspace.routes.ts) encaminha relatórios para `ManagerReports`, com apuração local de uma amostra fictícia de setembro de 2026 compartilhada com o painel e independente da fila atual. O escopo e a validação dessa extensão estão em [FRONTEND_GESTOR_RELATORIOS.md](FRONTEND_GESTOR_RELATORIOS.md). Os relatórios não incluem filtros ou exportação.
+O detalhe continua usando a rota parametrizada `chamados/:id`; `1043` é o cenário capturado. [workspace.routes.ts](../src/app/features/workspace/workspace.routes.ts) encaminha relatórios para `ManagerReports`, com apuração local de uma amostra fictícia de setembro de 2026 compartilhada com o painel e independente da fila atual. O escopo e a validação dessa extensão estão em [FRONTEND_GESTOR_RELATORIOS.md](FRONTEND_GESTOR_RELATORIOS.md). Os filtros combinados e a exportação demonstrativa atuais estão descritos no [adendo FE-029–033](#extensão-fe-029033).
 
 Auditoria agora carrega `ManagerAudit`, com quatro colunas, filtros combinados e seis registros por página, em um snapshot fictício até 05/11/2026. Reutiliza os primitivos acima, troca a tabela por fichas abaixo de 768 px e empilha os detalhes abaixo de 1280 px, com transferência e retorno do foco. A consulta não modifica stores ou registros. A retenção de cinco anos é apenas uma política prevista na proposta; escopo, limites e evidências próprios estão em [FRONTEND_GESTOR_AUDITORIA.md](FRONTEND_GESTOR_AUDITORIA.md).
 
@@ -241,3 +241,17 @@ São **52 capturas**, uma para cada combinação das 13 rotas com 1440, 768, 390
 `confirm/metrics.json` registra zero overflow da página, um `h1` no `main`, zero imagens quebradas e zero `pageerrors`. `company-edit-390.png` registra o diálogo de edição preenchido, com foco visível e ações alcançáveis. Há evidências adicionais de diálogos em `tmp/fe021-deactivate-modal-mobile.png`, `tmp/fe021-deactivate-modal-actions-mobile.png` e `tmp/fe025-cancel-dialog-mobile.png`. As referências anteriores são `before/dashboard-1440.png` e `before/tickets-1440.png`.
 
 **Revisão independente concluída:** [finish-review.md](../tmp/manager-standardization/finish-review.md) registra a revisão original e seu único achado. [review-fix-evidence.md](../tmp/manager-standardization/review-fix-evidence.md) registra a correção, a validação posterior e as recapturas; `post-review-changed-captures.json` e `pre-review-fix-hashes.json` preservam a comparação. [finish-verdict.md](../tmp/manager-standardization/finish-verdict.md) aprova a correção pontuada com `disposition: ship` e nenhuma pendência. O parecer posterior se limita a esse achado e não representa uma nova busca de defeitos nas 13 rotas.
+
+## Extensão FE-029–033
+
+Em 09/11/2026, relatórios recebem filtros locais, resumo gráfico compartilhado com o painel e PDF/CSV demonstrativos; auditoria recebe carregamento selecionável e a rota `/app/gestor/auditoria/evidencias/EV-4310`. O [registro da entrega](FRONTEND_29_33_GESTOR.md) reúne roteiro, limites e evidências, sem substituir a validação histórica acima. Permanecem Operate, Manrope e `framed-sheet`, sem novos tokens ou CSS global.
+
+| Componente / fonte | Contrato atual |
+| --- | --- |
+| `ManagerMetricCard` / [fonte](../src/app/features/workspace/gestor/components/manager-metric-card.ts) | `value: number \| string` permite “—”; usar `suffix=""` e tom neutro quando não há base para apurar taxa. Os demais inputs permanecem iguais. |
+| `ManagerSlaSummary` / `app-manager-sla-summary` / [fonte](../src/app/features/workspace/gestor/components/manager-sla-summary.ts) | `clocks: readonly (ReportRate & { key: ReportClock; label: string })[]` obrigatório; `title` padrão `Cumprimento por prazo`, `context` padrão `Amostra de demonstração`. Apresenta barras cumpridos/violados, contagens e legenda. A página só o renderiza quando há chamados. |
+| `ManagerReportExport` / `app-manager-report-export` / [fonte](../src/app/features/workspace/gestor/components/manager-report-export.ts) | `context: string` obrigatório; `disabled: boolean`, padrão `false`. Encapsula PDF/CSV, preparação, conclusão manual, cancelamento, backdrop, Escape, contenção e retorno de foco; não gera arquivo ou download. |
+| `ManagerPurgedEvidenceCard` / `app-manager-purged-evidence-card` / [fonte](../src/app/features/workspace/gestor/components/manager-purged-evidence-card.ts) | `evidence: PurgedEvidenceMetadata` obrigatório. Cartão somente de leitura com EXPURGADA e metadados; sem referência ou ação de imagem. |
+| `WorkspaceLoadingState` / `app-workspace-loading-state` / [fonte](../src/app/features/workspace/components/workspace-loading-state.ts) | `[label]: string`, padrão `Carregando exemplos…`; `[skeleton]: boolean`, padrão `true`. Anuncia status com `aria-busy`, indicador decorativo e movimento reduzido. A exportação usa `[skeleton]="false"` para o diálogo compacto. |
+
+O DTO readonly [PurgedEvidenceMetadata](../src/app/features/workspace/gestor/data/purged-evidence-demo-data.ts) tem `id`, `serviceId`, `ticketTitle`, `uploadedAt`, `uploadedLabel`, `purgedAt`, `purgedLabel` e `reason`: `string`; `ticketId`: `number`. Não possui imagem, caminho de arquivo ou URL de storage. O exemplo histórico EV-4310 é independente do chamado atual #1032; retenção e expurgo continuam apenas previstos.
