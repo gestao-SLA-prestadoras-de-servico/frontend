@@ -13,6 +13,7 @@ import { LucideDynamicIcon, LucideLockKeyhole } from '@lucide/angular';
 import { ButtonSecondary } from '@app/shared/ui/button';
 import { Select } from '@app/shared/ui/input/select.directive';
 import { WORKSPACE_ICONS } from '../../data/workspace-icons';
+import { WorkspaceLoadingState } from '../../components/workspace-loading-state';
 import { ManagerAuditOperationBadge } from '../components/manager-audit-operation-badge';
 import { ManagerEmptyState } from '../components/manager-empty-state';
 import { ManagerPageHeader } from '../components/manager-page-header';
@@ -60,6 +61,7 @@ const PAGE_SIZE = 6;
     ManagerAuditOperationBadge,
     ManagerTicketBadge,
     ManagerEmptyState,
+    WorkspaceLoadingState,
   ],
   templateUrl: './manager-audit.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -85,6 +87,7 @@ export class ManagerAudit {
   protected readonly entity = signal<AuditEntity | 'all'>('all');
   protected readonly period = signal<AuditPeriod>('last30');
   protected readonly pageIndex = signal(0);
+  protected readonly loading = signal(false);
   protected readonly selectedId = signal<string | null>('audit-007');
   protected readonly filteredRecords = computed(() =>
     filterAuditRecords(AUDIT_RECORDS, {
@@ -97,7 +100,12 @@ export class ManagerAudit {
     Math.ceil(this.filteredRecords().length / PAGE_SIZE),
   );
   protected readonly pageRecords = computed(() =>
-    this.filteredRecords().slice(this.pageIndex() * PAGE_SIZE, (this.pageIndex() + 1) * PAGE_SIZE),
+    this.loading()
+      ? []
+      : this.filteredRecords().slice(
+          this.pageIndex() * PAGE_SIZE,
+          (this.pageIndex() + 1) * PAGE_SIZE,
+        ),
   );
   protected readonly selectedRecord = computed<AuditRecord | null>(
     () =>
@@ -118,6 +126,10 @@ export class ManagerAudit {
   protected changeActor(event: Event): void {
     this.actor.set((event.target as HTMLSelectElement).value as AuditActor | 'all');
     this.resetPage();
+  }
+  protected changeScenario(event: Event): void {
+    this.loading.set((event.target as HTMLSelectElement).value === 'loading');
+    this.returnTarget = null;
   }
   protected changeEntity(event: Event): void {
     this.entity.set((event.target as HTMLSelectElement).value as AuditEntity | 'all');

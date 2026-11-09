@@ -81,7 +81,9 @@
         }
       </div>
     </div>
-    @if (pageRecords().length) {
+    @if (loading()) {
+      <app-workspace-loading-state label="Carregando registros de demonstração…" />
+    } @else if (pageRecords().length) {
       <div class="hidden overflow-x-auto md:block">
         <table appManagerTable class="min-w-[620px] table-fixed">
           <caption class="sr-only">
@@ -190,34 +192,38 @@
         </button></app-manager-empty-state
       >
     }
-    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-line p-4 sm:px-5">
-      <p class="text-xs leading-relaxed text-ink3" role="status">
-        Mostrando {{ firstResult() }}–{{ lastResult() }} de {{ filteredRecords().length }} registros
-        do período
-      </p>
-      <nav class="flex gap-2" aria-label="Paginação da auditoria">
-        <button
-          appButtonSecondary
-          id="audit-previous"
-          type="button"
-          class="min-h-11 px-3 py-2 disabled:cursor-not-allowed disabled:opacity-45"
-          [disabled]="pageIndex() === 0"
-          (click)="changePage(-1)"
-        >
-          Anterior
-        </button>
-        <button
-          appButtonSecondary
-          type="button"
-          class="min-h-11 px-3 py-2 disabled:cursor-not-allowed disabled:opacity-45"
-          [disabled]="pageIndex() + 1 >= pageCount()"
-          id="audit-next"
-          (click)="changePage(1)"
-        >
-          Próxima
-        </button>
-      </nav>
-    </div>
+    @if (!loading()) {
+      <div
+        class="flex flex-wrap items-center justify-between gap-3 border-t border-line p-4 sm:px-5"
+      >
+        <p class="text-xs leading-relaxed text-ink3" role="status">
+          Mostrando {{ firstResult() }}–{{ lastResult() }} de
+          {{ filteredRecords().length }} registros do período
+        </p>
+        <nav class="flex gap-2" aria-label="Paginação da auditoria">
+          <button
+            appButtonSecondary
+            id="audit-previous"
+            type="button"
+            class="min-h-11 px-3 py-2 disabled:cursor-not-allowed disabled:opacity-45"
+            [disabled]="pageIndex() === 0"
+            (click)="changePage(-1)"
+          >
+            Anterior
+          </button>
+          <button
+            appButtonSecondary
+            type="button"
+            class="min-h-11 px-3 py-2 disabled:cursor-not-allowed disabled:opacity-45"
+            [disabled]="pageIndex() + 1 >= pageCount()"
+            id="audit-next"
+            (click)="changePage(1)"
+          >
+            Próxima
+          </button>
+        </nav>
+      </div>
+    }
   </section>
 
   <aside appManagerPanel id="audit-record-details" aria-labelledby="audit-detail-heading">
@@ -298,8 +304,41 @@
       </button>
     } @else {
       <p class="mt-4 text-sm leading-relaxed text-ink2">
-        Nenhum registro corresponde aos filtros. Ajuste a consulta para visualizar os detalhes.
+        {{
+          loading()
+            ? 'Os detalhes ficam disponíveis ao retornar à lista de demonstração.'
+            : 'Nenhum registro corresponde aos filtros. Ajuste a consulta para visualizar os detalhes.'
+        }}
       </p>
     }
   </aside>
 </div>
+<details class="group mt-5 rounded-deadline border border-line p-4 sm:p-5">
+  <summary
+    class="flex min-h-11 cursor-pointer items-center rounded-sm text-sm font-semibold text-ink2"
+  >
+    Estados da demonstração
+    <svg
+      class="ml-auto size-4 shrink-0 group-open:rotate-90"
+      [lucideIcon]="icons.chevron"
+      aria-hidden="true"
+    ></svg>
+  </summary>
+  <div class="mt-3 max-w-sm">
+    <label appManagerLabel for="audit-scenario">Visualizar cenário da auditoria</label>
+    <select
+      appSelect
+      id="audit-scenario"
+      class="mt-2"
+      [value]="loading() ? 'loading' : 'list'"
+      (change)="changeScenario($event)"
+    >
+      <option value="list">Registros de exemplo</option>
+      <option value="loading">Carregamento simulado</option>
+    </select>
+    <p class="mt-3 text-xs leading-relaxed text-ink2">
+      Sem consultas ou espera real. Retorne aos registros para continuar com os filtros
+      selecionados.
+    </p>
+  </div>
+</details>
