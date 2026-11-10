@@ -18,10 +18,12 @@ test('internal pages keep their layout and field labels across device widths', a
     'cliente/novo-chamado',
     'cliente/chamados/1042',
   ];
-  for (const width of [320, 768, 1440]) {
-    await page.setViewportSize({ width, height: 900 });
-    for (const route of routes) {
-      await gotoAndWaitForHydration(page, `/app/${route}`);
+  const widths = [320, 390, 768, 1440];
+  for (const route of routes) {
+    await page.setViewportSize({ width: widths[0], height: 900 });
+    await gotoAndWaitForHydration(page, `/app/${route}`);
+    for (const width of widths) {
+      await page.setViewportSize({ width, height: 900 });
       await expect(page.locator('main h1'), route).toHaveCount(1);
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth),
