@@ -1,0 +1,188 @@
+﻿<app-manager-page-header
+  title="Painel de operações"
+  description="A fila de hoje, com os prazos que pedem atenção primeiro."
+  demo="Retrato fictício de 05/11/2026. Indicadores e prazos não consultam uma operação real."
+  ><a
+    appButtonPrimary
+    managerHeaderActions
+    routerLink="/app/gestor/chamados"
+    class="min-h-11 px-4 py-2"
+  >
+    <svg class="size-4" [lucideIcon]="icons.tickets" aria-hidden="true"></svg>Abrir fila de chamados
+  </a></app-manager-page-header
+>
+
+<section class="mt-6" aria-label="Indicadores da fila">
+  <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+    @for (indicator of indicators(); track indicator.label) {
+      <app-manager-metric-card
+        variant="outlined"
+        [label]="indicator.label"
+        [value]="indicator.value"
+        [icon]="indicator.icon"
+        [tone]="indicator.tone"
+        [note]="indicator.note"
+      />
+    }
+  </div>
+</section>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
+  <app-manager-activity-chart />
+  <app-manager-sla-health [total]="nonFinalizedCount()" [violated]="violatedCount()" />
+</div>
+
+<div class="mt-6 grid items-start gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)]">
+  <section appManagerPanel="flush" aria-labelledby="attention-heading">
+    <div class="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
+      <div>
+        <h2 appManagerSectionHeading id="attention-heading">Chamados que pedem atenção</h2>
+        <p class="mt-1 text-[13px] text-ink2">
+          {{ attentionTickets().length }} chamados não finalizados
+        </p>
+      </div>
+      <a appManagerTextAction routerLink="/app/gestor/chamados" class="text-xs"
+        >Ver fila completa<svg class="size-4" [lucideIcon]="icons.arrow" aria-hidden="true"></svg
+      ></a>
+    </div>
+    @if (attentionTickets().length) {
+      <div class="relative hidden overflow-x-auto xl:block">
+        <table
+          appManagerTable
+          class="min-w-[720px] table-fixed"
+          aria-label="Chamados que pedem atenção"
+        >
+          <colgroup>
+            <col class="w-[37%]" />
+            <col class="w-[22%]" />
+            <col class="w-[16%]" />
+            <col class="w-[25%]" />
+          </colgroup>
+          <thead appManagerTableHead>
+            <tr>
+              <th class="px-4 py-3" scope="col">Chamado</th>
+              <th class="px-3 py-3" scope="col">Estado e prioridade</th>
+              <th class="px-3 py-3" scope="col">Técnico</th>
+              <th class="px-3 py-3" scope="col">Relógios</th>
+            </tr>
+          </thead>
+          <tbody appManagerTableBody>
+            @for (ticket of attentionTickets(); track ticket.id) {
+              <tr>
+                <th scope="row" class="px-4 py-4 align-top">
+                  <a
+                    class="block rounded-sm font-semibold text-pri-d underline-offset-4 hover:underline"
+                    [routerLink]="['/app/gestor/chamados', ticket.id]"
+                    ><span class="block text-xs tabular-nums text-ink3">#{{ ticket.id }}</span
+                    ><span class="mt-1 block">{{ ticket.title }}</span></a
+                  >
+                  <p class="mt-1 text-xs font-normal text-ink2">{{ ticket.client }}</p>
+                </th>
+                <td class="px-3 py-4 align-top">
+                  <div class="flex flex-wrap gap-1.5">
+                    <app-manager-ticket-badge [value]="ticket.status" /><app-manager-ticket-badge
+                      [value]="ticket.priority"
+                    />
+                  </div>
+                </td>
+                <td class="px-3 py-4 align-top text-ink2">
+                  {{ ticket.technician ?? 'Sem indicação' }}
+                </td>
+                <td class="px-3 py-4 align-top"><app-manager-ticket-clocks [ticket]="ticket" /></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <ul class="divide-y divide-line xl:hidden">
+        @for (ticket of attentionTickets(); track ticket.id) {
+          <li class="p-4 sm:p-5">
+            <article>
+              <span class="text-xs tabular-nums text-ink3">#{{ ticket.id }}</span>
+              <h3 class="mt-1 text-sm font-semibold">
+                <a
+                  class="rounded-sm text-pri-d underline-offset-4 hover:underline"
+                  [routerLink]="['/app/gestor/chamados', ticket.id]"
+                  >{{ ticket.title }}</a
+                >
+              </h3>
+              <p class="mt-1 text-xs text-ink2">{{ ticket.client }}</p>
+              <div class="mt-3 flex flex-wrap gap-2">
+                <app-manager-ticket-badge [value]="ticket.priority" /><app-manager-ticket-badge
+                  [value]="ticket.status"
+                />
+              </div>
+              <dl class="mt-4 grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <dt class="text-xs text-ink3">Aberto em</dt>
+                  <dd class="m-0 mt-1 tabular-nums">{{ ticket.openedAt }}</dd>
+                </div>
+                <div>
+                  <dt class="text-xs text-ink3">Técnico</dt>
+                  <dd class="m-0 mt-1 text-ink2">{{ ticket.technician ?? 'Sem indicação' }}</dd>
+                </div>
+                <div class="col-span-2">
+                  <dt class="text-xs text-ink3">Relógios</dt>
+                  <dd class="m-0 mt-1.5"><app-manager-ticket-clocks [ticket]="ticket" /></dd>
+                </div>
+              </dl>
+            </article>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="px-5 py-7 text-sm text-ink2" role="status">
+        Nenhum chamado não finalizado pede atenção agora.
+      </p>
+    }
+  </section>
+  <app-manager-team-workload />
+</div>
+
+<div class="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(280px,1fr)_minmax(0,2fr)]">
+  <section appManagerPanel aria-labelledby="states-heading">
+    <h2 appManagerSectionHeading id="states-heading">Chamados por estados</h2>
+    <p class="mt-1 text-[13px] leading-5 text-ink3">{{ nonFinalizedCount() }} não finalizados</p>
+    <ul class="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-1">
+      @for (state of statusBreakdown(); track state.status) {
+        <li>
+          <div class="flex items-baseline justify-between gap-3">
+            <span class="min-w-0 text-[13px] leading-5 text-ink2">{{ state.label }}</span
+            ><span class="text-sm font-semibold tabular-nums">{{ state.count }}</span>
+          </div>
+          <div class="mt-2 h-2 overflow-hidden rounded-full bg-bg" aria-hidden="true">
+            <span class="block h-full rounded-full bg-pri" [style.width.%]="state.share"></span>
+          </div>
+        </li>
+      }
+    </ul>
+  </section>
+  <section appManagerPanel aria-labelledby="sla-heading">
+    <h2 appManagerSectionHeading id="sla-heading">Cumprimentos SLA do mês</h2>
+    <p class="mt-1 text-[13px] leading-5 text-ink3">
+      Amostra demonstrativa · {{ monthlyReport.period.toLocaleLowerCase('pt-BR') }} ·
+      {{ monthlyReport.total }} chamados encerrados
+    </p>
+    <ul class="mt-4 space-y-4">
+      @for (metric of monthlySla; track metric.label) {
+        <li>
+          <div class="flex items-baseline justify-between gap-3">
+            <span class="text-[13px] leading-5 text-ink2">{{ metric.label }}</span
+            ><span class="text-sm font-semibold tabular-nums">{{ metric.percentage }}%</span>
+          </div>
+          <div class="mt-2 h-2 overflow-hidden rounded-full bg-bg" aria-hidden="true">
+            <span
+              class="block h-full rounded-full bg-grn"
+              [style.width.%]="metric.percentage"
+            ></span>
+          </div>
+          <p class="mt-1 text-[13px] leading-5">
+            <span class="text-grn-t">{{ metric.fulfilled }} cumpridos</span
+            ><span class="text-ink3"> · </span
+            ><span class="text-danger">{{ metric.violated }} violados</span>
+          </p>
+        </li>
+      }
+    </ul>
+  </section>
+</div>

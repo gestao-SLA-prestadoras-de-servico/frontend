@@ -1,0 +1,113 @@
+<app-manager-page-header
+  title="Novo usuário"
+  description="Revise os dados e o perfil para visualizar um cadastro de exemplo."
+  demo="O envio adiciona o exemplo somente à lista desta sessão. Não há integração com Keycloak ou persistência."
+  ><a
+    managerHeaderActions
+    routerLink="/app/gestor/usuarios"
+    appButtonSecondary
+    class="min-h-11 px-4 py-2"
+    >Voltar à lista</a
+  ></app-manager-page-header
+>
+
+<form
+  appManagerPanel
+  class="mt-7 max-w-[760px]"
+  [formGroup]="form"
+  (ngSubmit)="submit()"
+  novalidate
+>
+  <fieldset class="grid gap-5" [disabled]="false">
+    <legend class="text-base font-semibold">Identificação e acesso</legend>
+    <div>
+      <label appManagerLabel for="new-user-name">Nome completo</label
+      ><input
+        id="new-user-name"
+        appInput
+        class="mt-2"
+        formControlName="name"
+        autocomplete="name"
+        [attr.aria-invalid]="invalid('name')"
+        [attr.aria-describedby]="invalid('name') ? 'new-user-name-error' : null"
+      />
+      @if (invalid('name')) {
+        <p id="new-user-name-error" class="mt-2 text-sm text-danger">{{ errors.name }}</p>
+      }
+    </div>
+    <div>
+      <label appManagerLabel for="new-user-email">E-mail</label
+      ><input
+        id="new-user-email"
+        appInput
+        class="mt-2"
+        type="email"
+        formControlName="email"
+        autocomplete="email"
+        [attr.aria-invalid]="invalid('email')"
+        [attr.aria-describedby]="invalid('email') ? 'new-user-email-error' : null"
+      />
+      @if (invalid('email') || form.controls.email.hasError('duplicate')) {
+        <p id="new-user-email-error" class="mt-2 text-sm text-danger">
+          {{
+            form.controls.email.hasError('duplicate')
+              ? 'Este e-mail já aparece na lista demonstrativa.'
+              : errors.email
+          }}
+        </p>
+      }
+    </div>
+    <div>
+      <label appManagerLabel for="new-user-role">Perfil de acesso</label
+      ><select appSelect id="new-user-role" class="mt-2" formControlName="role">
+        <option>Cliente</option>
+        <option>Técnico</option>
+        <option>Gestor</option>
+      </select>
+      <p class="mt-2 text-xs text-ink3">
+        Perfil serve para ilustrar as áreas disponíveis; este formulário não concede permissões.
+      </p>
+    </div>
+    @if (isClient()) {
+      <div>
+        <label appManagerLabel for="new-user-company">Empresa vinculada</label
+        ><select
+          appSelect
+          id="new-user-company"
+          class="mt-2"
+          formControlName="company"
+          [attr.aria-invalid]="invalid('company')"
+          [attr.aria-describedby]="invalid('company') ? 'new-user-company-error' : null"
+        >
+          <option value="">Selecione uma empresa</option>
+          <option>Edifício Aurora</option>
+          <option>Clínica Horizonte</option>
+          <option>Mercado Estação</option>
+          <option>Residencial Alameda</option>
+        </select>
+        @if (invalid('company')) {
+          <p id="new-user-company-error" class="mt-2 text-sm text-danger">{{ errors.company }}</p>
+        }
+      </div>
+    }
+  </fieldset>
+  <div
+    class="mt-6 flex flex-col-reverse gap-2 border-t border-line pt-5 sm:flex-row sm:justify-end"
+  >
+    <a
+      routerLink="/app/gestor/usuarios"
+      appButtonSecondary
+      class="min-h-11 px-4 py-2 text-center no-underline"
+      >Cancelar</a
+    ><button type="submit" appButtonPrimary class="min-h-11 px-4 py-2">Simular cadastro</button>
+  </div>
+</form>
+
+<aside appManagerPanel class="mt-6 max-w-[760px] text-sm text-ink2">
+  <h2 appManagerSectionHeading class="text-ink">Perfis demonstrados</h2>
+  <ul class="mt-2 grid gap-2 sm:grid-cols-3">
+    <li><strong class="text-ink">Cliente:</strong> acompanha chamados da empresa.</li>
+    <li><strong class="text-ink">Técnico:</strong> recebe atendimentos e registra evidências.</li>
+    <li><strong class="text-ink">Gestor:</strong> organiza a operação.</li>
+  </ul>
+</aside>

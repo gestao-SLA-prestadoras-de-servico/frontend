@@ -1,0 +1,308 @@
+<app-manager-page-header
+  title="Contratos"
+  description="Consulte a vigência dos contratos e as políticas vinculadas a cada empresa."
+  demo="Demonstração com contratos e políticas fictícias. Nenhuma operação real é executada."
+  ><a
+    managerHeaderActions
+    routerLink="/app/gestor/contratos/nova"
+    appButtonPrimary
+    class="min-h-11 px-4 py-2.5"
+  >
+    <svg class="size-4" [lucideIcon]="icons.add" aria-hidden="true"></svg>Novo contrato
+  </a></app-manager-page-header
+>
+
+@if (notice(); as message) {
+  <section
+    #noticeTarget
+    tabindex="-1"
+    role="status"
+    aria-labelledby="contract-notice-title"
+    class="mt-6 flex flex-wrap items-start justify-between gap-4 rounded-deadline bg-grn-bg p-4 text-grn-t sm:p-5"
+  >
+    <div>
+      <h2 id="contract-notice-title" class="text-sm font-semibold leading-normal tracking-normal">
+        {{ message.title }}
+      </h2>
+      <p class="mt-1 text-sm">{{ message.detail }}</p>
+    </div>
+    <button
+      type="button"
+      class="min-h-11 rounded-sm px-3 text-sm font-semibold underline underline-offset-4"
+      (click)="clearNotice()"
+    >
+      Fechar
+    </button>
+  </section>
+}
+
+<section class="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Indicadores de contracts">
+  <app-manager-metric-card
+    variant="outlined"
+    label="Contratos"
+    [value]="contracts().length"
+    icon="contracts"
+    tone="blue"
+  />
+  <app-manager-metric-card
+    variant="outlined"
+    label="Vigentes"
+    [value]="currentCount()"
+    icon="current"
+    tone="green"
+  />
+  <app-manager-metric-card
+    variant="outlined"
+    label="Futuros"
+    [value]="futureCount()"
+    icon="future"
+    tone="blue"
+  />
+  <app-manager-metric-card
+    variant="outlined"
+    label="Vencidos"
+    [value]="expiredCount()"
+    icon="expired"
+    tone="danger"
+  />
+</section>
+<p class="mt-2 text-xs text-ink3">Situação avaliada em 05/11/2026.</p>
+
+<section class="mt-7" aria-label="Busca e filtros de contratos">
+  <div class="grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]">
+    <div>
+      <label appManagerLabel for="contract-search">Buscar contrato</label>
+      <input
+        id="contract-search"
+        appInput
+        class="mt-2"
+        type="search"
+        autocomplete="off"
+        placeholder="Número, empresa ou política"
+        [value]="query()"
+        (input)="updateQuery($event)"
+      />
+    </div>
+    <div>
+      <label appManagerLabel for="contract-term-filter">Vigência</label>
+      <select
+        appSelect
+        id="contract-term-filter"
+        class="mt-2"
+        [value]="filter()"
+        (change)="updateFilter($event)"
+      >
+        <option value="all">Todas</option>
+        <option value="current">Vigentes</option>
+        <option value="future">Futuros</option>
+        <option value="expired">Vencidos</option>
+      </select>
+    </div>
+  </div>
+</section>
+
+<section class="mt-7" aria-labelledby="contract-list-heading">
+  <div class="flex flex-wrap items-baseline justify-between gap-3">
+    <h2 appManagerSectionHeading id="contract-list-heading">Lista de contratos</h2>
+    <p class="text-xs text-ink3" aria-live="polite">
+      {{ filteredRows().length }} {{ filteredRows().length === 1 ? 'resultado' : 'resultados' }}
+    </p>
+  </div>
+
+  @if (filteredRows().length) {
+    <div appManagerCollection class="mt-3 hidden overflow-x-auto xl:block">
+      <table appManagerTable class="min-w-[980px] table-fixed">
+        <caption class="sr-only">
+          Contratos fictícios, vigência e política vinculada
+        </caption>
+        <colgroup>
+          <col class="w-[14%]" />
+          <col class="w-[20%]" />
+          <col class="w-[11%]" />
+          <col class="w-[11%]" />
+          <col class="w-[22%]" />
+          <col class="w-[10%]" />
+          <col class="w-[12%]" />
+        </colgroup>
+        <thead appManagerTableHead>
+          <tr>
+            <th scope="col" class="px-3 py-3">Contrato</th>
+            <th scope="col" class="px-3 py-3">Empresa</th>
+            <th scope="col" class="px-3 py-3">Início</th>
+            <th scope="col" class="px-3 py-3">Fim</th>
+            <th scope="col" class="px-3 py-3">Política vinculada</th>
+            <th scope="col" class="px-3 py-3">Situação</th>
+            <th scope="col" class="px-3 py-3">Detalhes</th>
+          </tr>
+        </thead>
+        <tbody appManagerTableBody>
+          @for (row of filteredRows(); track row.contract.id) {
+            <tr>
+              <th scope="row" class="px-3 py-4 align-top font-semibold leading-[1.5]">
+                {{ row.contract.id }}
+              </th>
+              <td class="px-3 py-4 align-top text-ink2 wrap-anywhere">{{ row.companyName }}</td>
+              <td class="px-3 py-4 align-top tabular-nums">
+                {{ row.contract.startDate | date: 'dd/MM/yyyy' : 'UTC' }}
+              </td>
+              <td class="px-3 py-4 align-top tabular-nums">
+                {{ row.contract.endDate | date: 'dd/MM/yyyy' : 'UTC' }}
+              </td>
+              <td class="px-3 py-4 align-top">
+                <span class="block text-xs font-semibold text-ink2">{{ row.policyCode }}</span>
+                <span class="mt-0.5 block text-sm wrap-anywhere">{{ row.policyName }}</span>
+              </td>
+              <td class="px-3 py-4 align-top">
+                @if (row.term === 'current') {
+                  <app-manager-status-badge value="current" />
+                } @else if (row.term === 'future') {
+                  <app-manager-status-badge value="future" />
+                } @else {
+                  <app-manager-status-badge value="expired" />
+                }
+              </td>
+              <td class="px-3 py-3 align-top">
+                <button
+                  appManagerTextAction
+                  #detailsDesktopTrigger
+                  type="button"
+                  [disabled]="!ready()"
+                  [attr.aria-label]="'Ver detalhes do contrato ' + row.contract.id"
+                  (click)="openDetails(row.contract, detailsDesktopTrigger)"
+                >
+                  Ver detalhes
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div appManagerCollection class="mt-3 divide-y divide-line xl:hidden">
+      @for (row of filteredRows(); track row.contract.id) {
+        <article
+          class="p-4 first:rounded-t-deadline last:rounded-b-deadline"
+          [attr.aria-labelledby]="'contract-title-' + row.contract.id"
+        >
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h3
+                [id]="'contract-title-' + row.contract.id"
+                class="text-sm font-semibold leading-[1.5] tracking-[-.01em]"
+              >
+                {{ row.contract.id }}
+              </h3>
+              <p class="mt-1 text-sm text-ink2">{{ row.companyName }}</p>
+            </div>
+            @if (row.term === 'current') {
+              <app-manager-status-badge value="current" />
+            } @else if (row.term === 'future') {
+              <app-manager-status-badge value="future" />
+            } @else {
+              <app-manager-status-badge value="expired" />
+            }
+          </div>
+          <dl class="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+            <div>
+              <dt class="text-xs text-ink3">Início</dt>
+              <dd class="m-0 mt-0.5 tabular-nums">
+                {{ row.contract.startDate | date: 'dd/MM/yyyy' : 'UTC' }}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-xs text-ink3">Fim</dt>
+              <dd class="m-0 mt-0.5 tabular-nums">
+                {{ row.contract.endDate | date: 'dd/MM/yyyy' : 'UTC' }}
+              </dd>
+            </div>
+            <div class="col-span-2">
+              <dt class="text-xs text-ink3">Política vinculada</dt>
+              <dd class="m-0 mt-0.5">{{ row.policyCode }} · {{ row.policyName }}</dd>
+            </div>
+          </dl>
+          <div class="mt-3 border-t border-line pt-2">
+            <button
+              appManagerTextAction
+              #detailsMobileTrigger
+              type="button"
+              [disabled]="!ready()"
+              [attr.aria-label]="'Ver detalhes do contrato ' + row.contract.id"
+              (click)="openDetails(row.contract, detailsMobileTrigger)"
+            >
+              Ver detalhes
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  } @else {
+    <app-manager-empty-state
+      class="mt-3"
+      title="Nenhum contrato encontrado"
+      description="Ajuste a busca ou o filtro de vigência para ver outros contratos de exemplo."
+      ><button appManagerTextAction type="button" class="mt-4" (click)="clearFilters()">
+        Limpar busca e filtro
+      </button></app-manager-empty-state
+    >
+  }
+</section>
+
+<dialog
+  appManagerDialog
+  #detailsDialog
+  tabindex="-1"
+  class="w-[min(560px,calc(100%-24px))]"
+  aria-labelledby="contract-details-title"
+  (close)="onDetailsClose()"
+  (click)="onDetailsBackdrop($event)"
+  (keydown)="trapDetailsFocus($event)"
+>
+  @if (selectedContract(); as contract) {
+    <div class="p-5 sm:p-7">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h2
+            id="contract-details-title"
+            class="text-xl font-semibold leading-snug tracking-[-.02em]"
+          >
+            {{ contract.id }}
+          </h2>
+          <p class="mt-2 text-sm text-ink2">{{ companyName(contract.companyId) }}</p>
+        </div>
+        <button
+          appManagerTextAction
+          #closeDetailsButton
+          type="button"
+          class="shrink-0"
+          (click)="closeDetails()"
+        >
+          Fechar
+        </button>
+      </div>
+      <dl class="mt-6 divide-y divide-line border-y border-line text-sm">
+        <div class="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
+          <dt class="text-ink2">Início da vigência</dt>
+          <dd class="m-0 font-semibold tabular-nums">
+            {{ contract.startDate | date: 'dd/MM/yyyy' : 'UTC' }}
+          </dd>
+        </div>
+        <div class="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
+          <dt class="text-ink2">Fim da vigência</dt>
+          <dd class="m-0 font-semibold tabular-nums">
+            {{ contract.endDate | date: 'dd/MM/yyyy' : 'UTC' }}
+          </dd>
+        </div>
+        <div class="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
+          <dt class="text-ink2">Política vinculada</dt>
+          <dd class="m-0 font-semibold">{{ policyName(contract.policyId) }}</dd>
+        </div>
+        <div class="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
+          <dt class="text-ink2">Situação em 05/11/2026</dt>
+          <dd class="m-0 font-semibold">{{ contractTermLabel(contract) }}</dd>
+        </div>
+      </dl>
+      <p class="mt-4 text-xs text-ink3">Dados fictícios. Nenhum cadastro foi alterado.</p>
+    </div>
+  }
+</dialog>

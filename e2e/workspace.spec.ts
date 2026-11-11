@@ -11,8 +11,10 @@ const profiles = [
       'Painel',
       'Fila de chamados',
       'Relatórios',
-      'Contratos e SLA',
-      'Clientes e usuários',
+      'Contratos',
+      'Políticas SLA',
+      'Empresas',
+      'Usuários',
       'Auditoria',
     ],
     count: 4,
@@ -47,6 +49,10 @@ for (const profile of profiles) {
     await expect(nav.getByRole('link').first()).toHaveAttribute('aria-current', 'page');
     if (profile.key === 'tecnico') {
       await expect(page.locator('app-technician-ticket-card')).toHaveCount(profile.count);
+    } else if (profile.key === 'gestor') {
+      await expect(
+        page.getByRole('table', { name: 'Chamados que pedem atenção' }).locator('tbody tr'),
+      ).toHaveCount(profile.count);
     } else {
       await expect(page.getByRole('table').locator('tbody tr')).toHaveCount(profile.count);
     }
@@ -111,9 +117,9 @@ for (const width of [320, 390, 768]) {
     await expect(menu).not.toBeVisible();
     await expect(trigger).toBeFocused();
     await trigger.click();
-    await menu.getByRole('link', { name: 'Contratos e SLA' }).click();
+    await menu.getByRole('link', { name: 'Políticas SLA' }).click();
     await expect(menu).not.toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Contratos e SLA', exact: true })).toBeFocused();
+    await expect(page.getByRole('heading', { name: 'Políticas SLA', exact: true })).toBeFocused();
     await trigger.click();
     await page.mouse.click(width - 2, 400);
     await expect(menu).not.toBeVisible();

@@ -1,7 +1,16 @@
 export type ProfileKey = 'gestor' | 'tecnico' | 'cliente';
 export type PageKind = 'overview' | 'tickets' | 'preview';
 export type WorkspaceIconKey =
-  'home' | 'tickets' | 'reports' | 'contracts' | 'users' | 'audit' | 'service' | 'add';
+  | 'home'
+  | 'tickets'
+  | 'reports'
+  | 'contracts'
+  | 'sla'
+  | 'building'
+  | 'users'
+  | 'audit'
+  | 'service'
+  | 'add';
 
 export interface WorkspacePageData {
   key: string;
@@ -135,15 +144,15 @@ export const WORKSPACE_PROFILES: readonly WorkspaceProfile[] = [
       {
         key: 'contratos',
         path: '/app/gestor/contratos',
-        title: 'Contratos e SLA',
-        description: 'O contexto contratual que orienta os três compromissos de prazo.',
+        title: 'Contratos',
+        description: 'Vigência dos contratos empresariais e políticas vinculadas.',
         icon: 'contracts',
         group: 'Gestão',
         kind: 'preview',
         preview: {
           title: 'Contrato de manutenção predial',
           description:
-            'Exemplo de apresentação de um contrato. Cadastro e edição de políticas não estão disponíveis na demonstração.',
+            'Exemplo de vigência contratual com uma política SLA vinculada. Prazos e versões são consultados na área de políticas.',
           facts: [
             { label: 'Cliente fictício', value: 'Edifício Aurora' },
             { label: 'Identificação de exemplo', value: 'CT-2026-014' },
@@ -152,10 +161,38 @@ export const WORKSPACE_PROFILES: readonly WorkspaceProfile[] = [
         },
       },
       {
+        key: 'politicas',
+        path: '/app/gestor/politicas',
+        title: 'Políticas SLA',
+        description: 'Prazos de resposta, atendimento em campo e resolução.',
+        icon: 'sla',
+        group: 'Gestão',
+        kind: 'preview',
+        preview: {
+          title: 'Prazos por prioridade',
+          description:
+            'Matrizes e versões fictícias demonstram como consultar os compromissos de cada política.',
+          facts: [
+            { label: 'Relógios', value: 'Resposta, atendimento em campo e resolução' },
+            { label: 'Prioridades', value: 'Alta e Normal' },
+            { label: 'Dados', value: 'Exemplos locais sem versionamento real' },
+          ],
+        },
+      },
+      {
+        key: 'empresas',
+        path: '/app/gestor/empresas',
+        title: 'Empresas',
+        description: 'Cadastro de clientes empresariais e dados de contato.',
+        icon: 'building',
+        group: 'Gestão',
+        kind: 'preview',
+      },
+      {
         key: 'usuarios',
         path: '/app/gestor/usuarios',
-        title: 'Clientes e usuários',
-        description: 'As pessoas e empresas que participam do atendimento.',
+        title: 'Usuários',
+        description: 'As pessoas e os perfis que participam do atendimento.',
         icon: 'users',
         group: 'Gestão',
         kind: 'preview',

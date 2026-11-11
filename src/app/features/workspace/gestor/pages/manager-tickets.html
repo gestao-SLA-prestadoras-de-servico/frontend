@@ -1,0 +1,215 @@
+<app-manager-page-header
+  title="Fila de chamados"
+  description="Encontre o próximo atendimento pelos dados do cliente, do técnico e da prioridade."
+  demo="Dados fictícios · 05/11/2026"
+></app-manager-page-header>
+
+<section aria-label="Indicadores dos chamados" class="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
+  <app-manager-metric-card label="Em aberto" [value]="openCount()" icon="open" tone="blue" />
+  <app-manager-metric-card
+    label="Resolvidos"
+    [value]="resolvedCount()"
+    icon="resolved"
+    tone="green"
+  />
+  <app-manager-metric-card
+    label="Atrasados"
+    [value]="overdueCount()"
+    icon="overdue"
+    tone="danger"
+  />
+</section>
+
+<section class="mt-6" aria-label="Filtros de chamados">
+  <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div>
+      <label appManagerLabel for="ticket-client">Cliente</label
+      ><select
+        appSelect
+        id="ticket-client"
+        class="mt-2"
+        [value]="clientFilter()"
+        (change)="updateClient($event)"
+      >
+        <option>Todas</option>
+        @for (client of clients(); track client) {
+          <option [value]="client">{{ client }}</option>
+        }
+      </select>
+    </div>
+    <div>
+      <label appManagerLabel for="ticket-technician">Técnico</label
+      ><select
+        appSelect
+        id="ticket-technician"
+        class="mt-2"
+        [value]="technicianFilter()"
+        (change)="updateTechnician($event)"
+      >
+        <option>Todos</option>
+        @for (technician of technicians(); track technician) {
+          <option [value]="technician">{{ technician }}</option>
+        }
+      </select>
+    </div>
+    <div>
+      <label appManagerLabel for="ticket-status">Situação</label
+      ><select
+        appSelect
+        id="ticket-status"
+        class="mt-2"
+        [value]="statusFilter()"
+        (change)="updateStatus($event)"
+      >
+        <option>Todas</option>
+        <option value="ABERTO">Aberto</option>
+        <option value="ATRIBUIDO">Atribuído</option>
+        <option value="EM_ATENDIMENTO">Em atendimento</option>
+        <option value="RESOLVIDO">Resolvido</option>
+        <option value="CANCELADO">Cancelado</option>
+        <option value="ENCERRADO">Encerrado</option>
+      </select>
+    </div>
+    <div>
+      <label appManagerLabel for="ticket-priority">Prioridade</label
+      ><select
+        appSelect
+        id="ticket-priority"
+        class="mt-2"
+        [value]="priorityFilter()"
+        (change)="updatePriority($event)"
+      >
+        <option>Todas</option>
+        <option>Alta</option>
+        <option>Normal</option>
+      </select>
+    </div>
+  </div>
+</section>
+
+<section class="mt-7" aria-labelledby="ticket-list-title">
+  <div class="flex flex-wrap items-baseline justify-between gap-3">
+    <h2 appManagerSectionHeading id="ticket-list-title">Chamados no cenário</h2>
+    <p class="text-xs text-ink3" aria-live="polite">
+      {{ filteredTickets().length }}
+      {{ filteredTickets().length === 1 ? 'resultado' : 'resultados' }}
+      <button appManagerTextAction type="button" class="ml-2" (click)="clearFilters()">
+        Limpar filtros
+      </button>
+    </p>
+  </div>
+  @if (filteredTickets().length) {
+    <div appManagerCollection class="mt-3 hidden overflow-x-auto md:block">
+      <table appManagerTable class="min-w-[940px] table-fixed">
+        <caption class="sr-only">
+          Fila demonstrativa com chamado e cliente, prioridade, estado, técnico, abertura e relógios
+          de SLA
+        </caption>
+        <colgroup>
+          <col class="w-[28%]" />
+          <col class="w-[10%]" />
+          <col class="w-[16%]" />
+          <col class="w-[13%]" />
+          <col class="w-[10%]" />
+          <col class="w-[23%]" />
+        </colgroup>
+        <thead appManagerTableHead>
+          <tr>
+            <th scope="col" class="px-4 py-3">Chamado</th>
+            <th scope="col" class="px-4 py-3">Prioridade</th>
+            <th scope="col" class="px-4 py-3">Estado</th>
+            <th scope="col" class="px-4 py-3">Técnico</th>
+            <th scope="col" class="px-4 py-3">Aberto em</th>
+            <th scope="col" class="px-4 py-3">Relógios</th>
+          </tr>
+        </thead>
+        <tbody appManagerTableBody>
+          @for (ticket of filteredTickets(); track ticket.id) {
+            <tr>
+              <th scope="row" class="px-4 py-4 align-top">
+                <a
+                  class="block rounded-sm font-semibold text-pri-d underline-offset-4 hover:underline"
+                  [routerLink]="['/app/gestor/chamados', ticket.id]"
+                >
+                  <span class="block text-xs tabular-nums text-ink3">#{{ ticket.id }}</span>
+                  <span class="mt-1 block">{{ ticket.title }}</span>
+                </a>
+                <p class="mt-1 text-xs font-normal text-ink2">{{ ticket.client }}</p>
+              </th>
+              <td class="px-4 py-4 align-top">
+                <app-manager-ticket-badge [value]="ticket.priority" />
+              </td>
+              <td class="px-4 py-4 align-top">
+                <app-manager-ticket-badge [value]="ticket.status" />
+              </td>
+              <td class="px-4 py-4 align-top text-ink2">
+                {{ ticket.technician ?? 'Sem indicação' }}
+              </td>
+              <td class="px-4 py-4 align-top text-xs leading-relaxed tabular-nums text-ink2">
+                <span class="block whitespace-nowrap">{{ ticket.openedAt.split(' · ')[0] }}</span>
+                <span class="mt-1 block">{{ ticket.openedAt.split(' · ')[1] }}</span>
+              </td>
+              <td class="px-4 py-4 align-top">
+                <app-manager-ticket-clocks [ticket]="ticket" />
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div appManagerCollection class="mt-3 divide-y divide-line md:hidden">
+      @for (ticket of filteredTickets(); track ticket.id) {
+        <article class="p-4 first:rounded-t-deadline last:rounded-b-deadline">
+          <div>
+            <div class="min-w-0">
+              <p class="text-xs tabular-nums text-ink3">#{{ ticket.id }}</p>
+              <h3 class="mt-1 text-sm leading-[1.5] font-semibold">
+                <a
+                  class="text-inherit underline decoration-transparent underline-offset-4 hover:text-pri-d hover:decoration-current"
+                  [routerLink]="['/app/gestor/chamados', ticket.id]"
+                  >{{ ticket.title }}</a
+                >
+              </h3>
+              <p class="mt-1 text-xs text-ink2">{{ ticket.client }}</p>
+            </div>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <app-manager-ticket-badge [value]="ticket.priority" />
+              <app-manager-ticket-badge [value]="ticket.status" />
+            </div>
+          </div>
+          <dl class="mt-4 grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <dt class="text-xs text-ink3">Aberto em</dt>
+              <dd class="m-0 mt-0.5 tabular-nums">{{ ticket.openedAt }}</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-ink3">Técnico</dt>
+              <dd class="m-0 mt-0.5">{{ ticket.technician ?? 'Sem indicação' }}</dd>
+            </div>
+            <div class="col-span-2">
+              <dt class="text-xs text-ink3">Relógios</dt>
+              <dd class="m-0 mt-1.5">
+                <app-manager-ticket-clocks [ticket]="ticket" />
+              </dd>
+            </div>
+          </dl>
+          <a
+            appManagerTextAction
+            [routerLink]="['/app/gestor/chamados', ticket.id]"
+            class="mt-4 border-t border-line pt-3"
+            >Abrir detalhes <svg class="size-4" [lucideIcon]="icons.arrow" aria-hidden="true"></svg
+          ></a>
+        </article>
+      }
+    </div>
+  } @else {
+    <app-manager-empty-state
+      class="mt-3"
+      title="Nenhum chamado corresponde aos filtros"
+      description="Remova um filtro para ampliar a consulta da demonstração."
+      ><button appManagerTextAction type="button" class="mt-3" (click)="clearFilters()">
+        Limpar filtros
+      </button></app-manager-empty-state
+    >
+  }
+</section>

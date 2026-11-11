@@ -1,0 +1,244 @@
+<a appManagerTextAction routerLink="/app/gestor/contratos" class="mb-4">
+  <svg class="size-4" [lucideIcon]="icons.back" aria-hidden="true"></svg>Contratos
+</a>
+<app-manager-page-header
+  title="Novo contrato"
+  description="Defina a empresa, o período de vigência e a política que orienta o atendimento."
+  demo="Demonstração com dados fictícios. A revisão não envia nem salva informações."
+></app-manager-page-header>
+
+@if (created(); as contract) {
+  <section
+    #successMessage
+    tabindex="-1"
+    role="status"
+    aria-labelledby="contract-created-title"
+    class="mt-7 max-w-[760px] rounded-deadline bg-grn-bg p-5 text-grn-t sm:p-7"
+  >
+    <h2 id="contract-created-title" class="text-lg font-semibold leading-[1.4] tracking-[-.02em]">
+      Cadastro demonstrativo concluído
+    </h2>
+    <p class="mt-2 text-sm">
+      {{ contract.id }} foi incluído na lista desta sessão. Nenhuma informação foi enviada ou salva.
+    </p>
+    <dl class="mt-5 grid gap-4 text-sm sm:grid-cols-2">
+      <div>
+        <dt class="text-xs text-grn-t">Empresa</dt>
+        <dd class="m-0 mt-1 font-semibold">{{ selectedCompany()?.legalName }}</dd>
+      </div>
+      <div>
+        <dt class="text-xs text-grn-t">Política vinculada</dt>
+        <dd class="m-0 mt-1 font-semibold">
+          {{ selectedPolicy()?.code }} · {{ selectedPolicy()?.name }}
+        </dd>
+      </div>
+      <div>
+        <dt class="text-xs text-grn-t">Início</dt>
+        <dd class="m-0 mt-1 font-semibold tabular-nums">
+          {{ contract.startDate | date: 'dd/MM/yyyy' : 'UTC' }}
+        </dd>
+      </div>
+      <div>
+        <dt class="text-xs text-grn-t">Fim</dt>
+        <dd class="m-0 mt-1 font-semibold tabular-nums">
+          {{ contract.endDate | date: 'dd/MM/yyyy' : 'UTC' }}
+        </dd>
+      </div>
+    </dl>
+    <a routerLink="/app/gestor/contratos" appButtonPrimary class="mt-6 min-h-11 px-4 py-2.5">
+      Ver contratos<svg class="size-4" [lucideIcon]="icons.arrow" aria-hidden="true"></svg>
+    </a>
+  </section>
+} @else {
+  <section appManagerPanel class="mt-7 max-w-[760px]" aria-labelledby="contract-form-title">
+    <h2 appManagerSectionHeading id="contract-form-title">Dados do contrato</h2>
+    <p class="mt-2 text-xs text-ink3">Todos os campos são obrigatórios.</p>
+    <form class="mt-6 space-y-5" [formGroup]="form" (ngSubmit)="openReview()" novalidate>
+      <div>
+        <label appManagerLabel for="contract-companyId">Empresa</label>
+        <select
+          appSelect
+          id="contract-companyId"
+          class="mt-2"
+          formControlName="companyId"
+          required
+          [attr.aria-invalid]="invalid('companyId')"
+          aria-describedby="contract-company-help contract-company-error"
+        >
+          <option value="">Selecione uma empresa</option>
+          @for (company of activeCompanies(); track company.id) {
+            <option [value]="company.id">{{ company.legalName }}</option>
+          }
+        </select>
+        <p id="contract-company-help" class="mt-2 text-xs text-ink3">
+          Apenas empresas ativas aparecem para novos contratos.
+        </p>
+        <p
+          id="contract-company-error"
+          class="mt-2 text-sm text-danger"
+          [hidden]="!invalid('companyId')"
+        >
+          {{ fieldErrors.companyId }}
+        </p>
+      </div>
+
+      <fieldset class="min-w-0">
+        <legend class="text-sm font-semibold">Período de vigência</legend>
+        <div class="mt-2 grid gap-4 sm:grid-cols-2">
+          <div>
+            <label for="contract-startDate" class="block text-sm text-ink2">Data de início</label>
+            <input
+              appInput
+              id="contract-startDate"
+              class="mt-2"
+              type="date"
+              formControlName="startDate"
+              required
+              [attr.aria-invalid]="invalid('startDate')"
+              aria-describedby="contract-startDate-error contract-date-order-error"
+            />
+            <p
+              id="contract-startDate-error"
+              class="mt-2 text-sm text-danger"
+              [hidden]="!invalid('startDate') || dateOrderError"
+            >
+              {{ fieldErrors.startDate }}
+            </p>
+          </div>
+          <div>
+            <label for="contract-endDate" class="block text-sm text-ink2">Data de fim</label>
+            <input
+              appInput
+              id="contract-endDate"
+              class="mt-2"
+              type="date"
+              formControlName="endDate"
+              required
+              [attr.aria-invalid]="invalid('endDate')"
+              aria-describedby="contract-endDate-error contract-date-order-error"
+            />
+            <p
+              id="contract-endDate-error"
+              class="mt-2 text-sm text-danger"
+              [hidden]="!invalid('endDate') || dateOrderError"
+            >
+              {{ fieldErrors.endDate }}
+            </p>
+          </div>
+        </div>
+        <p
+          id="contract-date-order-error"
+          class="mt-3 text-sm text-danger"
+          [hidden]="!dateOrderError"
+        >
+          A data de fim deve ser igual ou posterior à data de início.
+        </p>
+      </fieldset>
+
+      <div>
+        <label appManagerLabel for="contract-policyId">Política vinculada</label>
+        <select
+          appSelect
+          id="contract-policyId"
+          class="mt-2"
+          formControlName="policyId"
+          required
+          [attr.aria-invalid]="invalid('policyId')"
+          aria-describedby="contract-policy-help contract-policy-error"
+        >
+          <option value="">Selecione uma política</option>
+          @for (policy of policies; track policy.id) {
+            <option [value]="policy.id">{{ policy.code }} · {{ policy.name }}</option>
+          }
+        </select>
+        <p id="contract-policy-help" class="mt-2 text-xs text-ink3">
+          A política aparece como referência vinculada neste cenário fictício.
+        </p>
+        <p
+          id="contract-policy-error"
+          class="mt-2 text-sm text-danger"
+          [hidden]="!invalid('policyId')"
+        >
+          {{ fieldErrors.policyId }}
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3 border-t border-line pt-5">
+        <button
+          #reviewButton
+          type="submit"
+          appButtonPrimary
+          class="min-h-12 px-5 py-3 disabled:cursor-wait disabled:opacity-60"
+          [disabled]="!ready() || activeCompanies().length === 0"
+        >
+          Revisar cadastro<svg class="size-4" [lucideIcon]="icons.arrow" aria-hidden="true"></svg>
+        </button>
+        <a routerLink="/app/gestor/contratos" appButtonSecondary class="min-h-12 px-5 py-3"
+          >Cancelar</a
+        >
+      </div>
+    </form>
+  </section>
+}
+
+<dialog
+  appManagerDialog
+  #reviewDialog
+  tabindex="-1"
+  class="w-[min(600px,calc(100%-24px))]"
+  aria-labelledby="contract-review-title"
+  (close)="onReviewClose()"
+  (click)="onReviewBackdrop($event)"
+  (keydown)="trapReviewFocus($event)"
+>
+  <div class="p-5 sm:p-7">
+    <h2 id="contract-review-title" class="text-xl font-semibold leading-snug tracking-[-.02em]">
+      Revisar cadastro
+    </h2>
+    <p class="mt-2 text-sm text-ink2">
+      Confira os dados do contrato antes de concluir a demonstração.
+    </p>
+    <dl class="mt-5 divide-y divide-line border-y border-line text-sm">
+      <div class="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
+        <dt class="text-ink2">Empresa</dt>
+        <dd class="m-0 font-semibold">{{ selectedCompany()?.legalName }}</dd>
+      </div>
+      <div class="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
+        <dt class="text-ink2">Início</dt>
+        <dd class="m-0 font-semibold tabular-nums">
+          {{ form.controls.startDate.value | date: 'dd/MM/yyyy' : 'UTC' }}
+        </dd>
+      </div>
+      <div class="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
+        <dt class="text-ink2">Fim</dt>
+        <dd class="m-0 font-semibold tabular-nums">
+          {{ form.controls.endDate.value | date: 'dd/MM/yyyy' : 'UTC' }}
+        </dd>
+      </div>
+      <div class="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
+        <dt class="text-ink2">Política</dt>
+        <dd class="m-0 font-semibold">
+          {{ selectedPolicy()?.code }} · {{ selectedPolicy()?.name }}
+        </dd>
+      </div>
+    </dl>
+    <p class="mt-4 text-xs text-ink3">
+      Ao confirmar, o contrato entra apenas na lista desta sessão. Nenhum dado será enviado ou
+      salvo.
+    </p>
+    <div class="mt-6 flex flex-wrap justify-end gap-3 border-t border-line pt-5">
+      <button
+        #cancelReviewButton
+        type="button"
+        appButtonSecondary
+        class="min-h-11 px-4 py-2.5"
+        (click)="closeReview()"
+      >
+        Voltar ao formulário
+      </button>
+      <button type="button" appButtonPrimary class="min-h-11 px-4 py-2.5" (click)="confirmDraft()">
+        Confirmar cadastro demonstrativo
+      </button>
+    </div>
+  </div>
+</dialog>

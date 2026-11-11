@@ -1,0 +1,253 @@
+<a appManagerTextAction routerLink="/app/gestor/politicas" class="mb-4">
+  <svg class="size-4" [lucideIcon]="icons.back" aria-hidden="true"></svg>Políticas SLA
+</a>
+<app-manager-page-header
+  title="Revisar prazos"
+  description="{{ selectedPolicy().code }} · {{ selectedPolicy().name }} · versão atual v{{
+    currentVersion().version
+  }}"
+  demo="Prévia demonstrativa: os prazos usam minutos de janela (09h–18h, dias úteis). Nenhum SLA é calculado e nenhuma versão será criada."
+></app-manager-page-header>
+
+@if (previewNotice(); as notice) {
+  <section
+    #previewFeedback
+    tabindex="-1"
+    role="status"
+    aria-labelledby="sla-preview-feedback-title"
+    class="mt-6 max-w-[760px] rounded-deadline bg-grn-bg p-4 text-grn-t sm:p-5"
+  >
+    <h2
+      id="sla-preview-feedback-title"
+      class="text-sm font-semibold leading-normal tracking-normal"
+    >
+      Prévia encerrada
+    </h2>
+    <p class="mt-1 text-sm">{{ notice }}</p>
+  </section>
+}
+
+<div class="mt-6 grid items-start gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(280px,.85fr)]">
+  <section appManagerPanel aria-labelledby="sla-edit-form-title">
+    <h2 appManagerSectionHeading id="sla-edit-form-title">Prazos da política</h2>
+    <p class="mt-1 text-xs text-ink3">
+      Informe minutos inteiros de janela. 540 min correspondem a 1 dia útil no exemplo fixo.
+    </p>
+
+    <form class="mt-5" [formGroup]="form" (ngSubmit)="reviewPreview()" novalidate>
+      <div>
+        <label appManagerLabel for="sla-edit-policy">Política</label>
+        <select
+          appSelect
+          id="sla-edit-policy"
+          class="mt-2"
+          formControlName="policyId"
+          (change)="onPolicyChange($event)"
+          aria-describedby="sla-edit-policy-help"
+        >
+          @for (policy of policies; track policy.id) {
+            <option [value]="policy.id">{{ policy.code }} · {{ policy.name }}</option>
+          }
+        </select>
+        <p id="sla-edit-policy-help" class="mt-2 text-xs text-ink3">
+          A seleção carrega os prazos atuais apenas como ponto de partida para a prévia.
+        </p>
+      </div>
+
+      @if (warningPriorities().length) {
+        <div
+          class="mt-5 rounded-deadline bg-danger-bg p-4 text-danger"
+          role="alert"
+          aria-live="polite"
+        >
+          <h3 class="text-sm font-semibold leading-normal tracking-normal">
+            Há prazos fora da ordem ilustrativa
+          </h3>
+          <p class="mt-1 text-sm">
+            A sequência de referência é Resposta &lt; Atendimento em campo &lt; Resolução. Revise os
+            valores antes de concluir a prévia.
+          </p>
+          @for (priority of warningPriorities(); track priority) {
+            <p class="mt-1 text-sm font-medium">{{ warningLine(priority) }}</p>
+          }
+          <p class="mt-2 text-xs">
+            O aviso não bloqueia a prévia e não representa validação de servidor.
+          </p>
+        </div>
+      } @else {
+        <p class="mt-5 text-xs leading-[1.6] text-ink2" role="status">
+          A ordem ilustrativa está consistente: Resposta &lt; Atendimento em campo &lt; Resolução.
+        </p>
+      }
+
+      <div class="mt-5 grid gap-6 xl:grid-cols-2">
+        @for (priority of priorities; track priority.key) {
+          <fieldset class="min-w-0 border-t border-line pt-4">
+            <legend class="px-0 text-sm font-semibold">Prioridade {{ priority.label }}</legend>
+            <div class="mt-3 space-y-4">
+              @for (clock of clocks; track clock.key) {
+                <div
+                  class="grid min-w-0 gap-x-3 gap-y-1 sm:grid-cols-[minmax(0,1fr)_144px] sm:items-center"
+                >
+                  <label
+                    [for]="controlId(priority.key, clock.key)"
+                    class="block text-sm font-medium"
+                  >
+                    {{ clock.label }} · {{ priority.label }}
+                    <span class="font-normal text-ink2">(min)</span>
+                  </label>
+                  <div class="relative min-w-0">
+                    <input
+                      appInput
+                      [id]="controlId(priority.key, clock.key)"
+                      [formControlName]="fieldFor(priority.key, clock.key)"
+                      (input)="refreshWarnings()"
+                      class="pr-12 text-right tabular-nums"
+                      type="number"
+                      min="1"
+                      step="1"
+                      inputmode="numeric"
+                      required
+                      [attr.aria-invalid]="invalid(fieldFor(priority.key, clock.key))"
+                      [attr.aria-describedby]="
+                        invalid(fieldFor(priority.key, clock.key))
+                          ? controlId(priority.key, clock.key) +
+                            '-help ' +
+                            controlId(priority.key, clock.key) +
+                            '-error'
+                          : controlId(priority.key, clock.key) + '-help'
+                      "
+                    />
+                    <span
+                      class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-ink2"
+                      >min</span
+                    >
+                  </div>
+                  <p
+                    [id]="controlId(priority.key, clock.key) + '-help'"
+                    class="text-xs leading-[1.45] text-ink2 sm:col-start-2"
+                  >
+                    {{ windowCopy(priority.key, clock.key) }}
+                  </p>
+                  <p
+                    [id]="controlId(priority.key, clock.key) + '-error'"
+                    class="text-xs text-danger sm:col-span-2"
+                    [hidden]="!invalid(fieldFor(priority.key, clock.key))"
+                  >
+                    {{ fieldError(fieldFor(priority.key, clock.key)) }}
+                  </p>
+                </div>
+              }
+            </div>
+          </fieldset>
+        }
+      </div>
+
+      <div class="mt-6 flex flex-wrap items-center gap-3 border-t border-line pt-5">
+        <button #reviewButton type="submit" appButtonPrimary class="min-h-12 px-5 py-3">
+          Revisar prévia
+        </button>
+        <a
+          routerLink="/app/gestor/politicas"
+          [queryParams]="{ policy: selectedPolicy().id }"
+          appButtonSecondary
+          class="min-h-12 px-5 py-3"
+        >
+          Voltar às políticas
+        </a>
+      </div>
+    </form>
+  </section>
+
+  <aside appManagerPanel>
+    <h2 appManagerSectionHeading>Como ler a matriz</h2>
+    <p class="mt-2 text-sm leading-[1.65] text-ink2">
+      Cada valor representa minutos dentro da janela útil de atendimento. O texto auxiliar usa uma
+      equivalência fixa apenas para alguns valores de exemplo.
+    </p>
+    <dl class="mt-4 divide-y divide-line border-y border-line text-sm">
+      <div class="grid grid-cols-[minmax(0,1fr)_auto] gap-3 py-3">
+        <dt class="text-ink2">Janela ilustrativa</dt>
+        <dd class="m-0 text-right font-semibold tabular-nums">09h–18h · seg–sex</dd>
+      </div>
+      <div class="grid grid-cols-[minmax(0,1fr)_auto] gap-3 py-3">
+        <dt class="text-ink2">Exemplo de conversão fixa</dt>
+        <dd class="m-0 text-right font-semibold tabular-nums">540 min · 1 dia útil</dd>
+      </div>
+    </dl>
+    <p class="mt-4 text-xs leading-[1.6] text-ink3">
+      A revisão mostra os números digitados; não altera contratos, políticas ou histórico.
+    </p>
+  </aside>
+</div>
+
+<dialog
+  appManagerDialog
+  #reviewDialog
+  tabindex="-1"
+  class="w-[min(680px,calc(100%-24px))]"
+  aria-labelledby="sla-review-title"
+  (close)="onReviewClose()"
+  (click)="onReviewBackdrop($event)"
+  (keydown)="trapReviewFocus($event)"
+>
+  <div class="p-5 sm:p-7">
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <h2 id="sla-review-title" class="text-xl font-semibold leading-snug tracking-[-.02em]">
+          Revisão demonstrativa
+        </h2>
+        <p class="mt-2 text-sm text-ink2">
+          {{ selectedPolicy().code }} · {{ selectedPolicy().name }}
+        </p>
+      </div>
+      <button
+        #cancelReviewButton
+        type="button"
+        appButtonSecondary
+        class="min-h-11 shrink-0 px-3 py-2"
+        (click)="closeReview()"
+      >
+        Voltar e editar
+      </button>
+    </div>
+    <p class="mt-4 text-sm leading-[1.6] text-ink2">
+      Confira os prazos da prévia. Nenhum valor será atualizado e o histórico não receberá uma nova
+      versão.
+    </p>
+    <div class="mt-5 grid gap-5 border-y border-line py-4 sm:grid-cols-2">
+      @for (priority of priorities; track priority.key) {
+        <section [attr.aria-labelledby]="'sla-review-' + priority.key">
+          <h3 [id]="'sla-review-' + priority.key" class="text-sm font-semibold">
+            Prioridade {{ priority.label }}
+          </h3>
+          <dl class="mt-2 space-y-2 text-sm">
+            @for (clock of clocks; track clock.key) {
+              <div class="flex items-baseline justify-between gap-3">
+                <dt class="text-ink2">{{ clock.shortLabel }}</dt>
+                <dd class="m-0 text-right font-semibold tabular-nums">
+                  {{ formatMinutes(editedMatrix()[priority.key][clock.key]) }} min
+                </dd>
+              </div>
+            }
+          </dl>
+        </section>
+      }
+    </div>
+    @if (warningPriorities().length) {
+      <p class="mt-4 rounded-deadline bg-danger-bg p-3 text-sm text-danger" role="note">
+        A prévia preserva o aviso de ordem inconsistente para revisão manual.
+      </p>
+    }
+    <div class="mt-5 flex flex-wrap justify-end gap-3 border-t border-line pt-5">
+      <button
+        type="button"
+        appButtonPrimary
+        class="min-h-11 px-4 py-2.5"
+        (click)="completePreview()"
+      >
+        Concluir prévia
+      </button>
+    </div>
+  </div>
+</dialog>
