@@ -5,7 +5,6 @@ import {
   computed,
   DestroyRef,
   ElementRef,
-  HostListener,
   inject,
   signal,
   viewChild,
@@ -17,13 +16,22 @@ import { LucideDynamicIcon } from '@lucide/angular';
 import { Brand } from '@app/shared/ui/brand/brand';
 import { UserMenu } from '@app/shared/ui/user-menu/user-menu';
 import { WorkspaceNavigation } from '../components/workspace-navigation/workspace-navigation';
+import { WorkspaceNotifications } from '../components/workspace-notifications/workspace-notifications';
 import { profileByKey, WORKSPACE_PROFILES } from '../data/workspace-data';
 import { WORKSPACE_ICONS } from '../data/workspace-icons';
 import { preventDefaultUnlessReplayed } from '../../../shared/utils/event-replay';
 
 @Component({
   selector: 'app-workspace-shell',
-  imports: [Brand, UserMenu, WorkspaceNavigation, RouterLink, RouterOutlet, LucideDynamicIcon],
+  imports: [
+    Brand,
+    UserMenu,
+    WorkspaceNavigation,
+    WorkspaceNotifications,
+    RouterLink,
+    RouterOutlet,
+    LucideDynamicIcon,
+  ],
   templateUrl: './workspace-shell.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
@@ -36,9 +44,6 @@ export class WorkspaceShell {
   private restoreMenuFocus = true;
   private readonly menuTrigger = viewChild.required<ElementRef<HTMLButtonElement>>('menuTrigger');
   private readonly closeButton = viewChild.required<ElementRef<HTMLButtonElement>>('closeButton');
-  private readonly notificationTrigger =
-    viewChild<ElementRef<HTMLButtonElement>>('notificationTrigger');
-  private readonly notificationArea = viewChild<ElementRef<HTMLElement>>('notificationArea');
   private readonly content = viewChild<ElementRef<HTMLElement>>('content');
   protected readonly profiles = WORKSPACE_PROFILES;
   protected readonly icons = WORKSPACE_ICONS;
@@ -46,7 +51,6 @@ export class WorkspaceShell {
   protected readonly profile = computed(() => this.context().profile);
   protected readonly page = computed(() => this.context().page);
   protected readonly menuOpen = signal(false);
-  protected readonly notificationsOpen = signal(false);
 
   protected get contentHref(): string {
     return `${this.router.url.split('#')[0]}#workspace-content`;
@@ -68,7 +72,6 @@ export class WorkspaceShell {
       .subscribe(() => {
         this.context.set(this.readContext());
         this.closeNavigation(false);
-        this.notificationsOpen.set(false);
       });
     afterNextRender(() => {
       const media = matchMedia('(min-width: 1024px)');
@@ -161,18 +164,5 @@ export class WorkspaceShell {
   }
   protected expireSession(): void {
     void this.router.navigateByUrl('/sessao-expirada');
-  }
-
-  @HostListener('document:pointerdown', ['$event'])
-  protected onOutsidePointer(event: PointerEvent): void {
-    if (!this.notificationArea()?.nativeElement.contains(event.target as Node))
-      this.notificationsOpen.set(false);
-  }
-
-  @HostListener('document:keydown.escape')
-  protected closeNotifications(): void {
-    if (!this.notificationsOpen()) return;
-    this.notificationsOpen.set(false);
-    this.notificationTrigger()?.nativeElement.focus();
   }
 }

@@ -18,7 +18,7 @@ Abra `/app/gestor`, `/app/tecnico` ou `/app/cliente`. `/app` leva ao perfil Gest
 | Técnico | Meus chamados; Atendimento atual.                                                      |
 | Cliente | Meus chamados; Abrir chamado.                                                          |
 
-O seletor **Perfil de demonstração** muda o contexto e a rota inicial. Todas as áreas são acessíveis diretamente; a mudança de menu não é uma regra de autorização. Os menus de Gestor e Técnico têm uma prévia local de notificações. O Cliente não tem sino. **Sair** e **Simular sessão expirada** reutilizam as telas da FRONTEND 05.
+O seletor **Perfil de demonstração** muda o contexto e a rota inicial. Todas as áreas são acessíveis diretamente; a mudança de menu não é uma regra de autorização. Gestor e Técnico reutilizam `WorkspaceNotifications` no cabeçalho, com lista fictícia por perfil, contagem, leitura em memória, links de chamados e cenários de vazio, carregamento e erro. O Cliente não tem sino. O escopo e a verificação estão em [FRONTEND_28_NOTIFICACOES.md](FRONTEND_28_NOTIFICACOES.md). **Sair** e **Simular sessão expirada** reutilizam as telas da FRONTEND 05.
 
 As dez páginas de exemplo têm títulos, breadcrumbs e estado ativo na navegação. As áreas que dependem de próximas tasks exibem informações estáticas, contexto e um caminho de retorno. Não apresentam formulários ou ações que finjam cadastrar, alterar ou exportar dados.
 
