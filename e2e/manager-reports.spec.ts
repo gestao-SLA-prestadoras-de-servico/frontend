@@ -78,7 +78,7 @@ test('report metrics and tables are rendered without JavaScript', async ({ brows
     viewport: { width: 1440, height: 900 },
   });
   const page = await context.newPage();
-  await page.goto(`${baseURL}/app/gestor/relatorios`);
+  await page.goto('/app/gestor/relatorios');
   await expect(page.getByRole('heading', { name: 'Relatórios', exact: true })).toBeVisible();
   await expect(page.getByRole('table', { name: /^Por cliente/ })).toContainText('Edifício Aurora');
   await expect(page.getByRole('table', { name: /^Por técnico/ })).toContainText('Rafael Costa');

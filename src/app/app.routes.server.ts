@@ -1,6 +1,7 @@
 import { PrerenderFallback, RenderMode, ServerRoute } from '@angular/ssr';
 import { WORKSPACE_PROFILES } from './features/workspace/data/workspace-data';
 import { CLIENT_TICKETS } from './features/workspace/client/data/client-data';
+import { PURGED_EVIDENCE_SAMPLE } from './features/workspace/gestor/data/purged-evidence-demo-data';
 
 export const serverRoutes: ServerRoute[] = [
   ...['', 'login', 'sessao-demo', 'sessao-expirada', 'app'].map((path): ServerRoute => ({
@@ -13,6 +14,12 @@ export const serverRoutes: ServerRoute[] = [
       renderMode: RenderMode.Prerender,
     })),
   ),
+  {
+    path: 'app/gestor/auditoria/evidencias/:id',
+    renderMode: RenderMode.Prerender,
+    getPrerenderParams: async () => [{ id: PURGED_EVIDENCE_SAMPLE.id }],
+    fallback: PrerenderFallback.Server,
+  },
   {
     path: 'app/cliente/chamados/:id',
     renderMode: RenderMode.Prerender,

@@ -9,7 +9,7 @@
               <a
                 [routerLink]="page.path"
                 routerLinkActive="bg-sf text-pri-d font-semibold"
-                [routerLinkActiveOptions]="{ exact: true }"
+                [routerLinkActiveOptions]="{ exact: page.key !== 'auditoria' }"
                 ariaCurrentWhenActive="page"
                 class="flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm text-ink2 no-underline transition-colors duration-150 hover:bg-sf hover:text-ink motion-reduce:transition-none"
                 (click)="navigate.emit()"

@@ -4,6 +4,14 @@ import { WORKSPACE_PROFILES } from './data/workspace-data';
 import { clientTicketById } from './client/data/client-data';
 import { technicianTicketById } from './technician/technician-data';
 import { managerTicketById } from './gestor/data/manager-ticket-demo-store';
+import { PURGED_EVIDENCE_SAMPLE } from './gestor/data/purged-evidence-demo-data';
+
+const purgedEvidenceExists: CanMatchFn = (_route, segments) => {
+  const exists = segments[2]?.path === PURGED_EVIDENCE_SAMPLE.id;
+  const response = inject(RESPONSE_INIT, { optional: true });
+  if (!exists && response) response.status = 404;
+  return exists;
+};
 
 const clientTicketExists: CanMatchFn = (_route, segments) => {
   const exists = !!clientTicketById(segments[1]?.path ?? null);
@@ -98,6 +106,20 @@ export const WORKSPACE_ROUTES: Routes = [
           })),
           ...(profile.key === 'gestor'
             ? [
+                {
+                  path: 'auditoria/evidencias/:id',
+                  title: 'Evidência expurgada | Gestor | NIVELO',
+                  data: {
+                    profile: 'gestor',
+                    page: 'evidencia-expurgada',
+                    breadcrumb: 'Evidência expurgada',
+                  },
+                  canMatch: [purgedEvidenceExists],
+                  loadComponent: () =>
+                    import('./gestor/pages/manager-evidence-metadata').then(
+                      (m) => m.ManagerEvidenceMetadata,
+                    ),
+                },
                 {
                   path: 'chamados/:id',
                   title: 'Detalhe do chamado | Gestor | NIVELO',

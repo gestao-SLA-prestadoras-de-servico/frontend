@@ -22,6 +22,7 @@ import { ManagerTeamWorkload } from '../components/manager-team-workload';
 import { ManagerTicketBadge } from '../components/manager-ticket-badge';
 import { ManagerTicketClocks } from '../components/manager-ticket-clocks';
 import { MANAGER_REPORT_SAMPLE } from '../data/manager-report-demo-data';
+import { ManagerSlaSummary } from '../components/manager-sla-summary';
 
 const NON_FINAL_STATUSES: readonly ManagerTicketStatus[] = [
   'ABERTO',
@@ -37,6 +38,7 @@ const NON_FINAL_STATUSES: readonly ManagerTicketStatus[] = [
     LucideDynamicIcon,
     ManagerActivityChart,
     ManagerMetricCard,
+    ManagerSlaSummary,
     ManagerSlaHealth,
     ManagerTeamWorkload,
     ManagerTicketBadge,
@@ -126,7 +128,6 @@ export class ManagerDashboard {
   );
 
   protected readonly monthlyReport = MANAGER_REPORT_SAMPLE;
-  protected readonly monthlySla = MANAGER_REPORT_SAMPLE.clocks;
 
   protected readonly violatedCount = computed(
     () => this.attentionTickets().filter((ticket) => ticket.overdue).length,

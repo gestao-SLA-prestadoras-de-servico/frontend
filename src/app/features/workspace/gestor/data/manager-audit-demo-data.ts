@@ -1,4 +1,5 @@
 import type { ManagerTicketStatus } from './manager-ticket-demo-store';
+import { PURGED_EVIDENCE_SAMPLE } from './purged-evidence-demo-data';
 
 export const AUDIT_ACTORS = {
   camila: { name: 'Camila Moreira', role: 'Gestor', id: 'demo-camila' },
@@ -44,6 +45,7 @@ export interface AuditRecord {
   readonly ticket?: string;
   readonly reason?: string;
   readonly effects?: string;
+  readonly evidenceId?: string;
   readonly transition?: { readonly from: ManagerTicketStatus; readonly to: ManagerTicketStatus };
 }
 
@@ -154,12 +156,16 @@ export const AUDIT_RECORDS: readonly AuditRecord[] = [
   },
   {
     id: 'audit-004',
-    occurredAt: '2026-10-30T02:00:00-03:00',
+    occurredAt: PURGED_EVIDENCE_SAMPLE.purgedAt,
     date: '30 out 2026',
     time: '02h00',
     actor: 'system',
     operation: 'purged',
-    entity: { kind: 'evidence', label: 'EV-4310 · #1032' },
+    entity: {
+      kind: 'evidence',
+      label: `${PURGED_EVIDENCE_SAMPLE.id} · #${PURGED_EVIDENCE_SAMPLE.ticketId}`,
+    },
+    evidenceId: PURGED_EVIDENCE_SAMPLE.id,
     ticket: '#1032 · Luminárias do corredor',
     summary: 'Exemplo de registro de expurgo de uma evidência após a retenção prevista.',
     effects:

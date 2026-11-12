@@ -157,32 +157,15 @@
       }
     </ul>
   </section>
-  <section appManagerPanel aria-labelledby="sla-heading">
-    <h2 appManagerSectionHeading id="sla-heading">Cumprimentos SLA do mês</h2>
-    <p class="mt-1 text-[13px] leading-5 text-ink3">
-      Amostra demonstrativa · {{ monthlyReport.period.toLocaleLowerCase('pt-BR') }} ·
-      {{ monthlyReport.total }} chamados encerrados
-    </p>
-    <ul class="mt-4 space-y-4">
-      @for (metric of monthlySla; track metric.label) {
-        <li>
-          <div class="flex items-baseline justify-between gap-3">
-            <span class="text-[13px] leading-5 text-ink2">{{ metric.label }}</span
-            ><span class="text-sm font-semibold tabular-nums">{{ metric.percentage }}%</span>
-          </div>
-          <div class="mt-2 h-2 overflow-hidden rounded-full bg-bg" aria-hidden="true">
-            <span
-              class="block h-full rounded-full bg-grn"
-              [style.width.%]="metric.percentage"
-            ></span>
-          </div>
-          <p class="mt-1 text-[13px] leading-5">
-            <span class="text-grn-t">{{ metric.fulfilled }} cumpridos</span
-            ><span class="text-ink3"> · </span
-            ><span class="text-danger">{{ metric.violated }} violados</span>
-          </p>
-        </li>
-      }
-    </ul>
-  </section>
+  <app-manager-sla-summary
+    title="Cumprimentos SLA do mês"
+    [clocks]="monthlyReport.clocks"
+    [context]="
+      'Amostra demonstrativa · ' +
+      monthlyReport.period.toLocaleLowerCase('pt-BR') +
+      ' · ' +
+      monthlyReport.total +
+      ' chamados encerrados'
+    "
+  />
 </div>
