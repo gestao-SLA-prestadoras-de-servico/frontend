@@ -2,184 +2,243 @@
   <svg class="size-4" [lucideIcon]="icons.back" aria-hidden="true"></svg>Políticas SLA
 </a>
 <app-manager-page-header
-  title="Revisar prazos"
-  description="{{ selectedPolicy().code }} · {{ selectedPolicy().name }} · versão atual v{{
-    currentVersion().version
-  }}"
-  demo="Prévia demonstrativa: os prazos usam minutos de janela (09h–18h, dias úteis). Nenhum SLA é calculado e nenhuma versão será criada."
+  [title]="isNew() ? 'Nova política' : 'Revisar prazos'"
+  [description]="
+    selectedPolicy()
+      ? selectedPolicy()!.name + ' · versão atual v' + currentVersion()!.version
+      : 'Defina o nome e os prazos da nova política de SLA.'
+  "
 ></app-manager-page-header>
 
-@if (previewNotice(); as notice) {
+@if (notice(); as message) {
   <section
     #previewFeedback
     tabindex="-1"
-    role="status"
+    [attr.role]="message.tone === 'error' ? 'alert' : 'status'"
     aria-labelledby="sla-preview-feedback-title"
-    class="mt-6 max-w-[760px] rounded-deadline bg-grn-bg p-4 text-grn-t sm:p-5"
+    class="mt-6 max-w-[760px] rounded-deadline p-4 sm:p-5"
+    [class]="message.tone === 'error' ? 'bg-danger-bg text-danger' : 'bg-grn-bg text-grn-t'"
   >
     <h2
       id="sla-preview-feedback-title"
       class="text-sm font-semibold leading-normal tracking-normal"
     >
-      Prévia encerrada
+      {{ message.tone === 'error' ? 'Não foi possível salvar' : 'Prazos salvos' }}
     </h2>
-    <p class="mt-1 text-sm">{{ notice }}</p>
+    <p class="mt-1 text-sm">{{ message.text }}</p>
   </section>
 }
 
-<div class="mt-6 grid items-start gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(280px,.85fr)]">
-  <section appManagerPanel aria-labelledby="sla-edit-form-title">
-    <h2 appManagerSectionHeading id="sla-edit-form-title">Prazos da política</h2>
-    <p class="mt-1 text-xs text-ink3">
-      Informe minutos inteiros de janela. 540 min correspondem a 1 dia útil no exemplo fixo.
-    </p>
+@if (loadError(); as message) {
+  <div class="mt-6 rounded-deadline bg-danger-bg p-5 text-danger" role="alert">
+    <p class="font-semibold">Não foi possível carregar as políticas</p>
+    <p class="mt-1 text-sm">{{ message }}</p>
+    <button
+      type="button"
+      class="mt-3 min-h-11 text-sm font-semibold underline underline-offset-4"
+      (click)="data.reload()"
+    >
+      Tentar novamente
+    </button>
+  </div>
+} @else if (data.isLoading() && !policies().length) {
+  <app-workspace-loading-state class="mt-6" label="Carregando políticas…" />
+} @else {
+  <div class="mt-6 grid items-start gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(280px,.85fr)]">
+    <section appManagerPanel aria-labelledby="sla-edit-form-title">
+      <h2 appManagerSectionHeading id="sla-edit-form-title">Prazos da política</h2>
+      <p class="mt-1 text-xs text-ink3">
+        Informe minutos inteiros de janela útil. 540 min correspondem a 1 dia útil.
+      </p>
 
-    <form class="mt-5" [formGroup]="form" (ngSubmit)="reviewPreview()" novalidate>
-      <div>
-        <label appManagerLabel for="sla-edit-policy">Política</label>
-        <select
-          appSelect
-          id="sla-edit-policy"
-          class="mt-2"
-          formControlName="policyId"
-          (change)="onPolicyChange($event)"
-          aria-describedby="sla-edit-policy-help"
-        >
-          @for (policy of policies; track policy.id) {
-            <option [value]="policy.id">{{ policy.code }} · {{ policy.name }}</option>
-          }
-        </select>
-        <p id="sla-edit-policy-help" class="mt-2 text-xs text-ink3">
-          A seleção carrega os prazos atuais apenas como ponto de partida para a prévia.
-        </p>
-      </div>
-
-      @if (warningPriorities().length) {
-        <div
-          class="mt-5 rounded-deadline bg-danger-bg p-4 text-danger"
-          role="alert"
-          aria-live="polite"
-        >
-          <h3 class="text-sm font-semibold leading-normal tracking-normal">
-            Há prazos fora da ordem ilustrativa
-          </h3>
-          <p class="mt-1 text-sm">
-            A sequência de referência é Resposta &lt; Atendimento em campo &lt; Resolução. Revise os
-            valores antes de concluir a prévia.
-          </p>
-          @for (priority of warningPriorities(); track priority) {
-            <p class="mt-1 text-sm font-medium">{{ warningLine(priority) }}</p>
-          }
-          <p class="mt-2 text-xs">
-            O aviso não bloqueia a prévia e não representa validação de servidor.
+      <form class="mt-5" [formGroup]="form" (ngSubmit)="reviewPreview()" novalidate>
+        <div>
+          <label appManagerLabel for="sla-edit-policy">Política</label>
+          <select
+            appSelect
+            id="sla-edit-policy"
+            class="mt-2"
+            formControlName="policyId"
+            (change)="onPolicyChange($event)"
+            aria-describedby="sla-edit-policy-help"
+          >
+            @for (policy of policies(); track policy.id) {
+              <option [value]="policy.id">
+                {{ policy.name }} · v{{ policy.versions[0].version }}
+              </option>
+            }
+            <option [value]="novaPolitica">+ Nova política</option>
+          </select>
+          <p id="sla-edit-policy-help" class="mt-2 text-xs text-ink3">
+            Salvar cria uma versão nova; as versões anteriores continuam no histórico.
           </p>
         </div>
-      } @else {
-        <p class="mt-5 text-xs leading-[1.6] text-ink2" role="status">
-          A ordem ilustrativa está consistente: Resposta &lt; Atendimento em campo &lt; Resolução.
-        </p>
-      }
 
-      <div class="mt-5 grid gap-6 xl:grid-cols-2">
-        @for (priority of priorities; track priority.key) {
-          <fieldset class="min-w-0 border-t border-line pt-4">
-            <legend class="px-0 text-sm font-semibold">Prioridade {{ priority.label }}</legend>
-            <div class="mt-3 space-y-4">
-              @for (clock of clocks; track clock.key) {
-                <div
-                  class="grid min-w-0 gap-x-3 gap-y-1 sm:grid-cols-[minmax(0,1fr)_144px] sm:items-center"
-                >
-                  <label
-                    [for]="controlId(priority.key, clock.key)"
-                    class="block text-sm font-medium"
-                  >
-                    {{ clock.label }} · {{ priority.label }}
-                    <span class="font-normal text-ink2">(min)</span>
-                  </label>
-                  <div class="relative min-w-0">
-                    <input
-                      appInput
-                      [id]="controlId(priority.key, clock.key)"
-                      [formControlName]="fieldFor(priority.key, clock.key)"
-                      (input)="refreshWarnings()"
-                      class="pr-12 text-right tabular-nums"
-                      type="number"
-                      min="1"
-                      step="1"
-                      inputmode="numeric"
-                      required
-                      [attr.aria-invalid]="invalid(fieldFor(priority.key, clock.key))"
-                      [attr.aria-describedby]="
-                        invalid(fieldFor(priority.key, clock.key))
-                          ? controlId(priority.key, clock.key) +
-                            '-help ' +
-                            controlId(priority.key, clock.key) +
-                            '-error'
-                          : controlId(priority.key, clock.key) + '-help'
-                      "
-                    />
-                    <span
-                      class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-ink2"
-                      >min</span
-                    >
-                  </div>
-                  <p
-                    [id]="controlId(priority.key, clock.key) + '-help'"
-                    class="text-xs leading-[1.45] text-ink2 sm:col-start-2"
-                  >
-                    {{ windowCopy(priority.key, clock.key) }}
-                  </p>
-                  <p
-                    [id]="controlId(priority.key, clock.key) + '-error'"
-                    class="text-xs text-danger sm:col-span-2"
-                    [hidden]="!invalid(fieldFor(priority.key, clock.key))"
-                  >
-                    {{ fieldError(fieldFor(priority.key, clock.key)) }}
-                  </p>
-                </div>
-              }
-            </div>
-          </fieldset>
+        @if (isNew()) {
+          <div class="mt-5">
+            <label appManagerLabel for="sla-edit-name">Nome da política</label>
+            <input
+              appInput
+              id="sla-edit-name"
+              class="mt-2"
+              formControlName="name"
+              maxlength="100"
+              [attr.aria-invalid]="form.controls.name.invalid && submitted()"
+              aria-describedby="sla-edit-name-error"
+            />
+            <p
+              id="sla-edit-name-error"
+              class="mt-2 text-sm text-danger"
+              [hidden]="!(form.controls.name.invalid && submitted())"
+            >
+              Informe um nome entre 2 e 100 caracteres.
+            </p>
+          </div>
         }
-      </div>
 
-      <div class="mt-6 flex flex-wrap items-center gap-3 border-t border-line pt-5">
-        <button #reviewButton type="submit" appButtonPrimary class="min-h-12 px-5 py-3">
-          Revisar prévia
-        </button>
-        <a
-          routerLink="/app/gestor/politicas"
-          [queryParams]="{ policy: selectedPolicy().id }"
-          appButtonSecondary
-          class="min-h-12 px-5 py-3"
-        >
-          Voltar às políticas
-        </a>
-      </div>
-    </form>
-  </section>
+        <div class="mt-5">
+          <label appManagerLabel for="sla-edit-default-priority">Prioridade padrão</label>
+          <select
+            appSelect
+            id="sla-edit-default-priority"
+            class="mt-2"
+            formControlName="defaultPriority"
+            aria-describedby="sla-edit-default-priority-help"
+          >
+            <option value="NORMAL">Normal</option>
+            <option value="ALTA">Alta</option>
+          </select>
+          <p id="sla-edit-default-priority-help" class="mt-2 text-xs text-ink3">
+            Usada quando o gestor ainda não definiu a prioridade do chamado.
+          </p>
+        </div>
 
-  <aside appManagerPanel>
-    <h2 appManagerSectionHeading>Como ler a matriz</h2>
-    <p class="mt-2 text-sm leading-[1.65] text-ink2">
-      Cada valor representa minutos dentro da janela útil de atendimento. O texto auxiliar usa uma
-      equivalência fixa apenas para alguns valores de exemplo.
-    </p>
-    <dl class="mt-4 divide-y divide-line border-y border-line text-sm">
-      <div class="grid grid-cols-[minmax(0,1fr)_auto] gap-3 py-3">
-        <dt class="text-ink2">Janela ilustrativa</dt>
-        <dd class="m-0 text-right font-semibold tabular-nums">09h–18h · seg–sex</dd>
-      </div>
-      <div class="grid grid-cols-[minmax(0,1fr)_auto] gap-3 py-3">
-        <dt class="text-ink2">Exemplo de conversão fixa</dt>
-        <dd class="m-0 text-right font-semibold tabular-nums">540 min · 1 dia útil</dd>
-      </div>
-    </dl>
-    <p class="mt-4 text-xs leading-[1.6] text-ink3">
-      A revisão mostra os números digitados; não altera contratos, políticas ou histórico.
-    </p>
-  </aside>
-</div>
+        @if (warningPriorities().length) {
+          <div
+            id="sla-order-warning"
+            tabindex="-1"
+            class="mt-5 rounded-deadline bg-danger-bg p-4 text-danger"
+            role="alert"
+            aria-live="polite"
+          >
+            <h3 class="text-sm font-semibold leading-normal tracking-normal">
+              Há prazos fora de ordem
+            </h3>
+            <p class="mt-1 text-sm">
+              A sequência exigida é Resposta &lt; Atendimento em campo &lt; Resolução. Ajuste os
+              valores para salvar.
+            </p>
+            @for (priority of warningPriorities(); track priority) {
+              <p class="mt-1 text-sm font-medium">{{ warningLine(priority) }}</p>
+            }
+          </div>
+        } @else {
+          <p class="mt-5 text-xs leading-[1.6] text-ink2" role="status">
+            A ordem está consistente: Resposta &lt; Atendimento em campo &lt; Resolução.
+          </p>
+        }
+
+        <div class="mt-5 grid gap-6 xl:grid-cols-2">
+          @for (priority of priorities; track priority.key) {
+            <fieldset class="min-w-0 border-t border-line pt-4">
+              <legend class="px-0 text-sm font-semibold">Prioridade {{ priority.label }}</legend>
+              <div class="mt-3 space-y-4">
+                @for (clock of clocks; track clock.key) {
+                  <div
+                    class="grid min-w-0 gap-x-3 gap-y-1 sm:grid-cols-[minmax(0,1fr)_144px] sm:items-center"
+                  >
+                    <label
+                      [for]="controlId(priority.key, clock.key)"
+                      class="block text-sm font-medium"
+                    >
+                      {{ clock.label }} · {{ priority.label }}
+                      <span class="font-normal text-ink2">(min)</span>
+                    </label>
+                    <div class="relative min-w-0">
+                      <input
+                        appInput
+                        [id]="controlId(priority.key, clock.key)"
+                        [formControlName]="fieldFor(priority.key, clock.key)"
+                        (input)="refreshWarnings()"
+                        class="pr-12 text-right tabular-nums"
+                        type="number"
+                        min="1"
+                        step="1"
+                        inputmode="numeric"
+                        required
+                        [attr.aria-invalid]="invalid(fieldFor(priority.key, clock.key))"
+                        [attr.aria-describedby]="
+                          invalid(fieldFor(priority.key, clock.key))
+                            ? controlId(priority.key, clock.key) +
+                              '-help ' +
+                              controlId(priority.key, clock.key) +
+                              '-error'
+                            : controlId(priority.key, clock.key) + '-help'
+                        "
+                      />
+                      <span
+                        class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-ink2"
+                        >min</span
+                      >
+                    </div>
+                    <p
+                      [id]="controlId(priority.key, clock.key) + '-help'"
+                      class="text-xs leading-[1.45] text-ink2 sm:col-start-2"
+                    >
+                      {{ windowCopy(priority.key, clock.key) }}
+                    </p>
+                    <p
+                      [id]="controlId(priority.key, clock.key) + '-error'"
+                      class="text-xs text-danger sm:col-span-2"
+                      [hidden]="!invalid(fieldFor(priority.key, clock.key))"
+                    >
+                      {{ fieldError(fieldFor(priority.key, clock.key)) }}
+                    </p>
+                  </div>
+                }
+              </div>
+            </fieldset>
+          }
+        </div>
+
+        <div class="mt-6 flex flex-wrap items-center gap-3 border-t border-line pt-5">
+          <button #reviewButton type="submit" appButtonPrimary class="min-h-12 px-5 py-3">
+            Revisar e salvar
+          </button>
+          <a
+            routerLink="/app/gestor/politicas"
+            [queryParams]="{ policy: selectedPolicy()?.id }"
+            appButtonSecondary
+            class="min-h-12 px-5 py-3"
+          >
+            Voltar às políticas
+          </a>
+        </div>
+      </form>
+    </section>
+
+    <aside appManagerPanel>
+      <h2 appManagerSectionHeading>Como ler a matriz</h2>
+      <p class="mt-2 text-sm leading-[1.65] text-ink2">
+        Cada valor representa minutos dentro da janela útil de atendimento. O texto auxiliar
+        converte para dias úteis e horas.
+      </p>
+      <dl class="mt-4 divide-y divide-line border-y border-line text-sm">
+        <div class="grid grid-cols-[minmax(0,1fr)_auto] gap-3 py-3">
+          <dt class="text-ink2">Janela de atendimento</dt>
+          <dd class="m-0 text-right font-semibold tabular-nums">09h–18h · seg–sex</dd>
+        </div>
+        <div class="grid grid-cols-[minmax(0,1fr)_auto] gap-3 py-3">
+          <dt class="text-ink2">Conversão</dt>
+          <dd class="m-0 text-right font-semibold tabular-nums">540 min · 1 dia útil</dd>
+        </div>
+      </dl>
+      <p class="mt-4 text-xs leading-[1.6] text-ink3">
+        Contratos vinculados passam a usar a versão nova nos chamados abertos depois do salvamento.
+      </p>
+    </aside>
+  </div>
+}
 
 <dialog
   appManagerDialog
@@ -195,10 +254,10 @@
     <div class="flex items-start justify-between gap-4">
       <div>
         <h2 id="sla-review-title" class="text-xl font-semibold leading-snug tracking-[-.02em]">
-          Revisão demonstrativa
+          {{ isNew() ? 'Criar política?' : 'Criar nova versão?' }}
         </h2>
         <p class="mt-2 text-sm text-ink2">
-          {{ selectedPolicy().code }} · {{ selectedPolicy().name }}
+          {{ isNew() ? form.controls.name.value : selectedPolicy()?.name }}
         </p>
       </div>
       <button
@@ -212,8 +271,8 @@
       </button>
     </div>
     <p class="mt-4 text-sm leading-[1.6] text-ink2">
-      Confira os prazos da prévia. Nenhum valor será atualizado e o histórico não receberá uma nova
-      versão.
+      Confira os prazos. A versão anterior continua no histórico e chamados já abertos mantêm os
+      prazos da versão com que foram abertos.
     </p>
     <div class="mt-5 grid gap-5 border-y border-line py-4 sm:grid-cols-2">
       @for (priority of priorities; track priority.key) {
@@ -234,19 +293,15 @@
         </section>
       }
     </div>
-    @if (warningPriorities().length) {
-      <p class="mt-4 rounded-deadline bg-danger-bg p-3 text-sm text-danger" role="note">
-        A prévia preserva o aviso de ordem inconsistente para revisão manual.
-      </p>
-    }
     <div class="mt-5 flex flex-wrap justify-end gap-3 border-t border-line pt-5">
       <button
         type="button"
         appButtonPrimary
         class="min-h-11 px-4 py-2.5"
-        (click)="completePreview()"
+        [disabled]="busy()"
+        (click)="save()"
       >
-        Concluir prévia
+        {{ busy() ? 'Salvando…' : isNew() ? 'Criar política' : 'Salvar nova versão' }}
       </button>
     </div>
   </div>

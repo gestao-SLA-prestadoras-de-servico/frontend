@@ -34,7 +34,13 @@ import { LucideDynamicIcon } from '@lucide/angular';
 import { ButtonSecondary, ButtonPrimary } from '@app/shared/ui/button';
 import { preventDefaultUnlessReplayed } from '../../../../shared/utils/event-replay';
 import { WORKSPACE_ICONS } from '../../data/workspace-icons';
-import { ManagerUser, UserDemoStore } from '../data/user-demo-store';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { forkJoin, map } from 'rxjs';
+import { CadastroApi } from '@app/core/api/cadastro.api';
+import { mensagemErro } from '@app/core/api/erros';
+import { UsuariosApi } from '@app/core/api/usuarios.api';
+import { WorkspaceLoadingState } from '../../components/workspace-loading-state';
+import { ManagerUser, toManagerUser, UserStore } from '../data/user-store';
 
 type RoleFilter = 'Todas' | ManagerUser['role'];
 type SituationFilter = 'Todas' | ManagerUser['situation'];
@@ -69,6 +75,7 @@ function normalize(value: string): string {
     ManagerTable,
     ManagerTableHead,
     ManagerTableBody,
+    WorkspaceLoadingState,
   ],
   templateUrl: './manager-users.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -77,14 +84,40 @@ function normalize(value: string): string {
 export class ManagerUsers {
   private readonly document = inject(DOCUMENT);
   private readonly injector = inject(Injector);
-  private readonly store = inject(UserDemoStore);
+  private readonly store = inject(UserStore);
+  private readonly api = inject(UsuariosApi);
+  private readonly cadastro = inject(CadastroApi);
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('deactivateDialog');
   private readonly cancelButton = viewChild<ElementRef<HTMLButtonElement>>('cancelButton');
   private readonly noticeTarget = viewChild<ElementRef<HTMLElement>>('noticeTarget');
   private trigger?: HTMLButtonElement;
   private completing = false;
   protected readonly icons = WORKSPACE_ICONS;
-  protected readonly users = this.store.users;
+  protected readonly data = rxResource({
+    stream: () =>
+      forkJoin({
+        usuarios: this.api.listar({ sort: 'nome,asc' }),
+        clientes: this.cadastro.clientes(),
+        tecnicos: this.api.tecnicos(),
+      }).pipe(
+        map(({ usuarios, clientes, tecnicos }) => {
+          const companies = new Map(clientes.map((c) => [c.id, c.razaoSocial]));
+          const open = new Map(tecnicos.map((t) => [t.id, t.chamadosNaoFinalizados]));
+          return usuarios.map((u) => toManagerUser(u, companies, open));
+        }),
+      ),
+  });
+  protected readonly loadError = computed(() =>
+    this.data.error() ? mensagemErro(this.data.error()) : null,
+  );
+  protected readonly users = computed(() => this.data.value() ?? []);
+  /** `GET /usuarios/{id}/chamados-a-transferir` do usuário em inativação. */
+  protected readonly transfer = rxResource({
+    params: () => this.selectedUser()?.id,
+    stream: ({ params: id }) => this.api.chamadosATransferir(id),
+  });
+  protected readonly busy = signal(false);
+  protected readonly dialogError = signal<string | null>(null);
   protected readonly notice = this.store.notice;
   protected readonly search = signal('');
   protected readonly roleFilter = signal<RoleFilter>('Todas');
@@ -124,20 +157,12 @@ export class ManagerUsers {
   protected readonly chosenSubstitute = computed(
     () => this.substitutes().find((user) => user.id === this.selectedSubstituteId()) ?? null,
   );
-  protected readonly substituteLoad = computed(() => {
-    const substitute = this.chosenSubstitute();
-    return substitute ? substitute.assigned + substitute.inProgress : 0;
-  });
-  protected readonly hasSubstituteConflict = computed(() => {
-    const substitute = this.chosenSubstitute();
-    return (
-      !!substitute && this.substituteLoad() + this.transferableCount() > substitute.workloadLimit
-    );
-  });
   protected readonly transferableCount = computed(() => {
-    const user = this.selectedUser();
-    return user ? user.assigned + user.inProgress : 0;
+    const counts = this.transfer.value();
+    return counts ? counts.ATRIBUIDO + counts.EM_ATENDIMENTO + counts.RESOLVIDO : 0;
   });
+  /** O backend exige substituto quando o técnico tem chamados não finalizados (RN-133). */
+  protected readonly needsSubstitute = computed(() => this.transferableCount() > 0);
 
   constructor() {
     afterNextRender(() => this.ready.set(true));
@@ -166,11 +191,12 @@ export class ManagerUsers {
   }
 
   protected openDeactivate(user: ManagerUser, trigger: HTMLButtonElement): void {
-    if (!this.ready() || user.role !== 'Técnico' || user.situation !== 'Ativo') return;
+    if (!this.ready() || user.situation !== 'Ativo') return;
     this.trigger = trigger;
     this.completing = false;
     this.selectedUser.set(user);
     this.selectedSubstituteId.set('');
+    this.dialogError.set(null);
     afterNextRender(
       () => {
         if (this.dialog().nativeElement.open) return;
@@ -223,25 +249,35 @@ export class ManagerUsers {
 
   protected confirmDeactivation(): void {
     const selected = this.selectedUser();
-    const substitute = this.selectedSubstituteId();
-    if (!selected || !substitute || this.hasSubstituteConflict()) return;
-    const success = this.store.deactivate(selected.id, substitute);
-    this.store.setNotice(
-      success
-        ? {
-            tone: 'success',
-            title: 'Inativação demonstrativa concluída',
-            detail: `${selected.name} foi inativado(a) e ${this.transferableCount()} chamados foram indicados para ${this.users().find((user) => user.id === substitute)?.name}. Os dados permanecem somente nesta sessão.`,
-          }
-        : {
-            tone: 'error',
-            title: 'Não foi possível concluir a simulação',
-            detail:
-              'A substituição não está disponível neste exemplo. Feche a janela e selecione outro técnico.',
-          },
-    );
-    this.completing = true;
-    this.closeDialog();
-    afterNextRender(() => this.noticeTarget()?.nativeElement.focus(), { injector: this.injector });
+    const substituteId = this.selectedSubstituteId();
+    if (!selected || this.busy() || this.transfer.isLoading()) return;
+    if (this.needsSubstitute() && !substituteId) return;
+    const substitute = this.chosenSubstitute();
+    const moved = this.transferableCount();
+    this.busy.set(true);
+    this.dialogError.set(null);
+    this.api.inativar(selected.id, this.needsSubstitute() ? substituteId : undefined).subscribe({
+      next: () => {
+        this.busy.set(false);
+        this.store.setNotice({
+          tone: 'success',
+          title: `${selected.name} foi inativado(a)`,
+          detail:
+            moved && substitute
+              ? `${moved} ${moved === 1 ? 'chamado passou' : 'chamados passaram'} para ${substitute.name}. O acesso ao sistema foi bloqueado.`
+              : 'O acesso ao sistema foi bloqueado.',
+        });
+        this.data.reload();
+        this.completing = true;
+        this.closeDialog();
+        afterNextRender(() => this.noticeTarget()?.nativeElement.focus(), {
+          injector: this.injector,
+        });
+      },
+      error: (erro: unknown) => {
+        this.busy.set(false);
+        this.dialogError.set(mensagemErro(erro));
+      },
+    });
   }
 }

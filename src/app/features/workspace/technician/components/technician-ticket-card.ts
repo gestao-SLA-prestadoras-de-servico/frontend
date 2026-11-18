@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LucideArrowRight, LucideClock3, LucideMapPin } from '@lucide/angular';
@@ -8,6 +9,7 @@ import { TechnicianTicket } from '../technician-data';
 @Component({
   selector: 'app-technician-ticket-card',
   imports: [
+    DatePipe,
     RouterLink,
     LucideArrowRight,
     LucideClock3,

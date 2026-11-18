@@ -10,7 +10,12 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
+import { DatePipe, formatDate } from '@angular/common';
+import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
+import { ChamadosApi } from '@app/core/api/chamados.api';
+import { mensagemErro, naoEncontrado } from '@app/core/api/erros';
+import { ChamadoTecnico } from '@app/core/api/modelos';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
   LucideArrowLeft,
@@ -22,14 +27,30 @@ import {
 import { ButtonPrimary, ButtonSecondary } from '@app/shared/ui/button';
 import { PageHeading } from '@app/shared/ui/page-heading/page-heading.directive';
 import { MissingPage } from '../../components/missing-page/missing-page';
+import { WorkspaceLoadingState } from '../../components/workspace-loading-state';
 import { TechnicianEvidencePanel } from '../components/technician-evidence';
 import { TechnicianTicketBadges } from '../components/technician-ticket-badges';
-import { TechnicianDemoStore } from '../technician-demo-store';
-import { evidenceCountsForCompletion, TechnicianEvent } from '../technician-data';
+import {
+  evidenceCountsForCompletion,
+  evidencePending,
+  TechnicianTicket,
+  toTechnicianTicket,
+} from '../technician-data';
+
+interface TechnicianEvent {
+  label: string;
+  at: string;
+  state: 'done' | 'current' | 'upcoming';
+}
+
+const quando = (iso?: string) =>
+  iso ? formatDate(iso, 'dd/MM/yyyy, HH:mm', 'en-US', '-0300') : '';
+const POLLING_MS = 3000;
 
 @Component({
   selector: 'app-technician-ticket',
   imports: [
+    DatePipe,
     RouterLink,
     LucideArrowLeft,
     LucideArrowRight,
@@ -40,6 +61,7 @@ import { evidenceCountsForCompletion, TechnicianEvent } from '../technician-data
     ButtonSecondary,
     PageHeading,
     MissingPage,
+    WorkspaceLoadingState,
     TechnicianEvidencePanel,
     TechnicianTicketBadges,
   ],
@@ -50,18 +72,65 @@ import { evidenceCountsForCompletion, TechnicianEvent } from '../technician-data
 export class TechnicianTicketPage {
   private readonly route = inject(ActivatedRoute);
   private readonly injector = inject(Injector);
-  protected readonly store = inject(TechnicianDemoStore);
+  private readonly api = inject(ChamadosApi);
   private readonly params = toSignal(this.route.paramMap, {
     initialValue: this.route.snapshot.paramMap,
   });
-  protected readonly ticketId = computed(() => Number(this.params().get('id') ?? 1042));
-  protected readonly ticket = computed(() => this.store.ticket(this.ticketId()));
+
+  /**
+   * `/app/tecnico/chamados/:id` abre o chamado; `/app/tecnico/atendimento` (sem id) abre o
+   * atendimento em andamento que vence primeiro, ou nada.
+   */
+  protected readonly data = rxResource({
+    params: () => this.params().get('id'),
+    stream: ({ params: id }): Observable<TechnicianTicket | null> => {
+      const alvo = id
+        ? of(id)
+        : this.api
+            .listar<ChamadoTecnico>({
+              estado: 'EM_ATENDIMENTO',
+              size: 1,
+              sort: 'proximoVencimento,asc',
+            })
+            .pipe(map((pagina) => pagina.content[0]?.id ?? null));
+      return alvo.pipe(
+        switchMap((chamadoId) =>
+          chamadoId
+            ? forkJoin({
+                chamado: this.api.detalhe<ChamadoTecnico>(chamadoId),
+                evidencias: this.api.evidencias(chamadoId),
+                historico: this.api.historico(chamadoId),
+              }).pipe(
+                map(({ chamado, evidencias, historico }) =>
+                  toTechnicianTicket(chamado, evidencias, historico),
+                ),
+              )
+            : of(null),
+        ),
+      );
+    },
+  });
+  protected readonly ticket = computed(() => this.data.value() ?? undefined);
+  protected readonly missing = computed(() => naoEncontrado(this.data.error()));
+  protected readonly loadError = computed(() =>
+    this.data.error() && !this.missing() ? mensagemErro(this.data.error()) : null,
+  );
   protected readonly draft = signal('');
   protected readonly feedback = signal('');
-  protected readonly canComplete = computed(() => this.store.canComplete(this.ticketId()));
+  protected readonly actionError = signal<string | null>(null);
+  protected readonly busy = signal(false);
   protected readonly hasValidEvidence = computed(
     () => this.ticket()?.evidences.some(evidenceCountsForCompletion) ?? false,
   );
+  protected readonly canComplete = computed(() => {
+    const ticket = this.ticket();
+    return (
+      !!ticket &&
+      ticket.status === 'EM_ATENDIMENTO' &&
+      ticket.technicalDescription.trim().length > 0 &&
+      this.hasValidEvidence()
+    );
+  });
   protected readonly completeDialog =
     viewChild.required<ElementRef<HTMLDialogElement>>('completeDialog');
   protected readonly cancelComplete =
@@ -71,6 +140,12 @@ export class TechnicianTicketPage {
 
   constructor() {
     effect(() => this.draft.set(this.ticket()?.technicalDescription ?? ''));
+    // Evidência RECEBIDA/PROCESSANDO muda sozinha no backend: recarrega até estabilizar.
+    effect((onCleanup) => {
+      if (!this.ticket()?.evidences.some(evidencePending) || this.data.isLoading()) return;
+      const timer = setTimeout(() => this.data.reload(), POLLING_MS);
+      onCleanup(() => clearTimeout(timer));
+    });
   }
 
   protected onDescriptionInput(event: Event): void {
@@ -79,18 +154,18 @@ export class TechnicianTicketPage {
 
   protected saveDescription(): void {
     const ticket = this.ticket();
-    if (!ticket || ticket.status !== 'EM_ATENDIMENTO') return;
-    this.store.saveDescription(ticket.id, this.draft());
-    this.feedback.set('Descrição técnica salva nesta demonstração.');
+    if (!ticket || ticket.status !== 'EM_ATENDIMENTO' || !this.draft().trim()) return;
+    this.run(this.api.salvarDescricao(ticket.id, this.draft().trim()), 'Descrição técnica salva.');
   }
 
   protected start(): void {
-    if (this.store.start(this.ticketId()))
-      this.feedback.set('Atendimento iniciado nesta demonstração.');
+    const ticket = this.ticket();
+    if (ticket) this.run(this.api.iniciarAtendimento(ticket.id), 'Atendimento iniciado.');
   }
 
   protected openCompletion(): void {
     if (!this.canComplete()) return;
+    this.actionError.set(null);
     this.completeDialog().nativeElement.showModal();
     this.cancelComplete().nativeElement.focus();
   }
@@ -100,17 +175,37 @@ export class TechnicianTicketPage {
   }
 
   protected confirmCompletion(): void {
-    if (!this.store.complete(this.ticketId())) return;
-    this.feedback.set('Atendimento concluído no exemplo. Nenhum chamado foi alterado no servidor.');
-    this.completeDialog().nativeElement.close();
-    afterNextRender(() => this.completionNotice()?.nativeElement.focus(), {
-      injector: this.injector,
+    const ticket = this.ticket();
+    if (!ticket || !this.canComplete()) return;
+    this.run(this.api.concluirAtendimento(ticket.id), 'Atendimento concluído.', () => {
+      this.completeDialog().nativeElement.close();
+      afterNextRender(() => this.completionNotice()?.nativeElement.focus(), {
+        injector: this.injector,
+      });
     });
   }
 
   protected onCompletionDialogClose(): void {
     const trigger = this.completeTrigger()?.nativeElement;
     if (trigger?.isConnected && !trigger.disabled) trigger.focus();
+  }
+
+  private run(request: Observable<unknown>, success: string, after?: () => void): void {
+    if (this.busy()) return;
+    this.busy.set(true);
+    this.actionError.set(null);
+    request.subscribe({
+      next: () => {
+        this.busy.set(false);
+        this.feedback.set(success);
+        this.data.reload();
+        after?.();
+      },
+      error: (erro: unknown) => {
+        this.busy.set(false);
+        this.actionError.set(mensagemErro(erro));
+      },
+    });
   }
 
   protected readonly stepLabels = [
@@ -122,7 +217,8 @@ export class TechnicianTicketPage {
   protected readonly stepStates = computed(() => {
     const current = this.ticket();
     if (!current) return this.stepLabels.map(() => 'upcoming' as const);
-    if (current.status === 'RESOLVIDO') return this.stepLabels.map(() => 'done' as const);
+    if (current.status !== 'ATRIBUIDO' && current.status !== 'EM_ATENDIMENTO')
+      return this.stepLabels.map(() => 'done' as const);
 
     const started = current.status === 'EM_ATENDIMENTO';
     const hasDescription = current.technicalDescription.trim().length > 0;
@@ -142,36 +238,39 @@ export class TechnicianTicketPage {
     if (!current) return [];
 
     const started = current.status !== 'ATRIBUIDO';
-    const resolved = current.status === 'RESOLVIDO';
+    const resolved = started && current.status !== 'EM_ATENDIMENTO';
     const hasDescription = current.technicalDescription.trim().length > 0;
     const evidence = current.evidences.find(evidenceCountsForCompletion);
-    const [assignedEvent, startEvent] = current.events;
 
     return [
-      { ...assignedEvent, state: 'done' },
-      { ...startEvent, state: started ? 'done' : 'current' },
+      { label: 'Chamado atribuído a você', at: quando(current.assignedAt), state: 'done' },
+      {
+        label: started ? 'Atendimento iniciado' : 'Início do atendimento',
+        at: started ? quando(current.startedAt) : 'Aguardando ação',
+        state: started ? 'done' : 'current',
+      },
       {
         label: 'Descrição técnica',
-        at: hasDescription
-          ? 'Salva nesta demonstração'
-          : started
-            ? 'Aguardando registro'
-            : 'Próxima etapa',
+        at: hasDescription ? 'Salva' : started ? 'Aguardando registro' : 'Próxima etapa',
         state: resolved || hasDescription ? 'done' : started && !evidence ? 'current' : 'upcoming',
       },
       {
         label: 'Evidências válidas',
-        at: evidence?.recordedAt ?? (started ? 'Aguarda evidência válida' : 'Próxima etapa'),
+        at: evidence
+          ? quando(evidence.recordedAt)
+          : started
+            ? 'Aguarda evidência válida'
+            : 'Próxima etapa',
         state: resolved || evidence ? 'done' : started && hasDescription ? 'current' : 'upcoming',
       },
       {
         label: 'Revisão e conclusão',
         at: resolved
-          ? 'Concluída no exemplo'
-          : evidence
+          ? 'Concluída'
+          : evidence && hasDescription
             ? 'Disponível para revisão'
-            : 'Aguarda evidência válida',
-        state: resolved ? 'done' : started && evidence ? 'current' : 'upcoming',
+            : 'Aguarda descrição e evidência',
+        state: resolved ? 'done' : started && evidence && hasDescription ? 'current' : 'upcoming',
       },
     ];
   });

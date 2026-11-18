@@ -6,8 +6,7 @@
     <div>
       <h2 id="evidence-title" class="text-base font-semibold tracking-[-.02em]">Evidências</h2>
       <p class="mt-1 text-xs text-ink3">
-        {{ items().length }} {{ items().length === 1 ? 'anexada' : 'anexadas' }} · demonstração
-        local
+        {{ items().length }} {{ items().length === 1 ? 'enviada' : 'enviadas' }} neste atendimento
       </p>
     </div>
     @if (!editable()) {
@@ -25,15 +24,16 @@
             <button
               type="button"
               class="block aspect-[4/3] w-full overflow-hidden rounded-lg border border-line bg-bg text-left focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
-              [attr.aria-label]="'Ampliar ' + item.name + ', estado ' + item.state"
+              [attr.aria-label]="'Ampliar ' + item.name + ', estado ' + stateLabels[item.state]"
               (click)="openPreview(index, $event)"
             >
-              @if (item.previewUrl) {
-                <img
-                  class="size-full object-cover transition-transform duration-200 group-hover:scale-[1.02] motion-reduce:transition-none"
-                  [src]="item.previewUrl"
-                  [alt]="item.alt"
-                  loading="lazy"
+              @if (item.state === 'DISPONIVEL') {
+                <app-evidence-image
+                  class="size-full"
+                  [evidenceId]="item.id"
+                  variant="miniatura"
+                  [alt]="'Miniatura de ' + item.name"
+                  imgClass="size-full object-cover"
                 />
               } @else {
                 <div class="grid size-full place-items-center bg-poster text-ink2">
@@ -44,16 +44,6 @@
                 </div>
               }
             </button>
-            @if (editable() && item.source === 'local') {
-              <button
-                type="button"
-                class="absolute top-2 right-2 grid size-11 place-items-center rounded-lg bg-sf/95 text-ink2 shadow-sm hover:text-danger focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri"
-                [attr.aria-label]="'Remover ' + item.name"
-                (click)="removeEvidence(item)"
-              >
-                <svg class="size-4" lucideTrash2 aria-hidden="true"></svg>
-              </button>
-            }
           </div>
           <div
             class="mt-2 flex flex-col items-start gap-1 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-2"
@@ -66,21 +56,19 @@
               [class]="stateClasses[item.state]"
             >
               <span class="size-1.5 rounded-full bg-current" aria-hidden="true"></span>
-              {{ item.state }}
+              {{ stateLabels[item.state] }}
             </span>
           </div>
           <p class="mt-1 text-[11px] text-ink3">
             {{ formatSize(item.sizeBytes) }}
-            @if (item.recordedAt) {
-              · {{ item.recordedAt }}
-            }
+            · {{ item.recordedAt | date: 'dd/MM/yyyy, HH:mm' : '-0300' }}
           </p>
         </li>
       }
     </ul>
   } @else {
     <p class="mt-5 rounded-lg bg-bg px-4 py-5 text-sm text-ink2">
-      Nenhuma evidência anexada neste exemplo. Selecione uma imagem para mostrar sua prévia local.
+      Nenhuma evidência enviada neste atendimento.
     </p>
   }
 
@@ -96,10 +84,16 @@
       <svg class="mx-auto size-6 text-ink3" lucideUpload aria-hidden="true"></svg>
       <p class="mt-3 text-sm font-semibold text-ink">Arraste as fotos ou escolha no dispositivo</p>
       <p id="evidence-guidance" class="mt-1.5 text-xs leading-[1.6] text-ink2">
-        JPEG, PNG ou WebP · até 10 MB por imagem. A prévia fica neste navegador; nada é enviado.
+        JPEG, PNG ou WebP · até 10 MB por imagem. As fotos são enviadas na hora.
       </p>
       <div class="mt-4 flex flex-wrap justify-center gap-2">
-        <button type="button" appButtonPrimary class="min-h-11 px-4 py-2.5" (click)="openCamera()">
+        <button
+          type="button"
+          appButtonPrimary
+          class="min-h-11 px-4 py-2.5"
+          [disabled]="uploading().length > 0"
+          (click)="openCamera()"
+        >
           <svg class="size-4" lucideCamera aria-hidden="true"></svg>
           Tirar foto
         </button>
@@ -107,6 +101,7 @@
           type="button"
           appButtonSecondary
           class="min-h-11 px-4 py-2.5"
+          [disabled]="uploading().length > 0"
           (click)="openFilePicker()"
         >
           Escolher arquivo
@@ -131,6 +126,11 @@
         aria-describedby="evidence-guidance"
         (change)="onSelectedFiles($event)"
       />
+      @if (uploading().length) {
+        <p class="mt-3 text-xs text-ink2">
+          Enviando {{ uploading().length }} {{ uploading().length === 1 ? 'imagem' : 'imagens' }}…
+        </p>
+      }
       <p class="sr-only" role="status" aria-live="polite">{{ feedback() }}</p>
       @if (errors().length) {
         <ul class="mt-3 list-none space-y-1 p-0 text-left text-xs text-danger" role="alert">
@@ -155,7 +155,7 @@
         <div class="min-w-0">
           <h3 class="truncate text-sm font-semibold">{{ current.name }}</h3>
           <p class="mt-0.5 text-xs text-ink3">
-            {{ current.state }} · {{ formatSize(current.sizeBytes) }}
+            {{ stateLabels[current.state] }} · {{ formatSize(current.sizeBytes) }}
           </p>
         </div>
         <button
@@ -168,19 +168,17 @@
         </button>
       </div>
       <div class="grid min-h-[240px] place-items-center bg-bg p-4 sm:min-h-[420px] sm:p-8">
-        @if (current.previewUrl) {
-          <img
-            class="max-h-[65dvh] max-w-full rounded-lg object-contain"
-            [src]="current.previewUrl"
-            [alt]="current.alt"
+        @if (current.state === 'DISPONIVEL') {
+          <app-evidence-image
+            [evidenceId]="current.id"
+            [alt]="'Evidência ' + current.name"
+            imgClass="max-h-[65dvh] max-w-full rounded-lg object-contain"
           />
         } @else {
           <div class="flex max-w-[40ch] flex-col items-center gap-3 text-center text-ink2">
             <svg class="size-9 text-ink3" lucideImage aria-hidden="true"></svg>
             <p class="text-sm font-medium">{{ placeholderLabel(current.state) }}</p>
-            <p class="text-xs text-ink3">
-              Este estado é ilustrativo; não há uma imagem disponível para ampliar.
-            </p>
+            <p class="text-xs text-ink3">A imagem ainda não está disponível para ampliar.</p>
           </div>
         }
       </div>

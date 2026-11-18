@@ -17,7 +17,8 @@ import { Brand } from '@app/shared/ui/brand/brand';
 import { UserMenu } from '@app/shared/ui/user-menu/user-menu';
 import { WorkspaceNavigation } from '../components/workspace-navigation/workspace-navigation';
 import { WorkspaceNotifications } from '../components/workspace-notifications/workspace-notifications';
-import { profileByKey, WORKSPACE_PROFILES } from '../data/workspace-data';
+import { AuthService } from '@app/core/services/auth.service';
+import { profileByKey } from '../data/workspace-data';
 import { WORKSPACE_ICONS } from '../data/workspace-icons';
 import { preventDefaultUnlessReplayed } from '../../../shared/utils/event-replay';
 
@@ -40,17 +41,23 @@ export class WorkspaceShell {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly auth = inject(AuthService);
   private readonly mobileDialog = viewChild<ElementRef<HTMLDialogElement>>('mobileDialog');
   private restoreMenuFocus = true;
   private readonly menuTrigger = viewChild.required<ElementRef<HTMLButtonElement>>('menuTrigger');
   private readonly closeButton = viewChild.required<ElementRef<HTMLButtonElement>>('closeButton');
   private readonly content = viewChild<ElementRef<HTMLElement>>('content');
-  protected readonly profiles = WORKSPACE_PROFILES;
   protected readonly icons = WORKSPACE_ICONS;
   private readonly context = signal(this.readContext());
   protected readonly profile = computed(() => this.context().profile);
   protected readonly page = computed(() => this.context().page);
   protected readonly menuOpen = signal(false);
+  protected readonly usuario = computed(() => {
+    const { nome = '', email = '' } = this.auth.usuario() ?? {};
+    const partes = nome.trim().split(/\s+/);
+    const iniciais = (partes[0]?.[0] ?? '') + (partes.length > 1 ? partes.at(-1)![0] : '');
+    return { nome, email, iniciais: iniciais.toUpperCase() };
+  });
 
   protected get contentHref(): string {
     return `${this.router.url.split('#')[0]}#workspace-content`;
@@ -79,7 +86,7 @@ export class WorkspaceShell {
         if (!media.matches) return;
         const wasOpen = this.menuOpen();
         this.closeNavigation(false);
-        if (wasOpen) document.getElementById('workspace-profile')?.focus();
+        if (wasOpen) this.content()?.nativeElement.focus();
       };
       media.addEventListener('change', onChange);
       this.destroyRef.onDestroy(() => media.removeEventListener('change', onChange));
@@ -99,11 +106,6 @@ export class WorkspaceShell {
           ? { key: data['page'] as string, title: data['breadcrumb'] as string }
           : undefined),
     };
-  }
-
-  protected switchProfile(event: Event): void {
-    const key = (event.target as HTMLSelectElement).value;
-    void this.router.navigateByUrl(profileByKey(key).home);
   }
 
   protected openNavigation(): void {
@@ -160,9 +162,6 @@ export class WorkspaceShell {
   }
 
   protected signOut(): void {
-    void this.router.navigate(['/login'], { queryParams: { estado: 'saida' } });
-  }
-  protected expireSession(): void {
-    void this.router.navigateByUrl('/sessao-expirada');
+    this.auth.logout();
   }
 }

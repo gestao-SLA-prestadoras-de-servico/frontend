@@ -9,12 +9,13 @@ import {
 } from '../components/manager-surface.directive';
 import { Textarea } from '@app/shared/ui/input/textarea.directive';
 import { Select } from '@app/shared/ui/input/select.directive';
-import { DOCUMENT, NgClass } from '@angular/common';
+import { DatePipe, DOCUMENT, NgClass } from '@angular/common';
 import {
   afterNextRender,
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   ElementRef,
   inject,
   Injector,
@@ -22,33 +23,40 @@ import {
   viewChild,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
+import { concat, forkJoin, map, Observable, toArray } from 'rxjs';
 import { LucideDynamicIcon } from '@lucide/angular';
+import { CadastroApi } from '@app/core/api/cadastro.api';
+import { ChamadosApi } from '@app/core/api/chamados.api';
+import { mensagemErro, naoEncontrado, problema } from '@app/core/api/erros';
+import { ChamadoGestor, Prioridade } from '@app/core/api/modelos';
+import { UsuariosApi } from '@app/core/api/usuarios.api';
 import { ButtonSecondary, ButtonPrimary } from '@app/shared/ui/button';
 import { PageHeading } from '@app/shared/ui/page-heading/page-heading.directive';
+import { EvidenceDownload, EvidenceImage } from '../../components/evidence-image';
+import { SlaApuracao } from '../../components/sla-apuracao';
+import { WorkspaceLoadingState } from '../../components/workspace-loading-state';
 import { WORKSPACE_ICONS } from '../../data/workspace-icons';
+import { Deadline } from '../../data/chamado';
 import { preventDefaultUnlessReplayed } from '../../../../shared/utils/event-replay';
 import {
-  ManagerTicketDemoStore,
+  ACTIVE_STATUSES,
+  loadManagerNames,
   ManagerTicketEvidence,
   ManagerTicketPriority,
-} from '../data/manager-ticket-demo-store';
-import { UserDemoStore } from '../data/user-demo-store';
-import { managerDeadlineClasses } from '../data/manager-ticket-presentation';
+  toManagerTicket,
+} from '../data/manager-ticket';
+import { loadSlaPolicies, SLA_CLOCKS, windowExample } from '../data/sla-policy-data';
 
-const PRIORITY_REFERENCE = {
-  Alta: [
-    { label: 'Resposta', value: '30 min' },
-    { label: 'Campo', value: '270 min' },
-    { label: 'Resolução', value: '1.080 min' },
-  ],
-  Normal: [
-    { label: 'Resposta', value: '120 min' },
-    { label: 'Campo', value: '540 min' },
-    { label: 'Resolução', value: '2.160 min' },
-  ],
-} satisfies Record<ManagerTicketPriority, readonly { label: string; value: string }[]>;
+const PRIORIDADE: Record<ManagerTicketPriority, Prioridade> = { Alta: 'ALTA', Normal: 'NORMAL' };
+const POLLING_MS = 3000;
+const EVIDENCE_LABELS: Record<ManagerTicketEvidence['status'], string> = {
+  RECEBIDA: 'Recebida',
+  PROCESSANDO: 'Processando',
+  DISPONIVEL: 'Disponível',
+  FALHA: 'Falha',
+  EXPURGADA: 'Expurgada',
+};
 
 type AssignmentMode = 'initial' | 'reassign' | null;
 
@@ -70,14 +78,20 @@ type AssignmentMode = 'initial' | 'reassign' | null;
     ManagerTextAction,
     ManagerPageHeader,
     ManagerTicketBadge,
+    DatePipe,
+    EvidenceImage,
+    EvidenceDownload,
+    SlaApuracao,
+    WorkspaceLoadingState,
   ],
   templateUrl: './manager-ticket-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
 })
 export class ManagerTicketDetail {
-  private readonly store = inject(ManagerTicketDemoStore);
-  private readonly userStore = inject(UserDemoStore);
+  private readonly api = inject(ChamadosApi);
+  private readonly usuarios = inject(UsuariosApi);
+  private readonly cadastro = inject(CadastroApi);
   private readonly route = inject(ActivatedRoute);
   private readonly document = inject(DOCUMENT);
   private readonly injector = inject(Injector);
@@ -109,64 +123,102 @@ export class ManagerTicketDetail {
   private evidenceTrigger?: HTMLButtonElement;
   protected readonly ready = signal(false);
   private completing = false;
-  private readonly routeId = toSignal(
-    this.route.paramMap.pipe(map((params) => Number(params.get('id')))),
-    {
-      initialValue: Number(this.route.snapshot.paramMap.get('id')),
-    },
-  );
+  private readonly routeId = toSignal(this.route.paramMap.pipe(map((p) => p.get('id') ?? '')), {
+    initialValue: this.route.snapshot.paramMap.get('id') ?? '',
+  });
   protected readonly icons = WORKSPACE_ICONS;
-  protected readonly deadlineClasses = managerDeadlineClasses;
-  protected readonly ticket = computed(() => this.store.byId(this.routeId()));
+  protected readonly evidenceLabels = EVIDENCE_LABELS;
+
+  protected readonly data = rxResource({
+    params: () => this.routeId(),
+    stream: ({ params: id }) =>
+      forkJoin({
+        chamado: this.api.detalhe<ChamadoGestor>(id),
+        historico: this.api.historico(id),
+        evidencias: this.api.evidencias(id),
+        names: loadManagerNames(this.usuarios, this.cadastro),
+        politicas: loadSlaPolicies(this.cadastro),
+        tecnicos: this.usuarios.tecnicos(),
+        sla: this.api.sla(id),
+      }).pipe(
+        map(({ chamado, historico, evidencias, names, politicas, tecnicos, sla }) => ({
+          sla,
+          ticket: toManagerTicket(chamado, names, historico, evidencias),
+          matrix: politicas
+            .flatMap((p) => p.versions)
+            .find((v) => v.id === chamado.politicaVersaoId)?.matrix,
+          tecnicos,
+        })),
+      ),
+  });
+  protected readonly ticket = computed(() => this.data.value()?.ticket ?? null);
+  protected readonly missing = computed(() => naoEncontrado(this.data.error()));
+  protected readonly loadError = computed(() =>
+    this.data.error() && !this.missing() ? mensagemErro(this.data.error()) : null,
+  );
+  protected readonly busy = signal(false);
   protected readonly selectedEvidence = computed(
     () =>
       this.ticket()?.evidences.find((evidence) => evidence.id === this.selectedEvidenceId()) ??
       null,
   );
-  protected readonly isOpenTicket = computed(() => this.ticket()?.status === 'ABERTO');
-  protected readonly selectedPriority = signal<ManagerTicketPriority>('Alta');
+  /** A prioridade pode mudar até o técnico resolver; o posicionamento é registrado uma vez. */
+  protected readonly canTriage = computed(() =>
+    ACTIVE_STATUSES.includes(this.ticket()?.status ?? 'ENCERRADO'),
+  );
+  protected readonly needsFirstPosition = computed(() => !this.ticket()?.firstPosition);
+  protected readonly selectedPriority = signal<ManagerTicketPriority>('Normal');
   protected readonly firstPosition = signal('');
   protected readonly submitted = signal(false);
   protected readonly reviewOpen = signal(false);
   protected readonly successMessage = signal('');
-  protected readonly priorityOptions = PRIORITY_REFERENCE;
+  protected readonly triageError = signal<string | null>(null);
   protected readonly triagePriorities: readonly ManagerTicketPriority[] = ['Alta', 'Normal'];
-  protected readonly selectedPriorityReference = computed(
-    () => PRIORITY_REFERENCE[this.selectedPriority()],
+  /** Prazos reais da versão da política com que o chamado foi aberto. */
+  protected readonly priorityOptions = computed(() => {
+    const matrix = this.data.value()?.matrix;
+    const of = (key: 'alta' | 'normal') =>
+      SLA_CLOCKS.map((clock) => ({
+        label: clock.shortLabel,
+        value: matrix ? windowExample(matrix[key][clock.key]).replace(' de janela', '') : '—',
+      }));
+    return { Alta: of('alta'), Normal: of('normal') } as Record<
+      ManagerTicketPriority,
+      readonly { label: string; value: string }[]
+    >;
+  });
+  protected readonly priorityChanged = computed(
+    () => this.selectedPriority() !== this.ticket()?.definedPriority,
   );
   protected readonly assignmentMode = signal<AssignmentMode>(null);
   protected readonly selectedTechnicianId = signal('');
   protected readonly assignmentNotice = signal('');
+  protected readonly assignmentError = signal<string | null>(null);
   protected readonly cancelNotice = signal('');
   protected readonly cancelReason = signal('');
   protected readonly cancelSubmitted = signal(false);
+  protected readonly cancelServerError = signal<string | null>(null);
   protected readonly cancelError = computed(
     () => this.cancelSubmitted() && this.cancelReason().trim().length < 10,
   );
   protected readonly selectedEvidenceId = signal('');
-  protected readonly reprocessOutcome = signal<'DISPONÍVEL' | 'FALHA'>('DISPONÍVEL');
   protected readonly reprocessingEvidenceId = signal<string | null>(null);
   protected readonly evidenceNotice = signal<{
     tone: 'loading' | 'success' | 'error';
     title: string;
     detail: string;
   } | null>(null);
-  protected readonly notificationOverrides = signal<Readonly<Record<number, boolean>>>({});
+  /** Preferência escolhida nesta tela até o recarregamento confirmar. */
+  private readonly notificationOverride = signal<boolean | null>(null);
   protected readonly notificationDisabled = computed(() => {
     const ticket = this.ticket();
-    return (
-      !ticket ||
-      ticket.notifyOnCompletion === null ||
-      ['CANCELADO', 'ENCERRADO'].includes(ticket.status)
-    );
+    return !ticket || ['CANCELADO', 'ENCERRADO'].includes(ticket.status) || this.busy();
   });
-  protected readonly notificationPreference = computed(() => {
-    const ticket = this.ticket();
-    if (!ticket || this.notificationDisabled()) return false;
-    return this.notificationOverrides()[ticket.id] ?? ticket.notifyOnCompletion ?? false;
-  });
+  protected readonly notificationPreference = computed(
+    () => this.notificationOverride() ?? this.ticket()?.notifyOnCompletion ?? false,
+  );
   protected readonly notificationState = computed(() =>
-    this.notificationDisabled()
+    this.notificationDisabled() && !this.busy()
       ? 'Indisponível'
       : this.notificationPreference()
         ? 'Ligado'
@@ -174,35 +226,65 @@ export class ManagerTicketDetail {
   );
   protected readonly notificationNotice = signal('');
   protected readonly technicians = computed(() =>
-    this.userStore
-      .users()
-      .filter(
-        (user) =>
-          user.role === 'Técnico' &&
-          user.situation === 'Ativo' &&
-          user.name !== this.ticket()?.technician,
-      ),
+    (this.data.value()?.tecnicos ?? [])
+      .filter((t) => t.sub !== this.ticket()?.technicianSub)
+      .map((t) => ({ id: t.id, sub: t.sub, name: t.nome, open: t.chamadosNaoFinalizados })),
   );
   protected readonly selectedTechnician = computed(
     () => this.technicians().find((user) => user.id === this.selectedTechnicianId()) ?? null,
   );
-  protected readonly assignmentLoadAfter = computed(() => {
-    const technician = this.selectedTechnician();
-    return technician ? technician.assigned + technician.inProgress + 1 : 0;
-  });
-  protected readonly assignmentConflict = computed(() => {
-    const technician = this.selectedTechnician();
-    return !!technician && this.assignmentLoadAfter() > technician.workloadLimit;
-  });
   protected readonly canAssign = computed(() =>
-    ['ABERTO', 'ATRIBUIDO', 'EM_ATENDIMENTO'].includes(this.ticket()?.status ?? ''),
+    ACTIVE_STATUSES.includes(this.ticket()?.status ?? 'ENCERRADO'),
   );
   protected readonly canCancel = computed(() =>
-    ['ABERTO', 'ATRIBUIDO', 'EM_ATENDIMENTO'].includes(this.ticket()?.status ?? ''),
+    ACTIVE_STATUSES.includes(this.ticket()?.status ?? 'ENCERRADO'),
   );
 
   constructor() {
     afterNextRender(() => this.ready.set(true));
+    // Ao abrir (ou trocar de) chamado, a triagem parte da prioridade atual.
+    effect(() => {
+      const ticket = this.ticket();
+      if (!ticket) return;
+      this.selectedPriority.set(
+        ticket.definedPriority ?? ticket.suggestedPriority ?? ticket.priority,
+      );
+    });
+    // Evidências em RECEBIDA/PROCESSANDO mudam sozinhas no backend: recarrega até estabilizar.
+    effect((onCleanup) => {
+      const pending = this.ticket()?.evidences.some(
+        (e) => e.status === 'RECEBIDA' || e.status === 'PROCESSANDO',
+      );
+      if (!pending || this.data.isLoading()) return;
+      const timer = setTimeout(() => this.data.reload(), POLLING_MS);
+      onCleanup(() => clearTimeout(timer));
+    });
+  }
+
+  protected deadlineClasses(deadline: Deadline): string {
+    return deadline.state === 'overdue'
+      ? 'bg-danger-bg text-danger'
+      : deadline.state === 'fulfilled'
+        ? 'bg-grn-bg text-grn-t'
+        : 'bg-pri-bg text-pri-d';
+  }
+
+  /** Executa uma ação, recarrega o chamado e devolve o erro em português (ou null). */
+  private run(request: Observable<unknown>, done: (erro: string | null) => void): void {
+    if (this.busy()) return;
+    this.busy.set(true);
+    request.subscribe({
+      next: () => {
+        this.busy.set(false);
+        this.data.reload();
+        done(null);
+      },
+      error: (erro: unknown) => {
+        this.busy.set(false);
+        if (problema(erro)?.codigo === 'CONFLITO_VERSAO') this.data.reload();
+        done(mensagemErro(erro));
+      },
+    });
   }
 
   protected updatePriority(priority: ManagerTicketPriority): void {
@@ -214,9 +296,10 @@ export class ManagerTicketDetail {
   }
 
   protected submitTriage(trigger: HTMLButtonElement): void {
-    if (!this.ready() || !this.isOpenTicket()) return;
+    if (!this.ready() || !this.canTriage()) return;
     this.submitted.set(true);
-    if (this.firstPosition().trim().length < 12) {
+    this.triageError.set(null);
+    if (this.invalidFirstPosition() || (!this.needsFirstPosition() && !this.priorityChanged())) {
       this.positionField()?.nativeElement.focus();
       return;
     }
@@ -275,14 +358,31 @@ export class ManagerTicketDetail {
     }
   }
 
+  /** Prioridade (se mudou) e depois o primeiro posicionamento (se ainda não houver). */
   protected confirmTriage(): void {
-    if (!this.reviewOpen() || this.firstPosition().trim().length < 12) return;
-    this.successMessage.set(
-      'Triagem demonstrativa confirmada. O chamado e os prazos permaneceram inalterados.',
-    );
-    this.completing = true;
-    this.closeTriageReview();
-    afterNextRender(() => this.noticeTarget()?.nativeElement.focus(), { injector: this.injector });
+    const ticket = this.ticket();
+    if (!ticket || !this.reviewOpen() || this.invalidFirstPosition()) return;
+    const positioning = this.needsFirstPosition();
+    const steps: Observable<unknown>[] = [];
+    if (this.priorityChanged())
+      steps.push(this.api.definirPrioridade(ticket.id, PRIORIDADE[this.selectedPriority()]));
+    if (positioning) steps.push(this.api.posicionar(ticket.id, this.firstPosition().trim()));
+    this.run(concat(...steps).pipe(toArray()), (erro) => {
+      this.triageError.set(erro);
+      if (erro) return;
+      this.successMessage.set(
+        positioning
+          ? 'Triagem registrada e primeiro posicionamento enviado ao cliente.'
+          : `Prioridade alterada para ${this.selectedPriority()}. Os prazos foram recalculados.`,
+      );
+      this.firstPosition.set('');
+      this.submitted.set(false);
+      this.completing = true;
+      this.closeTriageReview();
+      afterNextRender(() => this.noticeTarget()?.nativeElement.focus(), {
+        injector: this.injector,
+      });
+    });
   }
 
   protected clearSuccess(): void {
@@ -300,6 +400,7 @@ export class ManagerTicketDetail {
     this.completing = false;
     this.assignmentMode.set(item.technician ? 'reassign' : 'initial');
     this.selectedTechnicianId.set('');
+    this.assignmentError.set(null);
     afterNextRender(
       () => {
         if (this.assignmentDialog().nativeElement.open) return;
@@ -356,26 +457,21 @@ export class ManagerTicketDetail {
   protected confirmAssignment(): void {
     const item = this.ticket();
     const candidate = this.selectedTechnician();
-    if (!item || !candidate || this.assignmentConflict()) return;
+    if (!item || !candidate) return;
     const previous = item.technician;
-    const kind = item.status === 'EM_ATENDIMENTO' ? 'inProgress' : 'assigned';
-    const assigned = this.store.assign(item.id, candidate.name);
-    if (assigned) {
-      this.userStore.transferOpenAssignment(previous, candidate.name, kind);
+    this.run(this.api.atribuir(item.id, candidate.sub, item.version), (erro) => {
+      this.assignmentError.set(erro);
+      if (erro) return;
       this.assignmentNotice.set(
-        this.assignmentMode() === 'initial'
-          ? `Técnico responsável atualizado para ${candidate.name} no exemplo. A fila mudou somente nesta sessão.`
-          : `Responsável alterado de ${previous} para ${candidate.name} somente nesta sessão. Prazos já cumpridos permanecem como referência.`,
+        previous
+          ? `Responsável alterado de ${previous} para ${candidate.name}. Os dois foram notificados.`
+          : `${candidate.name} agora é o técnico responsável e foi notificado(a).`,
       );
-    } else {
-      this.assignmentNotice.set(
-        'Não foi possível concluir esta simulação. Confira a situação do chamado e tente novamente.',
-      );
-    }
-    this.completing = true;
-    this.closeAssignment();
-    afterNextRender(() => this.assignmentNoticeTarget()?.nativeElement.focus(), {
-      injector: this.injector,
+      this.completing = true;
+      this.closeAssignment();
+      afterNextRender(() => this.assignmentNoticeTarget()?.nativeElement.focus(), {
+        injector: this.injector,
+      });
     });
   }
 
@@ -389,6 +485,7 @@ export class ManagerTicketDetail {
     this.completing = false;
     this.cancelReason.set('');
     this.cancelSubmitted.set(false);
+    this.cancelServerError.set(null);
     afterNextRender(
       () => {
         if (this.cancelDialog().nativeElement.open) return;
@@ -450,13 +547,17 @@ export class ManagerTicketDetail {
       this.cancelReasonField()?.nativeElement.focus();
       return;
     }
-    this.cancelNotice.set(
-      'Confirmação demonstrativa registrada. O status e os dados do chamado permaneceram inalterados.',
-    );
-    this.completing = true;
-    this.closeCancellation();
-    afterNextRender(() => this.cancelNoticeTarget()?.nativeElement.focus(), {
-      injector: this.injector,
+    const ticket = this.ticket();
+    if (!ticket) return;
+    this.run(this.api.cancelar(ticket.id, this.cancelReason().trim()), (erro) => {
+      this.cancelServerError.set(erro);
+      if (erro) return;
+      this.cancelNotice.set('Chamado cancelado. Os relógios de SLA foram encerrados.');
+      this.completing = true;
+      this.closeCancellation();
+      afterNextRender(() => this.cancelNoticeTarget()?.nativeElement.focus(), {
+        injector: this.injector,
+      });
     });
   }
 
@@ -470,7 +571,6 @@ export class ManagerTicketDetail {
     this.evidenceTrigger = trigger;
     this.completing = false;
     this.selectedEvidenceId.set(evidenceId);
-    this.reprocessOutcome.set('DISPONÍVEL');
     afterNextRender(
       () => {
         if (this.evidenceDialog().nativeElement.open) return;
@@ -479,10 +579,6 @@ export class ManagerTicketDetail {
       },
       { injector: this.injector },
     );
-  }
-
-  protected updateReprocessOutcome(event: Event): void {
-    this.reprocessOutcome.set((event.target as HTMLSelectElement).value as 'DISPONÍVEL' | 'FALHA');
   }
 
   protected closeEvidenceDialog(): void {
@@ -531,48 +627,27 @@ export class ManagerTicketDetail {
   }
 
   protected confirmEvidenceReprocess(): void {
-    const ticket = this.ticket();
     const evidence = this.selectedEvidence();
-    if (!ticket || !evidence || evidence.status !== 'FALHA') return;
-    const evidenceId = evidence.id;
-    const outcome = this.reprocessOutcome();
-    if (!this.store.setEvidenceStatus(ticket.id, evidenceId, 'PROCESSANDO')) return;
-    this.reprocessingEvidenceId.set(evidenceId);
-    this.evidenceNotice.set({
-      tone: 'loading',
-      title: 'Reprocessando miniatura',
-      detail: 'Estado de carregamento demonstrativo. O arquivo original não foi enviado novamente.',
-    });
-    this.completing = true;
-    this.closeEvidenceDialog();
-    afterNextRender(() => this.evidenceNoticeTarget()?.nativeElement.focus(), {
-      injector: this.injector,
-    });
-
-    const finish = (): void => {
-      this.store.setEvidenceStatus(ticket.id, evidenceId, outcome);
+    if (!evidence || evidence.status !== 'FALHA') return;
+    this.reprocessingEvidenceId.set(evidence.id);
+    this.run(this.api.reprocessarEvidencia(evidence.id), (erro) => {
       this.reprocessingEvidenceId.set(null);
       this.evidenceNotice.set(
-        outcome === 'DISPONÍVEL'
-          ? {
-              tone: 'success',
-              title: 'Miniatura disponível',
-              detail: 'A demonstração terminou sem erro. O arquivo original permaneceu preservado.',
-            }
+        erro
+          ? { tone: 'error', title: 'Não foi possível reprocessar', detail: erro }
           : {
-              tone: 'error',
-              title: 'Nova falha na demonstração',
+              tone: 'loading',
+              title: 'Reprocessamento iniciado',
               detail:
-                'A miniatura continua indisponível. O arquivo original permaneceu preservado.',
+                'O arquivo original foi preservado. A miniatura atualiza sozinha em instantes.',
             },
       );
+      this.completing = true;
+      this.closeEvidenceDialog();
       afterNextRender(() => this.evidenceNoticeTarget()?.nativeElement.focus(), {
         injector: this.injector,
       });
-    };
-    const view = this.document.defaultView;
-    if (view) view.setTimeout(finish, 1200);
-    else finish();
+    });
   }
 
   protected clearEvidenceNotice(): void {
@@ -583,12 +658,16 @@ export class ManagerTicketDetail {
     const ticket = this.ticket();
     if (!ticket || this.notificationDisabled()) return;
     const enabled = (event.target as HTMLInputElement).checked;
-    this.notificationOverrides.update((choices) => ({ ...choices, [ticket.id]: enabled }));
-    this.notificationNotice.set(
-      enabled
-        ? 'Avisos de conclusão ligados neste chamado apenas para o seu usuário Gestor. A escolha não foi salva.'
-        : 'Avisos de conclusão desligados neste chamado apenas para o seu usuário Gestor. A escolha não foi salva.',
-    );
+    this.notificationOverride.set(enabled);
+    this.run(this.api.preferenciaNotificacao(ticket.id, enabled), (erro) => {
+      this.notificationOverride.set(erro ? !enabled : null);
+      this.notificationNotice.set(
+        erro ??
+          (enabled
+            ? 'Você será avisado(a) quando este chamado for concluído.'
+            : 'Você não receberá aviso de conclusão deste chamado.'),
+      );
+    });
   }
 
   protected clearNotificationNotice(): void {
@@ -604,6 +683,6 @@ export class ManagerTicketDetail {
   }
 
   protected invalidFirstPosition(): boolean {
-    return this.submitted() && this.firstPosition().trim().length < 12;
+    return this.needsFirstPosition() && this.submitted() && this.firstPosition().trim().length < 12;
   }
 }

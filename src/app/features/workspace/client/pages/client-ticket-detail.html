@@ -1,15 +1,15 @@
-@if (ticket(); as current) {
+@if (data.value(); as d) {
+  @let current = d.ticket;
   <a routerLink="/app/cliente" class="client-link mb-4"
     ><svg class="size-4" [lucideIcon]="icons.back" aria-hidden="true"></svg>Meus chamados</a
   >
   <div class="flex flex-wrap items-start justify-between gap-4">
     <div class="max-w-[70ch]">
-      <h1 appPageHeading class="client-title">#{{ current.id }} · {{ current.title }}</h1>
-      <p class="mt-3 text-sm text-ink2">{{ current.company }} · {{ current.location }}</p>
+      <h1 appPageHeading class="client-title">#{{ current.number }} · {{ current.title }}</h1>
+      <p class="mt-3 text-sm text-ink2">{{ current.location }}</p>
     </div>
     <app-client-status [status]="current.status" />
   </div>
-  <app-client-notice class="mt-4" />
   <dl
     class="mt-6 grid grid-cols-2 gap-x-5 gap-y-4 border-y border-line py-5 text-sm lg:grid-cols-4"
   >
@@ -24,18 +24,25 @@
       <dd class="m-0 mt-2"><app-client-priority [priority]="current.priority" /></dd>
     </div>
     <div>
-      <dt class="text-xs text-ink3">Técnico responsável</dt>
-      <dd class="m-0 mt-1">{{ current.technician ?? 'Aguardando atribuição' }}</dd>
+      <dt class="text-xs text-ink3">Atendimento</dt>
+      <dd class="m-0 mt-1">
+        {{ current.status === 'ABERTO' ? 'Aguardando atribuição' : 'Técnico designado' }}
+      </dd>
     </div>
     <div>
       <dt class="text-xs text-ink3">Contrato</dt>
-      <dd class="m-0 mt-1 tabular-nums">{{ current.contractId }}</dd>
+      <dd class="m-0 mt-1 tabular-nums">{{ d.contract }}</dd>
     </div>
   </dl>
-  <app-client-review class="mt-6" [ticket]="current" />
+  <app-client-review class="mt-6" [ticket]="current" (changed)="data.reload()" />
+  <app-sla-apuracao class="mt-7" [apuracao]="d.sla" />
   <section class="mt-7" aria-labelledby="ticket-deadlines-title">
     <h2 id="ticket-deadlines-title" class="client-heading">Três compromissos de prazo</h2>
-    <app-client-deadlines class="mt-4" [deadlines]="current.deadlines" />
+    @if (current.deadlines.length) {
+      <app-client-deadlines class="mt-4" [deadlines]="current.deadlines" />
+    } @else {
+      <p class="mt-3 text-sm text-ink2">Os prazos começam a contar após a triagem.</p>
+    }
   </section>
   <div class="mt-7 grid items-start gap-7 xl:grid-cols-[minmax(0,1.45fr)_minmax(300px,1fr)]">
     <div class="grid gap-6">
@@ -45,51 +52,64 @@
           {{ current.description }}
         </p>
       </section>
+      @if (current.firstResponse) {
+        <section class="client-panel" aria-labelledby="ticket-first-response-title">
+          <h2 id="ticket-first-response-title" class="client-heading">Resposta da prestadora</h2>
+          <p class="mt-3 max-w-[70ch] whitespace-pre-line text-sm text-ink2">
+            {{ current.firstResponse }}
+          </p>
+        </section>
+      }
       @if (current.resolution) {
         <section class="client-panel" aria-labelledby="ticket-resolution-title">
           <h2 id="ticket-resolution-title" class="client-heading">Relato do atendimento</h2>
-          <p class="mt-3 max-w-[70ch] text-sm text-ink2">{{ current.resolution }}</p>
-          <p class="mt-4 text-xs text-ink3">
-            Registrado por {{ current.technician }} · Conteúdo fictício.
+          <p class="mt-3 max-w-[70ch] whitespace-pre-line text-sm text-ink2">
+            {{ current.resolution }}
           </p>
+          <p class="mt-4 text-xs text-ink3">Registrado pelo técnico responsável.</p>
         </section>
       }
       <section class="client-panel" aria-labelledby="ticket-evidence-title">
         <h2 id="ticket-evidence-title" class="client-heading">Evidências do atendimento</h2>
-        @for (evidence of current.evidences; track evidence.title) {
+        @for (evidence of d.evidences; track evidence.id) {
           <figure class="mt-4">
-            <img
-              class="aspect-[16/9] w-full rounded-sm object-cover"
-              [src]="evidence.image"
-              [alt]="evidence.alt"
-              width="1536"
-              height="864"
-              loading="lazy"
-            />
+            @if (evidence.estado === 'DISPONIVEL') {
+              <app-evidence-image [evidenceId]="evidence.id" [alt]="'Evidência ' + evidence.nome" />
+            } @else {
+              <p class="rounded-sm bg-bg p-4 text-sm text-ink2">
+                {{
+                  evidence.estado === 'EXPURGADA'
+                    ? 'Imagem expurgada pela política de retenção.'
+                    : evidence.estado === 'FALHA'
+                      ? 'Não foi possível processar esta imagem.'
+                      : 'Imagem em processamento.'
+                }}
+              </p>
+            }
             <figcaption class="mt-3 text-sm">
-              <p class="font-medium">{{ evidence.title }}</p>
-              <p class="mt-1 text-ink2">{{ evidence.description }}</p>
-              <p class="mt-2 text-xs text-ink3">
-                Imagem ilustrativa gerada por IA. Não representa o atendimento. Registro fictício:
-                <time [attr.datetime]="evidence.at">{{
-                  evidence.at | date: 'dd/MM/yyyy, HH:mm' : '-0300'
+              <p class="font-medium wrap-anywhere">{{ evidence.nome }}</p>
+              <p class="mt-1 text-xs text-ink3">
+                Enviada em
+                <time [attr.datetime]="evidence.enviadaEm">{{
+                  evidence.enviadaEm | date: 'dd/MM/yyyy, HH:mm' : '-0300'
                 }}</time
                 >.
               </p>
+              @if (evidence.estado === 'DISPONIVEL') {
+                <app-evidence-download [evidenceId]="evidence.id" [fileName]="evidence.nome" />
+              }
             </figcaption>
           </figure>
         } @empty {
-          <p class="mt-3 text-sm text-ink2">
-            Nenhuma evidência disponível para este chamado no cenário de demonstração.
-          </p>
+          <p class="mt-3 text-sm text-ink2">Nenhuma evidência registrada para este chamado.</p>
         }
       </section>
     </div>
     <section class="client-panel" aria-labelledby="ticket-history-title">
       <h2 id="ticket-history-title" class="client-heading">Histórico do chamado</h2>
-      <p class="mt-2 text-xs text-ink3">Eventos fictícios · Horário de Brasília.</p>
+      <p class="mt-2 text-xs text-ink3">Horário de Brasília.</p>
       <ol class="mt-6 list-none p-0">
-        @for (event of current.events; track event.at; let last = $last) {
+        @for (event of d.events; track $index; let last = $last) {
           <li
             class="relative ml-1 border-l border-line pl-6"
             [class.pb-7]="!last"
@@ -106,12 +126,22 @@
               {{ event.title }}
             </h3>
             <p class="mt-1 text-xs text-ink3">{{ event.author }}</p>
-            <p class="mt-2 text-sm text-ink2">{{ event.description }}</p>
+            @if (event.description) {
+              <p class="mt-2 text-sm text-ink2">{{ event.description }}</p>
+            }
           </li>
         }
       </ol>
     </section>
   </div>
-} @else {
+} @else if (missing()) {
   <app-missing-page home="/app/cliente" label="Voltar aos meus chamados" />
+} @else if (erro(); as mensagem) {
+  <div class="rounded-deadline bg-danger-bg p-7 text-danger" role="alert">
+    <h1 class="text-base font-semibold tracking-normal">Não foi possível carregar o chamado</h1>
+    <p class="mt-2 text-sm">{{ mensagem }}</p>
+    <button class="client-link mt-3" type="button" (click)="data.reload()">Tentar novamente</button>
+  </div>
+} @else {
+  <app-workspace-loading-state label="Carregando chamado…" />
 }

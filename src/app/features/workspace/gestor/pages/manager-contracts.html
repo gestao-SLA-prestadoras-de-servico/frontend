@@ -1,7 +1,6 @@
 <app-manager-page-header
   title="Contratos"
   description="Consulte a vigência dos contratos e as políticas vinculadas a cada empresa."
-  demo="Demonstração com contratos e políticas fictícias. Nenhuma operação real é executada."
   ><a
     managerHeaderActions
     routerLink="/app/gestor/contratos/nova"
@@ -66,7 +65,9 @@
     tone="danger"
   />
 </section>
-<p class="mt-2 text-xs text-ink3">Situação avaliada em 05/11/2026.</p>
+<p class="mt-2 text-xs text-ink3">
+  Situação avaliada em {{ today | date: 'dd/MM/yyyy' : 'UTC' }} (horário de Brasília).
+</p>
 
 <section class="mt-7" aria-label="Busca e filtros de contratos">
   <div class="grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]">
@@ -109,11 +110,25 @@
     </p>
   </div>
 
-  @if (filteredRows().length) {
+  @if (loadError(); as message) {
+    <div class="mt-3 rounded-deadline bg-danger-bg p-5 text-danger" role="alert">
+      <p class="font-semibold">Não foi possível carregar os contratos</p>
+      <p class="mt-1 text-sm">{{ message }}</p>
+      <button
+        type="button"
+        class="mt-3 min-h-11 text-sm font-semibold underline underline-offset-4"
+        (click)="data.reload()"
+      >
+        Tentar novamente
+      </button>
+    </div>
+  } @else if (data.isLoading() && !rows().length) {
+    <app-workspace-loading-state class="mt-3" label="Carregando contratos…" />
+  } @else if (filteredRows().length) {
     <div appManagerCollection class="mt-3 hidden overflow-x-auto xl:block">
       <table appManagerTable class="min-w-[980px] table-fixed">
         <caption class="sr-only">
-          Contratos fictícios, vigência e política vinculada
+          Contratos, vigência e política vinculada
         </caption>
         <colgroup>
           <col class="w-[14%]" />
@@ -139,7 +154,7 @@
           @for (row of filteredRows(); track row.contract.id) {
             <tr>
               <th scope="row" class="px-3 py-4 align-top font-semibold leading-[1.5]">
-                {{ row.contract.id }}
+                {{ row.contract.code }}
               </th>
               <td class="px-3 py-4 align-top text-ink2 wrap-anywhere">{{ row.companyName }}</td>
               <td class="px-3 py-4 align-top tabular-nums">
@@ -167,7 +182,7 @@
                   #detailsDesktopTrigger
                   type="button"
                   [disabled]="!ready()"
-                  [attr.aria-label]="'Ver detalhes do contrato ' + row.contract.id"
+                  [attr.aria-label]="'Ver detalhes do contrato ' + row.contract.code"
                   (click)="openDetails(row.contract, detailsDesktopTrigger)"
                 >
                   Ver detalhes
@@ -191,7 +206,7 @@
                 [id]="'contract-title-' + row.contract.id"
                 class="text-sm font-semibold leading-[1.5] tracking-[-.01em]"
               >
-                {{ row.contract.id }}
+                {{ row.contract.code }}
               </h3>
               <p class="mt-1 text-sm text-ink2">{{ row.companyName }}</p>
             </div>
@@ -227,7 +242,7 @@
               #detailsMobileTrigger
               type="button"
               [disabled]="!ready()"
-              [attr.aria-label]="'Ver detalhes do contrato ' + row.contract.id"
+              [attr.aria-label]="'Ver detalhes do contrato ' + row.contract.code"
               (click)="openDetails(row.contract, detailsMobileTrigger)"
             >
               Ver detalhes
@@ -240,7 +255,7 @@
     <app-manager-empty-state
       class="mt-3"
       title="Nenhum contrato encontrado"
-      description="Ajuste a busca ou o filtro de vigência para ver outros contratos de exemplo."
+      description="Ajuste a busca ou o filtro de vigência para ver outros contratos."
       ><button appManagerTextAction type="button" class="mt-4" (click)="clearFilters()">
         Limpar busca e filtro
       </button></app-manager-empty-state
@@ -266,7 +281,7 @@
             id="contract-details-title"
             class="text-xl font-semibold leading-snug tracking-[-.02em]"
           >
-            {{ contract.id }}
+            {{ contract.code }}
           </h2>
           <p class="mt-2 text-sm text-ink2">{{ companyName(contract.companyId) }}</p>
         </div>
@@ -298,11 +313,45 @@
           <dd class="m-0 font-semibold">{{ policyName(contract.policyId) }}</dd>
         </div>
         <div class="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
-          <dt class="text-ink2">Situação em 05/11/2026</dt>
+          <dt class="text-ink2">Situação hoje</dt>
           <dd class="m-0 font-semibold">{{ contractTermLabel(contract) }}</dd>
         </div>
       </dl>
-      <p class="mt-4 text-xs text-ink3">Dados fictícios. Nenhum cadastro foi alterado.</p>
+      <div class="mt-5">
+        <label appManagerLabel for="contract-link-policy">
+          {{ contract.policyId ? 'Trocar política' : 'Vincular política' }}
+        </label>
+        <div class="mt-2 flex flex-wrap gap-3">
+          <select
+            appSelect
+            id="contract-link-policy"
+            class="min-w-0 flex-1"
+            [value]="linkPolicyId()"
+            (change)="onLinkPolicyChange($event)"
+          >
+            @for (policy of policies(); track policy.id) {
+              <option [value]="policy.id">
+                {{ policy.nome }} · v{{ policy.versaoAtual.numero }}
+              </option>
+            }
+          </select>
+          <button
+            type="button"
+            appButtonPrimary
+            class="min-h-11 px-4 py-2.5"
+            [disabled]="linking() || !linkPolicyId() || linkPolicyId() === contract.policyId"
+            (click)="linkPolicy()"
+          >
+            {{ linking() ? 'Salvando…' : 'Salvar' }}
+          </button>
+        </div>
+        @if (linkError(); as message) {
+          <p class="mt-2 text-sm text-danger" role="alert">{{ message }}</p>
+        }
+        <p class="mt-2 text-xs text-ink3">
+          Chamados já abertos mantêm os prazos da versão com que foram abertos.
+        </p>
+      </div>
     </div>
   }
 </dialog>

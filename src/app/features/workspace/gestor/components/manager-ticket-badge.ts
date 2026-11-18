@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { LucideDynamicIcon } from '@lucide/angular';
-import { ManagerTicketPriority, ManagerTicketStatus } from '../data/manager-ticket-demo-store';
+import { ManagerTicketPriority, ManagerTicketStatus } from '../data/manager-ticket';
 import { MANAGER_TICKET_BADGES } from '../data/manager-ticket-presentation';
 
 @Component({

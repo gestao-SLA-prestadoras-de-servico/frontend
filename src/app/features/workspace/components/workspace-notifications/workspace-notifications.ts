@@ -1,9 +1,10 @@
-import { DOCUMENT } from '@angular/common';
+import { DatePipe, DOCUMENT } from '@angular/common';
 import {
   afterNextRender,
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   ElementRef,
   HostListener,
   inject,
@@ -24,28 +25,25 @@ import {
   LucideRotateCcw,
 } from '@lucide/angular';
 import { ButtonSecondary } from '@app/shared/ui/button';
-import { Select } from '@app/shared/ui/input/select.directive';
 import { preventDefaultUnlessReplayed } from '@app/shared/utils/event-replay';
 import { ProfileKey } from '../../data/workspace-data';
 import { WORKSPACE_ICONS } from '../../data/workspace-icons';
 import {
-  DemoNotification,
+  AppNotification,
   groupNotifications,
-  NotificationDemoStore,
-} from '../../data/notification-demo-store';
-
-type NotificationScenario = 'list' | 'empty' | 'loading' | 'error';
+  NotificationStore,
+} from '../../data/notification-store';
 
 @Component({
   selector: 'app-workspace-notifications',
-  imports: [RouterLink, LucideDynamicIcon, ButtonSecondary, Select],
+  imports: [RouterLink, LucideDynamicIcon, ButtonSecondary, DatePipe],
   templateUrl: './workspace-notifications.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'relative block shrink-0', '(focusout)': 'onFocusOut($event)' },
 })
 export class WorkspaceNotifications implements OnChanges {
   readonly profile = input.required<ProfileKey>();
-  private readonly store = inject(NotificationDemoStore);
+  protected readonly store = inject(NotificationStore);
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
   private readonly injector = inject(Injector);
@@ -54,17 +52,11 @@ export class WorkspaceNotifications implements OnChanges {
   private readonly heading = viewChild<ElementRef<HTMLElement>>('heading');
   private readonly closeButton = viewChild<ElementRef<HTMLButtonElement>>('closeButton');
   protected readonly open = signal(false);
-  protected readonly scenario = signal<NotificationScenario>('list');
   protected readonly feedback = signal('');
-  protected readonly groups = computed(() =>
-    groupNotifications(this.store.forProfile(this.profile())),
-  );
+  protected readonly groups = computed(() => groupNotifications(this.store.items()));
+  /** Nula enquanto a primeira carga não terminou ou falhou. */
   protected readonly unread = computed(() =>
-    this.scenario() === 'empty'
-      ? 0
-      : this.scenario() === 'list'
-        ? this.store.forProfile(this.profile()).filter((item) => !item.read).length
-        : null,
+    this.store.status() === 'ready' ? this.store.unread() : null,
   );
   protected readonly unreadLabel = computed(() => {
     const count = this.unread();
@@ -75,7 +67,7 @@ export class WorkspaceNotifications implements OnChanges {
         : `${count} ${count === 1 ? 'não lida' : 'não lidas'}`;
   });
   protected readonly bellLabel = computed(
-    () => 'Notificações de demonstração, ' + this.unreadLabel().toLocaleLowerCase('pt-BR'),
+    () => 'Notificações, ' + this.unreadLabel().toLocaleLowerCase('pt-BR'),
   );
   protected readonly icons = {
     ...WORKSPACE_ICONS,
@@ -88,7 +80,6 @@ export class WorkspaceNotifications implements OnChanges {
     sla: WORKSPACE_ICONS.sla,
     completed: LucideCircleCheck,
     assigned: WORKSPACE_ICONS.users,
-    reassigned: WORKSPACE_ICONS.users,
     reopened: LucideRotateCcw,
     removed: WORKSPACE_ICONS.users,
   };
@@ -100,17 +91,18 @@ export class WorkspaceNotifications implements OnChanges {
         takeUntilDestroyed(),
       )
       .subscribe(() => this.close(false));
+    this.store.start(inject(DestroyRef));
   }
 
   ngOnChanges(): void {
     this.close(false);
-    this.scenario.set('list');
     this.feedback.set('');
   }
 
   protected toggle(): void {
     if (this.open()) this.close(true);
     else {
+      this.store.refresh();
       this.open.set(true);
       afterNextRender(
         () => {
@@ -151,39 +143,28 @@ export class WorkspaceNotifications implements OnChanges {
     this.close(true);
   }
 
-  protected markRead(notification: DemoNotification): void {
-    this.store.markRead(this.profile(), notification.id);
-    this.feedback.set('Notificação marcada como lida apenas nesta demonstração.');
+  protected markRead(notification: AppNotification): void {
+    this.store.markRead(notification.id);
+    this.feedback.set('Notificação marcada como lida.');
     this.document.getElementById(`notification-${notification.id}`)?.focus({ preventScroll: true });
   }
 
   protected markAllRead(): void {
     this.closeButton()?.nativeElement.focus({ preventScroll: true });
-    this.store.markAllRead(this.profile());
-    this.feedback.set('Todas as notificações deste perfil foram marcadas como lidas nesta sessão.');
+    this.store.markAllRead();
+    this.feedback.set('Todas as notificações foram marcadas como lidas.');
   }
 
-  protected ticketPath(notification: DemoNotification): string {
+  protected ticketPath(notification: AppNotification): string {
     return `/app/${this.profile()}/chamados/${notification.ticketId}`;
   }
 
-  protected openNotification(notification: DemoNotification, event: MouseEvent): void {
-    this.store.markRead(this.profile(), notification.id);
+  protected openNotification(notification: AppNotification, event: MouseEvent): void {
+    this.store.markRead(notification.id);
     if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0)
       return;
     const samePage = this.router.url.split(/[?#]/)[0] === this.ticketPath(notification);
     this.close(false);
     if (samePage) this.document.querySelector<HTMLElement>('main h1')?.focus();
-  }
-
-  protected changeScenario(event: Event): void {
-    this.scenario.set((event.target as HTMLSelectElement).value as NotificationScenario);
-    this.feedback.set('');
-  }
-
-  protected restoreList(): void {
-    this.scenario.set('list');
-    this.feedback.set('Exemplos disponíveis novamente. Nenhuma consulta foi enviada.');
-    this.closeButton()?.nativeElement.focus();
   }
 }

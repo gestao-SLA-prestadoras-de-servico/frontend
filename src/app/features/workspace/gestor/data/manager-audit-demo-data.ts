@@ -1,4 +1,4 @@
-import type { ManagerTicketStatus } from './manager-ticket-demo-store';
+import type { ManagerTicketStatus } from './manager-ticket';
 import { PURGED_EVIDENCE_SAMPLE } from './purged-evidence-demo-data';
 
 export const AUDIT_ACTORS = {

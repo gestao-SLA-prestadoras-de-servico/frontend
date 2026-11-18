@@ -14,13 +14,18 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   ElementRef,
   inject,
   Injector,
   signal,
   viewChild,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
+import { Observable } from 'rxjs';
+import { CadastroApi } from '@app/core/api/cadastro.api';
+import { mensagemErro } from '@app/core/api/erros';
+import { WorkspaceLoadingState } from '../../components/workspace-loading-state';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { LucideDynamicIcon } from '@lucide/angular';
@@ -29,23 +34,30 @@ import { preventDefaultUnlessReplayed } from '../../../../shared/utils/event-rep
 import { WORKSPACE_ICONS } from '../../data/workspace-icons';
 import {
   currentPolicyVersion,
-  firstSlaPolicy,
   inconsistentPriorities,
-  policyById,
+  loadSlaPolicies,
+  prazosFromMatrix,
   SLA_CLOCKS,
-  SLA_POLICY_DEMOS,
   SLA_PRIORITIES,
   SlaClock,
+  SlaPolicy,
   SlaPriority,
   windowExample,
-} from '../data/sla-policy-demo-data';
+} from '../data/sla-policy-data';
 import {
   createSlaPolicyForm,
   firstInvalidPolicyField,
   matrixFromSlaPolicyForm,
+  NOVA_POLITICA,
   policyField,
   SlaPolicyField,
 } from '../data/sla-policy-form';
+
+/** Ponto de partida de uma política nova: a mesma ordem que o backend exige. */
+const MATRIZ_INICIAL = {
+  alta: { response: 120, field: 540, resolution: 1080 },
+  normal: { response: 360, field: 1080, resolution: 2160 },
+};
 
 @Component({
   selector: 'app-manager-sla-policy-edit',
@@ -63,6 +75,7 @@ import {
     ManagerLabel,
     ManagerTextAction,
     ManagerPageHeader,
+    WorkspaceLoadingState,
   ],
   templateUrl: './manager-sla-policy-edit.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -77,27 +90,32 @@ export class ManagerSlaPolicyEdit {
     viewChild<ElementRef<HTMLButtonElement>>('cancelReviewButton');
   private readonly reviewButton = viewChild<ElementRef<HTMLButtonElement>>('reviewButton');
   private readonly previewFeedback = viewChild<ElementRef<HTMLElement>>('previewFeedback');
+  private readonly api = inject(CadastroApi);
   private trigger?: HTMLButtonElement;
   private completingPreview = false;
-  private readonly initialPolicyId =
-    policyById(this.route.snapshot.queryParamMap.get('policy') ?? '')?.id ?? firstSlaPolicy().id;
-  private readonly initialPolicy = policyById(this.initialPolicyId) ?? firstSlaPolicy();
+  private readonly requestedPolicyId = this.route.snapshot.queryParamMap.get('policy');
 
   protected readonly icons = WORKSPACE_ICONS;
-  protected readonly policies = SLA_POLICY_DEMOS;
+  protected readonly novaPolitica = NOVA_POLITICA;
+  protected readonly data = rxResource({ stream: () => loadSlaPolicies(this.api) });
+  protected readonly loadError = computed(() =>
+    this.data.error() ? mensagemErro(this.data.error()) : null,
+  );
+  protected readonly policies = computed(() => this.data.value() ?? []);
   protected readonly priorities = SLA_PRIORITIES;
   protected readonly clocks = SLA_CLOCKS;
-  protected readonly form = createSlaPolicyForm(
-    this.initialPolicyId,
-    currentPolicyVersion(this.initialPolicy).matrix,
-  );
+  protected readonly form = createSlaPolicyForm(NOVA_POLITICA, MATRIZ_INICIAL);
   private readonly formValues = toSignal(this.form.valueChanges, {
     initialValue: this.form.getRawValue(),
   });
-  protected readonly selectedPolicy = computed(
-    () => policyById(this.formValues().policyId ?? this.initialPolicyId) ?? firstSlaPolicy(),
+  protected readonly isNew = computed(() => this.formValues().policyId === NOVA_POLITICA);
+  protected readonly selectedPolicy = computed(() =>
+    this.policies().find((policy) => policy.id === this.formValues().policyId),
   );
-  protected readonly currentVersion = computed(() => currentPolicyVersion(this.selectedPolicy()));
+  protected readonly currentVersion = computed(() => {
+    const policy = this.selectedPolicy();
+    return policy ? currentPolicyVersion(policy) : undefined;
+  });
   protected readonly editedMatrix = computed(() => {
     this.formValues();
     return matrixFromSlaPolicyForm(this.form);
@@ -117,7 +135,21 @@ export class ManagerSlaPolicyEdit {
     return hasCompleteValues ? inconsistentPriorities(this.editedMatrix()) : [];
   });
   protected readonly submitted = signal(false);
-  protected readonly previewNotice = signal('');
+  protected readonly busy = signal(false);
+  protected readonly notice = signal<{ tone: 'success' | 'error'; text: string } | null>(null);
+  private initialized = false;
+
+  constructor() {
+    // Quando as políticas chegam, abre a pedida na URL, a primeira, ou o cadastro de uma nova.
+    effect(() => {
+      const policies = this.policies();
+      if (this.initialized || this.data.isLoading() || this.data.error()) return;
+      this.initialized = true;
+      const policy =
+        policies.find((candidate) => candidate.id === this.requestedPolicyId) ?? policies[0];
+      if (policy) this.loadPolicy(policy);
+    });
+  }
 
   protected invalid(field: SlaPolicyField): boolean {
     const control = this.form.controls[field];
@@ -159,11 +191,20 @@ export class ManagerSlaPolicyEdit {
   }
 
   protected onPolicyChange(event: Event): void {
-    const policy = policyById((event.target as HTMLSelectElement).value);
-    if (!policy) return;
+    const id = (event.target as HTMLSelectElement).value;
+    const policy = this.policies().find((candidate) => candidate.id === id);
+    if (policy) this.loadPolicy(policy);
+    else this.form.controls.name.setValue('');
+    this.submitted.set(false);
+    this.notice.set(null);
+  }
+
+  private loadPolicy(policy: SlaPolicy): void {
     const version = currentPolicyVersion(policy);
     this.form.reset({
       policyId: policy.id,
+      name: '',
+      defaultPriority: version.defaultPriority,
       altaResponse: version.matrix.alta.response,
       altaField: version.matrix.alta.field,
       altaResolution: version.matrix.alta.resolution,
@@ -171,19 +212,27 @@ export class ManagerSlaPolicyEdit {
       normalField: version.matrix.normal.field,
       normalResolution: version.matrix.normal.resolution,
     });
-    this.submitted.set(false);
-    this.previewNotice.set('');
   }
 
   protected reviewPreview(): void {
     this.submitted.set(true);
     this.form.markAllAsTouched();
+    this.form.controls.name.updateValueAndValidity();
+    if (this.form.controls.name.invalid) {
+      this.document.getElementById('sla-edit-name')?.focus();
+      return;
+    }
     if (this.form.invalid) {
       const field = firstInvalidPolicyField(this.form);
       if (field)
         this.document
           .getElementById(`sla-${field.replace(/([A-Z])/g, '-$1').toLowerCase()}`)
           ?.focus();
+      return;
+    }
+    // O backend recusa prazos fora de ordem (ORDEM_PRAZOS_INVALIDA); o aviso já está na tela.
+    if (this.warningPriorities().length) {
+      this.document.getElementById('sla-order-warning')?.focus();
       return;
     }
     this.trigger = this.reviewButton()?.nativeElement;
@@ -198,19 +247,46 @@ export class ManagerSlaPolicyEdit {
     );
   }
 
-  protected closeReview(): void {
-    if (this.reviewDialog().nativeElement.open) this.reviewDialog().nativeElement.close();
+  protected save(): void {
+    if (this.busy()) return;
+    const { policyId, name, defaultPriority } = this.form.getRawValue();
+    const prazos = prazosFromMatrix(this.editedMatrix());
+    const request: Observable<{ id: string }> = this.isNew()
+      ? this.api.criarPolitica(name.trim(), defaultPriority, prazos)
+      : this.api.novaVersao(policyId, defaultPriority, prazos);
+    const policyName = this.isNew() ? name.trim() : (this.selectedPolicy()?.name ?? '');
+    this.busy.set(true);
+    request.subscribe({
+      next: (created) => {
+        this.busy.set(false);
+        this.notice.set({
+          tone: 'success',
+          text: this.isNew()
+            ? `Política "${policyName}" criada. Ela já pode ser vinculada a contratos.`
+            : `Nova versão de "${policyName}" criada. Chamados novos já usam esses prazos.`,
+        });
+        if (this.isNew()) this.form.controls.policyId.setValue(created.id);
+        this.data.reload();
+        this.finishReview();
+      },
+      error: (erro: unknown) => {
+        this.busy.set(false);
+        this.notice.set({ tone: 'error', text: mensagemErro(erro) });
+        this.finishReview();
+      },
+    });
   }
 
-  protected completePreview(): void {
-    this.previewNotice.set(
-      'Prévia concluída. A política e o histórico permaneceram inalterados nesta demonstração.',
-    );
+  private finishReview(): void {
     this.completingPreview = true;
     this.closeReview();
     afterNextRender(() => this.previewFeedback()?.nativeElement.focus(), {
       injector: this.injector,
     });
+  }
+
+  protected closeReview(): void {
+    if (this.reviewDialog().nativeElement.open) this.reviewDialog().nativeElement.close();
   }
 
   protected onReviewClose(): void {

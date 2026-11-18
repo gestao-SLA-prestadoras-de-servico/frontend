@@ -241,7 +241,7 @@ export const WORKSPACE_PROFILES: readonly WorkspaceProfile[] = [
         key: 'chamados',
         path: '/app/tecnico',
         title: 'Meus chamados',
-        description: 'Os atendimentos atribuídos a você neste cenário de demonstração.',
+        description: 'Os atendimentos atribuídos a você.',
         icon: 'tickets',
         group: 'Atendimento',
         kind: 'tickets',

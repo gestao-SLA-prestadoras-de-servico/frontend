@@ -8,7 +8,7 @@ import {
   LucideUserRoundCheck,
   LucideWrench,
 } from '@lucide/angular';
-import type { ManagerTicketPriority, ManagerTicketStatus } from './manager-ticket-demo-store';
+import type { ManagerTicketPriority, ManagerTicketStatus } from './manager-ticket';
 
 export const MANAGER_TICKET_BADGES = {
   ABERTO: { label: 'Aberto', icon: LucideCircleDot, classes: 'bg-pri-bg text-pri-d' },

@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -5,28 +6,35 @@ import {
   computed,
   inject,
   input,
+  output,
   signal,
   viewChild,
 } from '@angular/core';
+import { catchError, from, map, mergeMap, of, toArray } from 'rxjs';
 import {
   LucideCamera,
   LucideChevronLeft,
   LucideChevronRight,
   LucideImage,
-  LucideTrash2,
   LucideUpload,
   LucideX,
 } from '@lucide/angular';
+import { ChamadosApi } from '@app/core/api/chamados.api';
+import { mensagemErro } from '@app/core/api/erros';
 import { ButtonPrimary, ButtonSecondary } from '@app/shared/ui/button';
-import { EvidenceState, TechnicianEvidence } from '../technician-data';
-import { TechnicianDemoStore } from '../technician-demo-store';
+import { EvidenceImage } from '../../components/evidence-image';
+import {
+  EVIDENCE_STATE_LABELS,
+  EvidenceState,
+  evidenceFileError,
+  TechnicianEvidence,
+} from '../technician-data';
 
 const stateClasses: Record<EvidenceState, string> = {
   RECEBIDA: 'bg-[#e1f4f5] text-[#005b63]',
   PROCESSANDO: 'bg-[#fff1d6] text-[#754500]',
-  DISPONÍVEL: 'bg-grn-bg text-grn-t',
+  DISPONIVEL: 'bg-grn-bg text-grn-t',
   FALHA: 'bg-danger-bg text-danger',
-  INDISPONÍVEL: 'bg-bg text-ink2',
   EXPURGADA: 'bg-bg text-ink2',
 };
 
@@ -37,22 +45,27 @@ const stateClasses: Record<EvidenceState, string> = {
     LucideChevronLeft,
     LucideChevronRight,
     LucideImage,
-    LucideTrash2,
     LucideUpload,
     LucideX,
     ButtonPrimary,
     ButtonSecondary,
+    DatePipe,
+    EvidenceImage,
   ],
   templateUrl: './technician-evidence.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
 })
 export class TechnicianEvidencePanel {
-  readonly ticketId = input.required<number>();
+  readonly ticketId = input.required<string>();
   readonly items = input.required<readonly TechnicianEvidence[]>();
   readonly editable = input(false);
+  /** Emitido quando um envio termina: o pai recarrega a lista de evidências. */
+  readonly changed = output<void>();
 
-  protected readonly store = inject(TechnicianDemoStore);
+  private readonly api = inject(ChamadosApi);
+  protected readonly uploading = signal<readonly string[]>([]);
+  protected readonly stateLabels = EVIDENCE_STATE_LABELS;
   protected readonly feedback = signal('');
   protected readonly errors = signal<readonly string[]>([]);
   protected readonly selectedIndex = signal(0);
@@ -126,11 +139,6 @@ export class TechnicianEvidencePanel {
     this.selectedIndex.update((index) => (index + direction + length) % length);
   }
 
-  protected removeEvidence(evidence: TechnicianEvidence): void {
-    this.store.removeLocalEvidence(this.ticketId(), evidence.id);
-    this.selectedIndex.set(Math.max(0, Math.min(this.selectedIndex(), this.items().length - 1)));
-  }
-
   protected formatSize(bytes: number): string {
     if (bytes < 1_000_000) return `${Math.max(1, Math.round(bytes / 1_000))} KB`;
     return `${(bytes / 1_000_000).toFixed(1).replace('.', ',')} MB`;
@@ -140,22 +148,51 @@ export class TechnicianEvidencePanel {
     const labels: Record<EvidenceState, string> = {
       RECEBIDA: 'Imagem recebida · prévia pendente',
       PROCESSANDO: 'Miniatura sendo preparada',
-      DISPONÍVEL: 'Prévia da imagem',
+      DISPONIVEL: 'Prévia da imagem',
       FALHA: 'Imagem indisponível por falha',
-      INDISPONÍVEL: 'Imagem indisponível',
       EXPURGADA: 'Imagem expurgada',
     };
     return labels[state];
   }
 
   private addFiles(files: readonly File[]): void {
-    if (!files.length) return;
-    const result = this.store.addEvidenceFiles(this.ticketId(), files);
-    this.errors.set(result.errors);
+    if (!files.length || this.uploading().length) return;
+    const errors = files.map(evidenceFileError).filter((e): e is string => e !== null);
+    const valid = files.filter((file) => !evidenceFileError(file));
+    this.errors.set(errors);
+    if (!valid.length) {
+      this.feedback.set('Nenhuma imagem válida foi enviada.');
+      return;
+    }
+    this.uploading.set(valid.map((file) => file.name));
+    const failures: string[] = [];
+    from(valid)
+      .pipe(
+        // Um arquivo recusado não interrompe os demais; até 2 envios em paralelo.
+        mergeMap(
+          (file) =>
+            this.api.enviarEvidencia(this.ticketId(), file).pipe(
+              map(() => true),
+              catchError((erro: unknown) => {
+                failures.push(`${file.name}: ${mensagemErro(erro)}`);
+                return of(false);
+              }),
+            ),
+          2,
+        ),
+        toArray(),
+      )
+      .subscribe((results) => this.finishUpload(results.filter(Boolean).length, failures));
+  }
+
+  private finishUpload(sent: number, errors: readonly string[]): void {
+    this.uploading.set([]);
+    this.errors.update((current) => [...current, ...errors]);
     this.feedback.set(
-      result.added
-        ? `${result.added} ${result.added === 1 ? 'imagem adicionada' : 'imagens adicionadas'} como prévia local. Nada foi enviado.`
-        : 'Nenhuma imagem válida foi adicionada.',
+      sent
+        ? `${sent} ${sent === 1 ? 'imagem enviada' : 'imagens enviadas'}. O processamento leva alguns segundos.`
+        : 'Nenhuma imagem foi enviada.',
     );
+    this.changed.emit();
   }
 }

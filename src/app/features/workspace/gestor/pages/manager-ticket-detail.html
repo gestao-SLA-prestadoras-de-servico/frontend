@@ -2,13 +2,12 @@
   <app-manager-page-header
     title="{{ item.title }}"
     description="{{ item.client }} · {{ item.location }}"
-    demo="Detalhes fictícios · 05/11/2026"
     ><div managerHeaderContext>
       <a appManagerTextAction routerLink="/app/gestor/chamados"
         ><svg class="size-4" [lucideIcon]="icons.back" aria-hidden="true"></svg>Voltar à fila</a
       >
       <div class="mt-4 flex flex-wrap items-center gap-2">
-        <span class="text-xs tabular-nums text-ink3">#{{ item.id }}</span
+        <span class="text-xs tabular-nums text-ink3">#{{ item.number }}</span
         ><app-manager-ticket-badge [value]="item.status" /><app-manager-ticket-badge
           [value]="item.priority"
         />
@@ -21,10 +20,10 @@
     >
       <svg class="mt-0.5 size-5 shrink-0" [lucideIcon]="icons.info" aria-hidden="true"></svg>
       <div>
-        <h2 class="text-sm font-semibold">Um prazo aparece violado neste exemplo</h2>
+        <h2 class="text-sm font-semibold">Este chamado já teve um prazo de SLA violado</h2>
         <p class="mt-1 text-sm">
-          O chamado continua na fila de triagem. O marcador serve apenas para orientar a
-          demonstração.
+          A violação fica registrada na apuração e na linha do tempo, mesmo que o atendimento
+          continue.
         </p>
       </div>
     </div>
@@ -33,27 +32,53 @@
     <div class="min-w-0 space-y-4">
       <section appManagerPanel>
         <h2 appManagerSectionHeading>Prazos do chamado</h2>
-        <dl class="mt-4 grid gap-3 sm:grid-cols-3">
-          <div class="rounded-deadline p-3" [ngClass]="deadlineClasses(item.responseClock)">
-            <dt class="text-xs text-ink2">Resposta</dt>
-            <dd class="m-0 mt-1 text-sm font-semibold">
-              {{ item.responseClock }}
-            </dd>
-          </div>
-          <div class="rounded-deadline p-3" [ngClass]="deadlineClasses(item.fieldClock)">
-            <dt class="text-xs text-ink2">Atendimento em campo</dt>
-            <dd class="m-0 mt-1 text-sm font-semibold">{{ item.fieldClock }}</dd>
-          </div>
-          <div class="rounded-deadline p-3" [ngClass]="deadlineClasses(item.resolutionClock)">
-            <dt class="text-xs text-ink2">Resolução</dt>
-            <dd class="m-0 mt-1 text-sm font-semibold">{{ item.resolutionClock }}</dd>
-          </div>
-        </dl>
+        @if (item.deadlines.length) {
+          <dl class="mt-4 grid gap-3 sm:grid-cols-3">
+            @for (deadline of item.deadlines; track deadline.key) {
+              <div class="rounded-deadline p-3" [ngClass]="deadlineClasses(deadline)">
+                <dt class="text-xs text-ink2">{{ deadline.label }}</dt>
+                <dd class="m-0 mt-1 text-sm font-semibold">
+                  {{
+                    deadline.state === 'fulfilled'
+                      ? 'Cumprido'
+                      : deadline.state === 'overdue'
+                        ? 'Violado'
+                        : 'Até'
+                  }}
+                  {{
+                    (deadline.state === 'fulfilled' ? deadline.completedAt : deadline.target)
+                      | date: 'dd/MM, HH:mm' : '-0300'
+                  }}
+                </dd>
+                @if (deadline.state === 'overdue') {
+                  <dd class="m-0 mt-1 text-xs">
+                    Prazo era {{ deadline.target | date: 'dd/MM, HH:mm' : '-0300' }}
+                  </dd>
+                }
+              </div>
+            }
+          </dl>
+        } @else {
+          <p class="mt-3 text-sm text-ink2">Nenhum relógio de SLA iniciado ainda.</p>
+        }
       </section>
+      @if (data.value()?.sla; as sla) {
+        <app-sla-apuracao [apuracao]="sla" />
+      }
       <section appManagerPanel>
         <h2 appManagerSectionHeading>Descrição</h2>
-        <p class="mt-3 max-w-[70ch] text-sm leading-[1.7] text-ink2">{{ item.description }}</p>
+        <p class="mt-3 max-w-[70ch] whitespace-pre-line text-sm leading-[1.7] text-ink2">
+          {{ item.description }}
+        </p>
       </section>
+      @if (item.firstPosition) {
+        <section appManagerPanel>
+          <h2 appManagerSectionHeading>Primeiro posicionamento</h2>
+          <p class="mt-3 max-w-[70ch] whitespace-pre-line text-sm leading-[1.7] text-ink2">
+            {{ item.firstPosition }}
+          </p>
+        </section>
+      }
       @if (item.evidences.length) {
         <section
           appManagerPanel
@@ -63,7 +88,7 @@
           <div class="flex flex-wrap items-end justify-between gap-3">
             <div>
               <h2 appManagerSectionHeading id="ticket-evidence-title">Evidências do atendimento</h2>
-              <p class="mt-1 text-sm text-ink2">Arquivos e processamento da demonstração.</p>
+              <p class="mt-1 text-sm text-ink2">Fotos enviadas pelo técnico.</p>
             </div>
             <span class="text-xs text-ink3"
               >{{ item.evidences.length }}
@@ -102,15 +127,45 @@
                 class="rounded-deadline border border-line p-3"
                 [attr.aria-busy]="evidence.status === 'PROCESSANDO'"
               >
-                <div class="grid min-h-32 place-items-center rounded-control bg-bg p-4 text-center">
-                  <svg class="size-8 text-ink3" [lucideIcon]="icons.image" aria-hidden="true"></svg>
-                  <p class="mt-2 text-xs text-ink2">Prévia ilustrativa · sem imagem real</p>
-                </div>
+                @if (evidence.status === 'DISPONIVEL') {
+                  <app-evidence-image
+                    [evidenceId]="evidence.id"
+                    variant="miniatura"
+                    [alt]="'Evidência ' + evidence.fileName"
+                    imgClass="aspect-[4/3] w-full rounded-control object-cover"
+                  />
+                } @else {
+                  <div
+                    class="grid min-h-32 place-items-center rounded-control bg-bg p-4 text-center"
+                  >
+                    <svg
+                      class="size-8 text-ink3"
+                      [lucideIcon]="icons.image"
+                      aria-hidden="true"
+                    ></svg>
+                    <p class="mt-2 text-xs text-ink2">
+                      {{
+                        evidence.status === 'EXPURGADA'
+                          ? 'Imagem expurgada'
+                          : evidence.status === 'FALHA'
+                            ? 'Sem miniatura'
+                            : 'Processando imagem'
+                      }}
+                    </p>
+                  </div>
+                }
                 <div class="mt-3 flex flex-wrap items-start justify-between gap-2">
                   <div class="min-w-0">
                     <h3 class="wrap-anywhere text-sm font-semibold">{{ evidence.fileName }}</h3>
-                    <p class="mt-1 text-xs text-ink2">{{ evidence.caption }}</p>
-                    <p class="mt-1 text-xs text-ink3">{{ evidence.uploadedAt }}</p>
+                    <p class="mt-1 text-xs text-ink3">
+                      {{ evidence.uploadedAt | date: 'dd/MM/yyyy, HH:mm' : '-0300' }}
+                    </p>
+                    @if (evidence.status !== 'EXPURGADA') {
+                      <app-evidence-download
+                        [evidenceId]="evidence.id"
+                        [fileName]="evidence.fileName"
+                      />
+                    }
                   </div>
                   <span
                     class="inline-flex min-h-7 shrink-0 items-center rounded-sm px-2.5 text-xs font-semibold"
@@ -118,21 +173,21 @@
                     [class.text-danger]="evidence.status === 'FALHA'"
                     [class.bg-pri-bg]="evidence.status === 'PROCESSANDO'"
                     [class.text-pri-d]="evidence.status === 'PROCESSANDO'"
-                    [class.bg-grn-bg]="evidence.status === 'DISPONÍVEL'"
-                    [class.text-grn-t]="evidence.status === 'DISPONÍVEL'"
-                    >{{ evidence.status }}</span
+                    [class.bg-grn-bg]="evidence.status === 'DISPONIVEL'"
+                    [class.text-grn-t]="evidence.status === 'DISPONIVEL'"
+                    >{{ evidenceLabels[evidence.status] }}</span
                   >
                 </div>
                 @if (evidence.status === 'FALHA') {
                   <div class="mt-3 rounded-control bg-danger-bg p-3 text-danger">
                     <p class="text-xs font-semibold">Falha de processamento</p>
-                    <p class="mt-1 text-xs leading-[1.6]">{{ evidence.failureMessage }}</p>
+                    <p class="mt-1 text-xs leading-[1.6]">
+                      A miniatura não foi gerada. O arquivo original está preservado.
+                    </p>
                   </div>
                 }
-                @if (evidence.status === 'PROCESSANDO') {
-                  <p class="mt-3 text-sm text-pri-d" role="status">
-                    Preparando miniatura nesta demonstração…
-                  </p>
+                @if (evidence.status === 'PROCESSANDO' || evidence.status === 'RECEBIDA') {
+                  <p class="mt-3 text-sm text-pri-d" role="status">Preparando miniatura…</p>
                 }
                 @if (evidence.status === 'FALHA') {
                   <button
@@ -149,9 +204,6 @@
               </article>
             }
           </div>
-          <p class="mt-3 text-xs leading-[1.6] text-ink3">
-            Nenhum arquivo é enviado ou retransmitido. Os estados são apenas demonstrativos.
-          </p>
         </section>
       } @else {
         <section appManagerPanel aria-labelledby="ticket-evidence-title">
@@ -170,7 +222,7 @@
       <section appManagerPanel>
         <h2 appManagerSectionHeading>Linha do tempo</h2>
         <ol class="mt-4 space-y-4">
-          @for (event of item.timeline; track event.at + event.title) {
+          @for (event of item.timeline; track $index) {
             <li
               class="grid grid-cols-[100px_minmax(0,1fr)] gap-3 border-l-2 pl-4"
               [class.border-line]="event.tone === 'neutral'"
@@ -178,7 +230,9 @@
               [class.border-grn]="event.tone === 'green'"
               [class.border-danger]="event.tone === 'red'"
             >
-              <time class="text-xs text-ink3">{{ event.at }}</time>
+              <time class="text-xs text-ink3" [attr.datetime]="event.at">{{
+                event.at | date: 'dd/MM, HH:mm' : '-0300'
+              }}</time>
               <div>
                 <h3 class="text-sm font-semibold">{{ event.title }}</h3>
                 <p class="mt-1 text-sm text-ink2">{{ event.detail }}</p>
@@ -197,32 +251,38 @@
         </div>
         <div>
           <dt class="text-xs text-ink3">Aberto em</dt>
-          <dd class="m-0 mt-1">{{ item.openedAt }}</dd>
+          <dd class="m-0 mt-1">{{ item.openedAt | date: 'dd/MM/yyyy, HH:mm' : '-0300' }}</dd>
         </div>
         <div>
           <dt class="text-xs text-ink3">Próximo prazo</dt>
-          <dd class="m-0 mt-1 font-semibold" [class.text-danger]="item.overdue">
-            {{ item.nextDeadline }}
+          <dd class="m-0 mt-1 font-semibold">
+            {{
+              item.nextDeadline
+                ? (item.nextDeadline | date: 'dd/MM/yyyy, HH:mm' : '-0300')
+                : 'Sem prazo correndo'
+            }}
           </dd>
         </div>
       </dl>
-      <div class="mt-4 border-t border-line pt-4">
-        <p class="text-xs leading-[1.6] text-ink2">
-          As ações nesta página são demonstrativas e alteram somente os dados em memória desta
-          sessão.
-        </p>
-      </div>
 
-      @if (isOpenTicket()) {
+      @if (canTriage()) {
         <section class="mt-4 border-t border-line pt-4" aria-labelledby="triage-heading">
           <div class="flex flex-wrap items-start justify-between gap-2">
             <div>
               <h2 appManagerSectionHeading id="triage-heading">Triagem</h2>
-              <p class="mt-1 text-sm text-ink2">Defina a prioridade e envie a primeira posição.</p>
+              <p class="mt-1 text-sm text-ink2">
+                {{
+                  needsFirstPosition()
+                    ? 'Defina a prioridade e envie a primeira posição ao cliente.'
+                    : 'A prioridade ainda pode mudar até o técnico resolver.'
+                }}
+              </p>
             </div>
-            <span class="rounded-sm bg-pri-bg px-2 py-1 text-xs font-semibold text-pri-d"
-              >Sugestão · {{ item.suggestedPriority }}</span
-            >
+            @if (item.suggestedPriority) {
+              <span class="rounded-sm bg-pri-bg px-2 py-1 text-xs font-semibold text-pri-d"
+                >Sugestão · {{ item.suggestedPriority }}</span
+              >
+            }
           </div>
           @if (successMessage()) {
             <div
@@ -232,7 +292,7 @@
               role="status"
               aria-live="polite"
             >
-              <p class="text-sm font-semibold">Demonstração concluída</p>
+              <p class="text-sm font-semibold">Triagem salva</p>
               <p class="mt-1 text-sm">{{ successMessage() }}</p>
               <button
                 type="button"
@@ -262,7 +322,7 @@
                       priority === item.suggestedPriority ? 'Prioridade sugerida' : 'Alternativa'
                     }}</span></span
                   ><span class="mt-2 grid grid-cols-3 gap-1.5 text-xs text-ink2">
-                    @for (clock of priorityOptions[priority]; track clock.label) {
+                    @for (clock of priorityOptions()[priority]; track clock.label) {
                       <span class="rounded-sm bg-bg px-1.5 py-2"
                         ><span class="block text-[10px]">{{ clock.label }}</span
                         ><span class="mt-1 block font-semibold text-ink">{{
@@ -275,49 +335,54 @@
               }
             </div>
           </fieldset>
-          <div class="mt-4">
-            <label appManagerLabel for="first-position"
-              >Primeiro posicionamento
-              <span class="text-xs font-normal text-ink2">(obrigatório)</span></label
-            ><textarea
-              appTextarea
-              #firstPositionField
-              id="first-position"
-              class="mt-2"
-              [value]="firstPosition()"
-              aria-required="true"
-              [attr.aria-invalid]="invalidFirstPosition()"
-              [attr.aria-describedby]="
-                invalidFirstPosition()
-                  ? 'first-position-error first-position-help'
-                  : 'first-position-help'
-              "
-              placeholder="Escreva uma atualização curta para o cliente."
-              (input)="updateFirstPosition($event)"
-            ></textarea>
-            @if (invalidFirstPosition()) {
-              <p id="first-position-error" class="mt-2 text-sm text-danger" role="alert">
-                Escreva ao menos 12 caracteres antes de revisar a triagem.
+          @if (needsFirstPosition()) {
+            <div class="mt-4">
+              <label appManagerLabel for="first-position"
+                >Primeiro posicionamento
+                <span class="text-xs font-normal text-ink2">(obrigatório)</span></label
+              ><textarea
+                appTextarea
+                #firstPositionField
+                id="first-position"
+                class="mt-2"
+                [value]="firstPosition()"
+                aria-required="true"
+                [attr.aria-invalid]="invalidFirstPosition()"
+                [attr.aria-describedby]="
+                  invalidFirstPosition()
+                    ? 'first-position-error first-position-help'
+                    : 'first-position-help'
+                "
+                placeholder="Escreva uma atualização curta para o cliente."
+                (input)="updateFirstPosition($event)"
+              ></textarea>
+              @if (invalidFirstPosition()) {
+                <p id="first-position-error" class="mt-2 text-sm text-danger" role="alert">
+                  Escreva ao menos 12 caracteres antes de revisar a triagem.
+                </p>
+              }
+              <p id="first-position-help" class="mt-2 text-xs leading-[1.6] text-ink2">
+                Vai por e-mail ao cliente e fica visível no chamado. Só pode ser enviado uma vez.
               </p>
-            }
-            <p id="first-position-help" class="mt-2 text-xs leading-[1.6] text-ink2">
-              O posicionamento segue por e-mail neste exemplo e representa a primeira resposta do
-              gestor.
+            </div>
+          }
+          @if (triageError(); as message) {
+            <p class="mt-3 rounded-deadline bg-danger-bg p-3 text-sm text-danger" role="alert">
+              {{ message }}
             </p>
-          </div>
+          }
           <button
             appButtonPrimary
             #triageTrigger
             type="button"
             class="mt-4 min-h-11 w-full px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
-            [disabled]="!ready()"
+            [disabled]="!ready() || busy() || (!needsFirstPosition() && !priorityChanged())"
             (click)="submitTriage(triageTrigger)"
           >
-            Confirmar triagem
+            {{ needsFirstPosition() ? 'Confirmar triagem' : 'Salvar prioridade' }}
           </button>
           <p class="mt-3 text-xs leading-[1.6] text-ink3">
-            As opções de prazo são referências fixas. A escolha não altera o chamado nem emite
-            eventos.
+            Os prazos mostrados são os da versão da política com que o chamado foi aberto.
           </p>
         </section>
       }
@@ -332,7 +397,7 @@
               role="status"
               aria-live="polite"
             >
-              <p class="text-sm font-semibold">Atribuição de demonstração</p>
+              <p class="text-sm font-semibold">Atribuição salva</p>
               <p class="mt-1 text-sm">{{ assignmentNotice() }}</p>
               <button
                 type="button"
@@ -359,14 +424,13 @@
             #assignmentTrigger
             type="button"
             class="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-control border border-line2 px-4 py-2 text-sm font-semibold text-ink hover:bg-sf focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-pri disabled:cursor-not-allowed disabled:opacity-50"
-            [disabled]="!ready()"
+            [disabled]="!ready() || busy()"
             (click)="openAssignment(assignmentTrigger)"
           >
             {{ item.technician ? 'Reatribuir técnico' : 'Atribuir técnico' }}
           </button>
           <p class="mt-2 text-xs leading-[1.6] text-ink3">
-            Disponibilidade e carga são fictícias. A confirmação atualiza somente este cenário de
-            sessão.
+            O técnico escolhido é notificado. Na reatribuição, o anterior também.
           </p>
         </section>
       }
@@ -450,9 +514,6 @@
             </button>
           </div>
         }
-        <p class="mt-2 text-xs leading-[1.6] text-ink3">
-          Demonstração local: esta preferência não é enviada nem salva no servidor.
-        </p>
       </section>
       <section class="mt-4 border-t border-danger/20 pt-4" aria-labelledby="cancel-section-heading">
         <h2 appManagerSectionHeading id="cancel-section-heading">Cancelar chamado</h2>
@@ -464,7 +525,7 @@
             role="status"
             aria-live="polite"
           >
-            <p class="text-sm font-semibold">Confirmação local</p>
+            <p class="text-sm font-semibold">Chamado cancelado</p>
             <p class="mt-1 text-sm">{{ cancelNotice() }}</p>
             <button
               type="button"
@@ -482,7 +543,7 @@
           #cancelTrigger
           type="button"
           class="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-control bg-danger px-4 py-2 text-sm font-semibold text-white hover:opacity-90 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-danger disabled:cursor-not-allowed disabled:opacity-45"
-          [disabled]="!canCancel() || !ready()"
+          [disabled]="!canCancel() || !ready() || busy()"
           (click)="openCancellation(cancelTrigger)"
         >
           Cancelar chamado
@@ -511,7 +572,7 @@
           <h2 id="triage-review-title" class="text-xl font-semibold tracking-[-.02em]">
             Revisar triagem
           </h2>
-          <p class="mt-2 text-sm text-ink2">Confirme a escolha para concluir a demonstração.</p>
+          <p class="mt-2 text-sm text-ink2">Confira antes de salvar.</p>
         </div>
         <button
           type="button"
@@ -525,20 +586,24 @@
       <dl class="mt-5 grid gap-4 rounded-deadline bg-bg p-4 text-sm">
         <div>
           <dt class="text-xs text-ink3">Chamado</dt>
-          <dd class="m-0 mt-1 font-semibold">#{{ item.id }} · {{ item.title }}</dd>
+          <dd class="m-0 mt-1 font-semibold">#{{ item.number }} · {{ item.title }}</dd>
         </div>
         <div>
           <dt class="text-xs text-ink3">Prioridade selecionada</dt>
           <dd class="m-0 mt-1 font-semibold">{{ selectedPriority() }}</dd>
         </div>
-        <div>
-          <dt class="text-xs text-ink3">Primeiro posicionamento</dt>
-          <dd class="m-0 mt-1 whitespace-pre-wrap">{{ firstPosition() }}</dd>
-        </div>
+        @if (needsFirstPosition()) {
+          <div>
+            <dt class="text-xs text-ink3">Primeiro posicionamento</dt>
+            <dd class="m-0 mt-1 whitespace-pre-wrap">{{ firstPosition() }}</dd>
+          </div>
+        }
       </dl>
-      <p class="mt-4 text-xs leading-[1.6] text-ink2">
-        A confirmação é local: nenhum status, prazo ou evento do chamado será atualizado.
-      </p>
+      @if (triageError(); as message) {
+        <p class="mt-4 rounded-deadline bg-danger-bg p-3 text-sm text-danger" role="alert">
+          {{ message }}
+        </p>
+      }
       <div class="mt-6 flex flex-col-reverse justify-end gap-2 sm:flex-row">
         <button
           #cancelTriageButton
@@ -552,9 +617,12 @@
           appButtonPrimary
           type="button"
           class="min-h-11 px-4 py-2"
+          [disabled]="busy()"
           (click)="confirmTriage()"
         >
-          Concluir triagem demonstrativa
+          {{
+            busy() ? 'Salvando…' : needsFirstPosition() ? 'Salvar e enviar' : 'Salvar prioridade'
+          }}
         </button>
       </div>
     </div>
@@ -576,7 +644,7 @@
             <h2 id="assignment-title" class="text-xl font-semibold tracking-[-.02em]">
               {{ mode === 'initial' ? 'Atribuição inicial' : 'Reatribuição de técnico' }}
             </h2>
-            <p class="mt-2 text-sm text-ink2">Chamado #{{ item.id }} · {{ item.title }}</p>
+            <p class="mt-2 text-sm text-ink2">Chamado #{{ item.number }} · {{ item.title }}</p>
           </div>
           <button
             type="button"
@@ -591,8 +659,8 @@
           <div class="mt-4 rounded-deadline bg-pri-bg p-4 text-pri-d">
             <p class="text-sm font-semibold">Continuidade do atendimento</p>
             <p class="mt-1 text-sm">
-              O serviço está em andamento. A troca demonstrativa registra o novo responsável e
-              mantém os prazos cumpridos como referência.
+              O serviço está em andamento. O novo responsável assume a continuidade e os prazos já
+              cumpridos ficam registrados.
             </p>
           </div>
         }
@@ -610,52 +678,20 @@
             <option value="">Selecione um técnico ativo</option>
             @for (candidate of technicians(); track candidate.id) {
               <option [value]="candidate.id">
-                {{ candidate.name }} · {{ candidate.assigned + candidate.inProgress }}/{{
-                  candidate.workloadLimit
-                }}
-                chamados ativos ·
-                {{
-                  candidate.assigned + candidate.inProgress >= candidate.workloadLimit
-                    ? 'Carga completa'
-                    : 'Disponível'
-                }}
+                {{ candidate.name }} · {{ candidate.open }}
+                {{ candidate.open === 1 ? 'chamado' : 'chamados' }} em aberto
               </option>
             }
           </select>
           <p class="mt-2 text-xs leading-[1.6] text-ink3">
-            A carga apresentada é uma referência de demonstração e não representa uma escala real.
+            Somente técnicos ativos. O número ao lado é a carga atual de cada um.
           </p>
         </div>
-        @if (selectedTechnician(); as technician) {
-          @if (assignmentConflict()) {
-            <div class="mt-4 rounded-deadline bg-danger-bg p-4 text-danger" role="alert">
-              <p class="text-sm font-semibold">Conflito de disponibilidade</p>
-              <p class="mt-1 text-sm">
-                {{ technician.name }} atingiria {{ assignmentLoadAfter() }}/{{
-                  technician.workloadLimit
-                }}
-                chamados ativos com este atendimento. Escolha outro técnico para continuar.
-              </p>
-            </div>
-          } @else {
-            <div class="mt-4 rounded-deadline bg-grn-bg p-4 text-grn-t">
-              <p class="text-sm font-semibold">Técnico disponível neste cenário</p>
-              <p class="mt-1 text-sm">
-                {{ technician.name }} ficará com {{ assignmentLoadAfter() }}/{{
-                  technician.workloadLimit
-                }}
-                chamados ativos.
-              </p>
-            </div>
-          }
+        @if (assignmentError(); as message) {
+          <p class="mt-4 rounded-deadline bg-danger-bg p-3 text-sm text-danger" role="alert">
+            {{ message }}
+          </p>
         }
-        <div class="mt-5 rounded-deadline border border-line p-4 text-sm text-ink2">
-          <p class="font-semibold text-ink">Confirmação local</p>
-          <p class="mt-1">
-            A escolha altera apenas o responsável no exemplo em memória desta sessão. Nenhum
-            atendimento real será modificado.
-          </p>
-        </div>
         <div class="mt-6 flex flex-col-reverse justify-end gap-2 sm:flex-row">
           <button
             #cancelAssignmentButton
@@ -669,10 +705,16 @@
             appButtonPrimary
             type="button"
             class="min-h-11 px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
-            [disabled]="!selectedTechnicianId() || assignmentConflict()"
+            [disabled]="!selectedTechnicianId() || busy()"
             (click)="confirmAssignment()"
           >
-            {{ mode === 'initial' ? 'Confirmar atribuição' : 'Confirmar reatribuição' }}
+            {{
+              busy()
+                ? 'Salvando…'
+                : mode === 'initial'
+                  ? 'Confirmar atribuição'
+                  : 'Confirmar reatribuição'
+            }}
           </button>
         </div>
       </div>
@@ -692,7 +734,7 @@
       <div class="flex items-start justify-between gap-4">
         <div>
           <h2 id="cancel-dialog-title" class="text-xl font-semibold tracking-[-.02em]">
-            Cancelar chamado #{{ item.id }}
+            Cancelar chamado #{{ item.number }}
           </h2>
           <p class="mt-2 text-sm text-ink2">{{ item.title }}</p>
         </div>
@@ -709,7 +751,6 @@
         <p class="text-sm font-semibold">Ação irreversível na operação</p>
         <p class="mt-1 text-sm">
           Chamados cancelados não podem ser retomados. Verifique a solicitação antes de continuar.
-          Esta confirmação é apenas demonstrativa.
         </p>
       </div>
       <div class="mt-5">
@@ -735,8 +776,13 @@
           </p>
         }
         <p id="cancel-reason-help" class="mt-2 text-xs leading-[1.6] text-ink2">
-          O motivo fica visível somente durante esta simulação e não é salvo.
+          O motivo fica registrado no histórico e na auditoria.
         </p>
+        @if (cancelServerError(); as message) {
+          <p class="mt-3 rounded-deadline bg-danger-bg p-3 text-sm text-danger" role="alert">
+            {{ message }}
+          </p>
+        }
       </div>
       <div class="mt-6 flex flex-col-reverse justify-end gap-2 sm:flex-row">
         <button
@@ -749,10 +795,11 @@
           Voltar</button
         ><button
           type="button"
-          class="min-h-11 rounded-control bg-danger px-4 py-2 text-sm font-semibold text-white hover:opacity-90 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-danger"
+          class="min-h-11 rounded-control bg-danger px-4 py-2 text-sm font-semibold text-white hover:opacity-90 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-danger disabled:opacity-50"
+          [disabled]="busy()"
           (click)="confirmCancellation()"
         >
-          Confirmar cancelamento
+          {{ busy() ? 'Cancelando…' : 'Confirmar cancelamento' }}
         </button>
       </div>
     </div>
@@ -788,24 +835,7 @@
         <div class="mt-5 rounded-deadline bg-pri-bg p-4 text-pri-d" role="status">
           <p class="text-sm font-semibold">Arquivo original preservado</p>
           <p class="mt-1 text-sm">
-            A demonstração simula apenas o processamento da miniatura. Nenhum arquivo será enviado
-            ou retransmitido.
-          </p>
-        </div>
-        <div class="mt-5">
-          <label appManagerLabel for="evidence-outcome"> Resultado simulado </label>
-          <select
-            appSelect
-            id="evidence-outcome"
-            class="mt-2"
-            [value]="reprocessOutcome()"
-            (change)="updateReprocessOutcome($event)"
-          >
-            <option value="DISPONÍVEL">Miniatura disponível</option>
-            <option value="FALHA">Nova falha de processamento</option>
-          </select>
-          <p class="mt-2 text-xs leading-[1.6] text-ink2">
-            A escolha controla apenas o resultado visual desta simulação local.
+            Só a miniatura e a versão de visualização são geradas de novo a partir do original.
           </p>
         </div>
         <div class="mt-6 flex flex-col-reverse justify-end gap-2 sm:flex-row">
@@ -822,6 +852,7 @@
             appButtonPrimary
             type="button"
             class="min-h-11 px-4 py-2"
+            [disabled]="busy()"
             (click)="confirmEvidenceReprocess()"
           >
             Confirmar reprocessamento
@@ -830,6 +861,20 @@
       </div>
     }
   </dialog>
+} @else if (loadError(); as message) {
+  <div class="rounded-deadline bg-danger-bg p-6 text-danger" role="alert">
+    <h1 appPageHeading class="text-xl font-semibold">Não foi possível carregar o chamado</h1>
+    <p class="mt-2 text-sm">{{ message }}</p>
+    <button
+      type="button"
+      class="mt-3 min-h-11 text-sm font-semibold underline underline-offset-4"
+      (click)="data.reload()"
+    >
+      Tentar novamente
+    </button>
+  </div>
+} @else if (!missing()) {
+  <app-workspace-loading-state label="Carregando chamado…" />
 } @else {
   <div class="rounded-deadline border border-line p-6">
     <h1 appPageHeading class="text-xl font-semibold">Chamado não encontrado</h1>

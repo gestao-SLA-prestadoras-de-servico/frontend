@@ -1,8 +1,12 @@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { SlaPriority, SlaTimeMatrix } from './sla-policy-demo-data';
+import { Prioridade } from '@app/core/api/modelos';
+import { SlaPriority, SlaTimeMatrix } from './sla-policy-data';
 
 export type SlaPolicyForm = FormGroup<{
   policyId: FormControl<string>;
+  /** Só quando `policyId` é NOVA_POLITICA. */
+  name: FormControl<string>;
+  defaultPriority: FormControl<Prioridade>;
   altaResponse: FormControl<number | null>;
   altaField: FormControl<number | null>;
   altaResolution: FormControl<number | null>;
@@ -11,7 +15,13 @@ export type SlaPolicyForm = FormGroup<{
   normalResolution: FormControl<number | null>;
 }>;
 
-export type SlaPolicyField = Exclude<keyof SlaPolicyForm['controls'], 'policyId'>;
+export type SlaPolicyField = Exclude<
+  keyof SlaPolicyForm['controls'],
+  'policyId' | 'name' | 'defaultPriority'
+>;
+
+/** Valor do seletor de política que abre o cadastro de uma política nova. */
+export const NOVA_POLITICA = '__nova__';
 
 export const SLA_POLICY_FIELD_LABELS: Record<SlaPolicyField, string> = {
   altaResponse: 'Informe os minutos de resposta para prioridade Alta.',
@@ -24,9 +34,24 @@ export const SLA_POLICY_FIELD_LABELS: Record<SlaPolicyField, string> = {
 
 const positiveWholeMinutes = [Validators.required, Validators.min(1), Validators.pattern(/^\d+$/)];
 
-export function createSlaPolicyForm(policyId: string, matrix: SlaTimeMatrix): SlaPolicyForm {
+export function createSlaPolicyForm(
+  policyId: string,
+  matrix: SlaTimeMatrix,
+  defaultPriority: Prioridade = 'NORMAL',
+): SlaPolicyForm {
   return new FormGroup({
     policyId: new FormControl(policyId, { nonNullable: true, validators: [Validators.required] }),
+    name: new FormControl('', {
+      nonNullable: true,
+      validators: [
+        (control) =>
+          control.parent?.get('policyId')?.value !== NOVA_POLITICA ||
+          (String(control.value).trim().length >= 2 && String(control.value).trim().length <= 100)
+            ? null
+            : { name: true },
+      ],
+    }),
+    defaultPriority: new FormControl<Prioridade>(defaultPriority, { nonNullable: true }),
     altaResponse: new FormControl(matrix.alta.response, { validators: positiveWholeMinutes }),
     altaField: new FormControl(matrix.alta.field, { validators: positiveWholeMinutes }),
     altaResolution: new FormControl(matrix.alta.resolution, { validators: positiveWholeMinutes }),

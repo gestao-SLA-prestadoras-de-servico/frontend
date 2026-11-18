@@ -14,7 +14,6 @@ import {
   ManagerLabel,
   ManagerTextAction,
 } from '../components/manager-surface.directive';
-import { Textarea } from '@app/shared/ui/input/textarea.directive';
 import { Select } from '@app/shared/ui/input/select.directive';
 import { DOCUMENT } from '@angular/common';
 import {
@@ -34,13 +33,20 @@ import { LucideDynamicIcon } from '@lucide/angular';
 import { ButtonPrimary, ButtonSecondary } from '@app/shared/ui/button';
 import { Input } from '@app/shared/ui/input/input.directive';
 import { preventDefaultUnlessReplayed } from '../../../../shared/utils/event-replay';
-import { CompanyDemoStore, CompanySituation, DemoCompany } from '../data/company-demo-store';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { map, Observable } from 'rxjs';
+import { CadastroApi } from '@app/core/api/cadastro.api';
+import { mensagemErro, problema } from '@app/core/api/erros';
+import { Company, CompanySituation, CompanyStore, toCompany } from '../data/company-store';
 import {
   COMPANY_FIELD_ERRORS,
-  CompanyField,
+  companyFormValue,
   createCompanyForm,
   firstInvalidCompanyField,
+  toDadosCliente,
 } from '../data/company-form';
+import { ManagerAddressFields } from '../components/manager-address-fields';
+import { WorkspaceLoadingState } from '../../components/workspace-loading-state';
 import { WORKSPACE_ICONS } from '../../data/workspace-icons';
 
 type CompanyFilter = 'all' | CompanySituation;
@@ -64,7 +70,6 @@ function normalize(value: string): string {
     Input,
     LucideDynamicIcon,
     Select,
-    Textarea,
     ManagerCollection,
     ManagerDialog,
     ManagerSectionHeading,
@@ -77,6 +82,8 @@ function normalize(value: string): string {
     ManagerTable,
     ManagerTableHead,
     ManagerTableBody,
+    ManagerAddressFields,
+    WorkspaceLoadingState,
   ],
   templateUrl: './manager-companies.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -85,7 +92,8 @@ function normalize(value: string): string {
 export class ManagerCompanies {
   private readonly document = inject(DOCUMENT);
   private readonly injector = inject(Injector);
-  private readonly store = inject(CompanyDemoStore);
+  private readonly store = inject(CompanyStore);
+  private readonly api = inject(CadastroApi);
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('companyDialog');
   private readonly editName = viewChild<ElementRef<HTMLInputElement>>('editName');
   private readonly cancelAction = viewChild<ElementRef<HTMLButtonElement>>('cancelAction');
@@ -93,13 +101,23 @@ export class ManagerCompanies {
   private trigger?: HTMLButtonElement;
   private completing = false;
   protected readonly icons = WORKSPACE_ICONS;
-  protected readonly companies = this.store.companies;
+  protected readonly data = rxResource({
+    stream: () =>
+      this.api
+        .clientes({ sort: 'razaoSocial,asc' })
+        .pipe(map((clientes) => clientes.map(toCompany))),
+  });
+  protected readonly loadError = computed(() =>
+    this.data.error() ? mensagemErro(this.data.error()) : null,
+  );
+  protected readonly companies = computed(() => this.data.value() ?? []);
+  protected readonly busy = signal(false);
   protected readonly notice = this.store.notice;
   protected readonly search = signal('');
   protected readonly filter = signal<CompanyFilter>('all');
   protected readonly ready = signal(false);
   protected readonly dialogMode = signal<DialogMode>(null);
-  protected readonly selectedCompany = signal<DemoCompany | null>(null);
+  protected readonly selectedCompany = signal<Company | null>(null);
   protected readonly submitted = signal(false);
   protected readonly form = createCompanyForm();
   protected readonly fieldErrors = COMPANY_FIELD_ERRORS;
@@ -146,23 +164,19 @@ export class ManagerCompanies {
     this.store.setNotice(null);
   }
 
-  protected invalid(field: CompanyField): boolean {
+  protected invalid(field: 'legalName' | 'contactEmail'): boolean {
     const control = this.form.controls[field];
     return control.invalid && (control.touched || this.submitted());
   }
 
-  protected openEdit(company: DemoCompany, trigger: HTMLButtonElement): void {
+  protected openEdit(company: Company, trigger: HTMLButtonElement): void {
     if (!this.ready()) return;
     this.trigger = trigger;
     this.completing = false;
     this.dialogMode.set('edit');
     this.selectedCompany.set(company);
     this.submitted.set(false);
-    this.form.reset({
-      legalName: company.legalName,
-      contactEmail: company.contactEmail,
-      address: company.address,
-    });
+    this.form.reset(companyFormValue(company.endereco, company.legalName, company.contactEmail));
     afterNextRender(
       () => {
         if (this.dialogMode() !== 'edit' || this.dialog().nativeElement.open) return;
@@ -173,7 +187,7 @@ export class ManagerCompanies {
     );
   }
 
-  protected openDeactivate(company: DemoCompany, trigger: HTMLButtonElement): void {
+  protected openDeactivate(company: Company, trigger: HTMLButtonElement): void {
     if (!this.ready() || company.situation === 'inactive') return;
     this.trigger = trigger;
     this.completing = false;
@@ -242,42 +256,43 @@ export class ManagerCompanies {
       return;
     }
 
-    const updated = this.store.update(company.id, this.form.getRawValue());
-    if (!updated) {
-      this.store.setNotice({
-        tone: 'error',
-        title: 'Não foi possível atualizar a empresa',
-        detail: 'Feche o diálogo, atualize a lista e tente novamente.',
-      });
-    } else {
-      this.store.setNotice({
-        tone: 'success',
-        title: 'Edição demonstrativa concluída',
-        detail: 'Os dados foram atualizados somente nesta sessão, sem envio ou persistência.',
-      });
-    }
-    this.finishDialogAndFocusNotice();
+    this.save(this.api.editarCliente(company.id, company.version, toDadosCliente(this.form)), {
+      title: 'Empresa atualizada',
+      detail: `Os dados de ${this.form.controls.legalName.value.trim()} foram salvos.`,
+    });
   }
 
   protected confirmDeactivation(): void {
     const company = this.selectedCompany();
     if (!company || this.dialogMode() !== 'deactivate') return;
-    const updated = this.store.deactivate(company.id);
-    this.store.setNotice(
-      updated
-        ? {
-            tone: 'success',
-            title: 'Inativação demonstrativa concluída',
-            detail:
-              'A situação foi alterada somente na lista desta sessão. Nenhum cadastro real foi alterado.',
-          }
-        : {
-            tone: 'error',
-            title: 'Não foi possível inativar a empresa',
-            detail: 'Feche o diálogo, atualize a lista e tente novamente.',
-          },
-    );
-    this.finishDialogAndFocusNotice();
+    this.save(this.api.inativarCliente(company.id), {
+      title: 'Empresa inativada',
+      detail: `${company.legalName} não aceita mais novos usuários nem contratos.`,
+    });
+  }
+
+  private save(request: Observable<unknown>, success: { title: string; detail: string }): void {
+    if (this.busy()) return;
+    this.busy.set(true);
+    request.subscribe({
+      next: () => {
+        this.busy.set(false);
+        this.store.setNotice({ tone: 'success', ...success });
+        this.data.reload();
+        this.finishDialogAndFocusNotice();
+      },
+      error: (erro: unknown) => {
+        this.busy.set(false);
+        this.store.setNotice({
+          tone: 'error',
+          title: 'Não foi possível salvar',
+          detail: mensagemErro(erro),
+        });
+        // Conflito de versão: os dados mudaram; recarrega e fecha para o gestor reabrir.
+        if (problema(erro)?.codigo === 'CONFLITO_VERSAO') this.data.reload();
+        this.finishDialogAndFocusNotice();
+      },
+    });
   }
 
   private finishDialogAndFocusNotice(): void {

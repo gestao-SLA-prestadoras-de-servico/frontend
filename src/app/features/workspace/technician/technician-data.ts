@@ -1,142 +1,134 @@
-import { DemoTicket, ticketsFor } from '../data/workspace-data';
+import {
+  ChamadoTecnico,
+  EstadoChamado,
+  EstadoEvidencia,
+  EventoView,
+  EvidenciasDoAtendimento,
+} from '@app/core/api/modelos';
+import { deadlinesFrom, PRIORIDADE_LABEL, PriorityLabel } from '../data/chamado';
 
-export type TechnicianStatus = 'ATRIBUIDO' | 'EM_ATENDIMENTO' | 'RESOLVIDO';
-export type TechnicianPriority = 'Crítica' | 'Alta' | 'Normal' | 'Baixa';
-export type EvidenceState =
-  'RECEBIDA' | 'PROCESSANDO' | 'DISPONÍVEL' | 'FALHA' | 'INDISPONÍVEL' | 'EXPURGADA';
+export type TechnicianStatus = EstadoChamado;
+export type TechnicianPriority = PriorityLabel;
+export type EvidenceState = EstadoEvidencia;
 
 export interface TechnicianEvidence {
   id: string;
   name: string;
   sizeBytes: number;
   state: EvidenceState;
-  source: 'fixture' | 'local';
-  alt: string;
-  previewUrl?: string;
-  recordedAt?: string;
-}
-
-export interface TechnicianEvent {
-  label: string;
-  at: string;
-  state: 'done' | 'current' | 'upcoming';
+  recordedAt: string;
 }
 
 export interface TechnicianDeadline {
   label: string;
-  value: string;
+  dueAt: string;
   state: 'on-time' | 'urgent' | 'overdue';
-  dueAt?: string;
 }
 
-export type TechnicianTicket = Omit<DemoTicket, 'status' | 'statusLabel' | 'priority'> & {
+export interface TechnicianTicket {
+  id: string;
+  number: number;
+  title: string;
+  location: string;
+  description: string;
   status: TechnicianStatus;
   priority: TechnicianPriority;
   technicalDescription: string;
-  deadline: TechnicianDeadline;
+  deadline: TechnicianDeadline | null;
   alertLabel?: string;
-  events: readonly TechnicianEvent[];
+  assignedAt?: string;
+  startedAt?: string;
   evidences: readonly TechnicianEvidence[];
+}
+
+export const EVIDENCE_STATE_LABELS: Record<EvidenceState, string> = {
+  RECEBIDA: 'Recebida',
+  PROCESSANDO: 'Processando',
+  DISPONIVEL: 'Disponível',
+  FALHA: 'Falha',
+  EXPURGADA: 'Expurgada',
 };
 
-const exampleEvidence: readonly TechnicianEvidence[] = [
-  {
-    id: '1042-evidence-0412',
-    name: 'IMG_0412.jpg',
-    sizeBytes: 3_200_000,
-    state: 'DISPONÍVEL',
-    source: 'fixture',
-    alt: 'Equipamento de climatização em imagem ilustrativa',
-    previewUrl: '/images/evidencias-ilustrativas.webp',
-    recordedAt: '05/11/2026, 09:12',
-  },
-  {
-    id: '1042-evidence-0413',
-    name: 'IMG_0413.jpg',
-    sizeBytes: 2_800_000,
-    state: 'PROCESSANDO',
-    source: 'fixture',
-    alt: 'Prévia indisponível enquanto a evidência de exemplo é processada',
-    recordedAt: '05/11/2026, 09:18',
-  },
-  {
-    id: '1042-evidence-0414',
-    name: 'IMG_0414.png',
-    sizeBytes: 1_100_000,
-    state: 'RECEBIDA',
-    source: 'fixture',
-    alt: 'Prévia da evidência recebida de exemplo ainda indisponível',
-    recordedAt: '05/11/2026, 09:21',
-  },
-  {
-    id: '1042-evidence-0415',
-    name: 'IMG_0415.webp',
-    sizeBytes: 900_000,
-    state: 'FALHA',
-    source: 'fixture',
-    alt: 'Evidência de exemplo com falha e sem prévia disponível',
-    recordedAt: '05/11/2026, 09:26',
-  },
-];
+const URGENTE_MS = 2 * 60 * 60 * 1000;
 
-const currentTechnicianTickets = ticketsFor('tecnico').filter(
-  (ticket): ticket is DemoTicket & { technician: string; status: TechnicianStatus } =>
-    ticket.technician === 'Rafael Costa' &&
-    (ticket.status === 'ATRIBUIDO' || ticket.status === 'EM_ATENDIMENTO'),
-);
+export function deadlineState(dueAt: string, now = Date.now()): TechnicianDeadline['state'] {
+  const restante = new Date(dueAt).getTime() - now;
+  return restante < 0 ? 'overdue' : restante < URGENTE_MS ? 'urgent' : 'on-time';
+}
 
-export const TECHNICIAN_TICKETS: readonly TechnicianTicket[] = currentTechnicianTickets.map(
-  (ticket) => ({
-    ...ticket,
-    priority: ticket.priority,
-    technicalDescription:
-      ticket.id === 1042
-        ? 'Compressor sem partida por falha no contator. Contator substituído; tensão e corrente conferidas nas três fases. Compressor em operação.'
-        : '',
-    deadline:
-      ticket.id === 1042
-        ? {
-            label: 'Resolução',
-            value: 'Vence hoje, 16h',
-            state: 'urgent',
-            dueAt: '2026-11-05T16:00:00-03:00',
-          }
-        : {
-            label: 'Atendimento em campo',
-            value: 'Até 05/11, 11h',
-            state: 'on-time',
-            dueAt: '2026-11-05T11:00:00-03:00',
-          },
-    alertLabel:
-      ticket.id === 1041 ? 'Prazo de resposta vencido · exemplo demonstrativo' : undefined,
-    events:
-      ticket.id === 1042
-        ? [
-            { label: 'Chamado atribuído a Rafael Costa', at: '05/11/2026, 08:42', state: 'done' },
-            { label: 'Atendimento iniciado', at: '05/11/2026, 09:05', state: 'done' },
-            { label: 'Registro técnico e evidências', at: 'Em andamento', state: 'current' },
-            { label: 'Revisão e conclusão', at: 'Próxima etapa', state: 'upcoming' },
-          ]
-        : [
-            { label: 'Chamado atribuído a Rafael Costa', at: '05/11/2026, 09:31', state: 'done' },
-            { label: 'Início do atendimento', at: 'Aguardando ação', state: 'current' },
-            { label: 'Registro técnico e evidências', at: 'Próxima etapa', state: 'upcoming' },
-            { label: 'Revisão e conclusão', at: 'Próxima etapa', state: 'upcoming' },
-          ],
-    evidences: ticket.id === 1042 ? exampleEvidence : [],
-  }),
-);
+/**
+ * `chamado` da listagem não traz relógios nem atendimentos: o prazo vem de `proximoVencimento`.
+ * No detalhe, o prazo mostrado é o relógio correndo que vence primeiro.
+ */
+export function toTechnicianTicket(
+  chamado: ChamadoTecnico,
+  evidencias: readonly EvidenciasDoAtendimento[] = [],
+  historico: readonly EventoView[] = [],
+  now = Date.now(),
+): TechnicianTicket {
+  const atendimento = chamado.atendimentos?.at(-1);
+  const correndo = deadlinesFrom(chamado.relogios)
+    .filter((d) => d.state === 'running')
+    .sort((a, b) => a.target.localeCompare(b.target))[0];
+  const dueAt = chamado.estadoFinalEm
+    ? null
+    : (correndo?.target ?? chamado.proximoVencimento ?? null);
+  const grupo = evidencias.find((g) => g.atendimentoId === atendimento?.id) ?? evidencias.at(-1);
+  const atribuicao = historico
+    .filter((e) =>
+      ['ATRIBUICAO', 'REATRIBUICAO', 'TRANSFERENCIA_POR_INATIVACAO'].includes(e.evento),
+    )
+    .at(-1);
+  return {
+    id: chamado.id,
+    number: chamado.numero,
+    title: chamado.titulo,
+    location: chamado.local,
+    description: chamado.descricao,
+    status: chamado.estado,
+    priority: PRIORIDADE_LABEL[chamado.prioridade],
+    technicalDescription: atendimento?.descricaoTecnica ?? '',
+    deadline: dueAt
+      ? {
+          label: correndo?.label ?? 'Próximo prazo',
+          dueAt,
+          state: deadlineState(dueAt, now),
+        }
+      : null,
+    alertLabel: chamado.comViolacao ? 'Este chamado já teve um prazo de SLA violado' : undefined,
+    assignedAt: atribuicao?.ocorridoEm,
+    startedAt: atendimento?.iniciadoEm ?? undefined,
+    evidences: (grupo?.evidencias ?? []).map((e) => ({
+      id: e.id,
+      name: e.nome,
+      sizeBytes: e.tamanho,
+      state: e.estado,
+      recordedAt: e.enviadaEm,
+    })),
+  };
+}
 
-const validEvidenceStates: readonly EvidenceState[] = ['RECEBIDA', 'PROCESSANDO', 'DISPONÍVEL'];
+const validEvidenceStates: readonly EvidenceState[] = ['RECEBIDA', 'PROCESSANDO', 'DISPONIVEL'];
 
 export function evidenceCountsForCompletion(evidence: TechnicianEvidence): boolean {
   return validEvidenceStates.includes(evidence.state);
 }
 
-export function technicianTicketById(id: number): TechnicianTicket | undefined {
-  return TECHNICIAN_TICKETS.find((ticket) => ticket.id === id);
+export function evidencePending(evidence: TechnicianEvidence): boolean {
+  return evidence.state === 'RECEBIDA' || evidence.state === 'PROCESSANDO';
 }
 
 export const ALLOWED_EVIDENCE_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const;
 export const ALLOWED_EVIDENCE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'] as const;
 export const MAX_EVIDENCE_SIZE_BYTES = 10 * 1024 * 1024;
+
+/** Mesma checagem do backend (RN-75), para avisar antes de enviar. */
+export function evidenceFileError(file: File): string | null {
+  const extension = `.${file.name.split('.').pop()?.toLowerCase() ?? ''}`;
+  const supported = file.type
+    ? (ALLOWED_EVIDENCE_TYPES as readonly string[]).includes(file.type)
+    : (ALLOWED_EVIDENCE_EXTENSIONS as readonly string[]).includes(extension);
+  if (!supported) return `${file.name}: escolha uma imagem JPEG, PNG ou WebP.`;
+  if (file.size > MAX_EVIDENCE_SIZE_BYTES) return `${file.name}: o limite é 10 MB por imagem.`;
+  return null;
+}
