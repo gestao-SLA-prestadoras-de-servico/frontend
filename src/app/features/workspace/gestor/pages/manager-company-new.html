@@ -4,7 +4,6 @@
 <app-manager-page-header
   title="Nova empresa"
   description="Informe os dados de contato do cliente empresarial."
-  demo="Dados fictícios. O cadastro é demonstrativo e não será enviado a um serviço externo."
 ></app-manager-page-header>
 
 @if (created(); as company) {
@@ -19,11 +18,10 @@
       id="company-created-title"
       class="text-lg font-semibold leading-[1.4] tracking-[-.02em] text-grn-t"
     >
-      Cadastro demonstrativo concluído
+      Empresa cadastrada
     </h2>
     <p class="mt-2 max-w-[65ch] text-sm text-grn-t">
-      {{ company.legalName }} foi incluída na lista desta sessão. Nenhuma informação foi enviada ou
-      salva.
+      {{ company.legalName }} já pode receber contratos e usuários.
     </p>
     <dl class="mt-5 grid gap-x-8 gap-y-4 text-sm sm:grid-cols-2">
       <div>
@@ -54,18 +52,15 @@
     <h2 appManagerSectionHeading id="company-form-title">Dados da empresa</h2>
     <p class="mt-2 text-xs text-ink3">Todos os campos são obrigatórios.</p>
 
-    @if (simulatedError()) {
+    @if (saveError(); as message) {
       <div
         #errorMessage
         tabindex="-1"
         role="alert"
         class="mt-5 rounded-deadline bg-danger-bg p-4 text-sm text-danger"
       >
-        <p class="font-semibold">Falha simulada ao salvar</p>
-        <p class="mt-1">
-          Os dados continuam no formulário e nenhum registro foi incluído. Revise as informações ou
-          tente novamente.
-        </p>
+        <p class="font-semibold">Não foi possível salvar</p>
+        <p class="mt-1">{{ message }} Os dados continuam no formulário.</p>
       </div>
     }
 
@@ -79,15 +74,15 @@
           formControlName="legalName"
           required
           minlength="3"
-          maxlength="160"
+          maxlength="200"
           autocomplete="organization"
           placeholder="Ex.: Edifício Aurora Administração Predial Ltda."
           [attr.aria-invalid]="invalid('legalName')"
           aria-describedby="new-company-legalName-help new-company-legalName-error"
-          (input)="clearSimulatedError()"
+          (input)="clearSaveError()"
         />
         <p id="new-company-legalName-help" class="mt-2 text-xs text-ink3">
-          Use de 3 a 160 caracteres.
+          Use de 3 a 200 caracteres.
         </p>
         <p
           id="new-company-legalName-error"
@@ -107,15 +102,15 @@
           type="email"
           formControlName="contactEmail"
           required
-          maxlength="160"
+          maxlength="254"
           autocomplete="email"
           placeholder="contato@empresa.example"
           [attr.aria-invalid]="invalid('contactEmail')"
           aria-describedby="new-company-contactEmail-help new-company-contactEmail-error"
-          (input)="clearSimulatedError()"
+          (input)="clearSaveError()"
         />
         <p id="new-company-contactEmail-help" class="mt-2 text-xs text-ink3">
-          Endereço usado para contato no cenário de demonstração.
+          Usado para contato com a empresa.
         </p>
         <p
           id="new-company-contactEmail-error"
@@ -126,58 +121,26 @@
         </p>
       </div>
 
-      <div>
-        <label appManagerLabel for="new-company-address">Endereço</label>
-        <textarea
-          appTextarea
-          id="new-company-address"
-          rows="3"
-          formControlName="address"
-          required
-          minlength="8"
-          maxlength="240"
-          autocomplete="street-address"
-          placeholder="Rua, número, bairro, cidade e UF"
-          [attr.aria-invalid]="invalid('address')"
-          aria-describedby="new-company-address-help new-company-address-error"
-          (input)="clearSimulatedError()"
-        ></textarea>
-        <p id="new-company-address-help" class="mt-2 text-xs text-ink3">
-          Use de 8 a 240 caracteres.
-        </p>
-        <p
-          id="new-company-address-error"
-          class="mt-2 text-sm text-danger"
-          [hidden]="!invalid('address')"
-        >
-          {{ fieldErrors.address }}
-        </p>
-      </div>
+      <app-manager-address-fields
+        [group]="form.controls.address"
+        prefix="new-company"
+        [submitted]="submitted()"
+      />
 
       <div class="flex flex-wrap items-center gap-3 border-t border-line pt-5">
         <button
           type="submit"
           appButtonPrimary
           class="min-h-12 px-5 py-3 disabled:cursor-wait disabled:opacity-60"
-          [disabled]="!ready()"
+          [disabled]="!ready() || busy()"
         >
-          Concluir cadastro<svg class="size-4" [lucideIcon]="icons.arrow" aria-hidden="true"></svg>
-        </button>
-        <button
-          type="button"
-          appButtonSecondary
-          class="min-h-12 px-5 py-3"
-          (click)="simulateError()"
-        >
-          Simular erro ao salvar
+          {{ busy() ? 'Salvando…' : 'Concluir cadastro'
+          }}<svg class="size-4" [lucideIcon]="icons.arrow" aria-hidden="true"></svg>
         </button>
         <a routerLink="/app/gestor/empresas" appButtonSecondary class="min-h-12 px-5 py-3">
           Cancelar
         </a>
       </div>
-      <p class="text-xs text-ink3">
-        A simulação de erro não altera nem envia os dados preenchidos.
-      </p>
     </form>
   </section>
 }

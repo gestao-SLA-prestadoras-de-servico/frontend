@@ -1,34 +1,12 @@
 import { inject, RESPONSE_INIT } from '@angular/core';
-import { CanMatchFn, Routes } from '@angular/router';
+import { CanMatchFn, Router, Routes } from '@angular/router';
 import { WORKSPACE_PROFILES } from './data/workspace-data';
-import { clientTicketById } from './client/data/client-data';
-import { technicianTicketById } from './technician/technician-data';
-import { managerTicketById } from './gestor/data/manager-ticket-demo-store';
 import { PURGED_EVIDENCE_SAMPLE } from './gestor/data/purged-evidence-demo-data';
+import { papelGuard } from '@app/core/guards/papel.guard';
+import { AuthService } from '@app/core/services/auth.service';
 
 const purgedEvidenceExists: CanMatchFn = (_route, segments) => {
   const exists = segments[2]?.path === PURGED_EVIDENCE_SAMPLE.id;
-  const response = inject(RESPONSE_INIT, { optional: true });
-  if (!exists && response) response.status = 404;
-  return exists;
-};
-
-const clientTicketExists: CanMatchFn = (_route, segments) => {
-  const exists = !!clientTicketById(segments[1]?.path ?? null);
-  const response = inject(RESPONSE_INIT, { optional: true });
-  if (!exists && response) response.status = 404;
-  return exists;
-};
-
-const technicianTicketExists: CanMatchFn = (_route, segments) => {
-  const exists = !!technicianTicketById(Number(segments[1]?.path));
-  const response = inject(RESPONSE_INIT, { optional: true });
-  if (!exists && response) response.status = 404;
-  return exists;
-};
-
-const managerTicketExists: CanMatchFn = (_route, segments) => {
-  const exists = !!managerTicketById(segments[1]?.path ?? null);
   const response = inject(RESPONSE_INIT, { optional: true });
   if (!exists && response) response.status = 404;
   return exists;
@@ -39,10 +17,21 @@ export const WORKSPACE_ROUTES: Routes = [
     path: '',
     loadComponent: () => import('./layout/workspace-shell').then((m) => m.WorkspaceShell),
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'gestor' },
+      // Volta do Keycloak cai em /app: segue para a rota pedida antes do login ou para a home do
+      // papel. Sem sessão o perfil é nulo e o papelGuard de 'gestor' inicia o login.
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: () => {
+          const auth = inject(AuthService);
+          const retorno = auth.consumirRetorno();
+          return retorno ? inject(Router).parseUrl(retorno) : (auth.perfil() ?? 'gestor');
+        },
+      },
       ...WORKSPACE_PROFILES.map((profile) => ({
         path: profile.key,
         data: { profile: profile.key },
+        canActivate: [papelGuard],
         children: [
           ...profile.pages.map((page) => ({
             path: page.path.replace(`/app/${profile.key}`, '').replace(/^\//, ''),
@@ -128,7 +117,6 @@ export const WORKSPACE_ROUTES: Routes = [
                     page: 'detalhe-chamado',
                     breadcrumb: 'Fila de chamados',
                   },
-                  canMatch: [managerTicketExists],
                   loadComponent: () =>
                     import('./gestor/pages/manager-ticket-detail').then(
                       (m) => m.ManagerTicketDetail,
@@ -192,7 +180,6 @@ export const WORKSPACE_ROUTES: Routes = [
                     page: 'detalhe-chamado',
                     breadcrumb: 'Detalhe do chamado',
                   },
-                  canMatch: [clientTicketExists],
                   loadComponent: () =>
                     import('./client/pages/client-ticket-detail').then((m) => m.ClientTicketDetail),
                 },
@@ -208,7 +195,6 @@ export const WORKSPACE_ROUTES: Routes = [
                     page: 'atendimento',
                     breadcrumb: 'Atendimento do chamado',
                   },
-                  canMatch: [technicianTicketExists],
                   loadComponent: () =>
                     import('./technician/pages/technician-ticket').then(
                       (m) => m.TechnicianTicketPage,

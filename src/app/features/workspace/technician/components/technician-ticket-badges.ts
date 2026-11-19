@@ -2,22 +2,26 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { TechnicianPriority, TechnicianStatus } from '../technician-data';
 
 const statusClasses: Record<TechnicianStatus, string> = {
+  ABERTO: 'bg-bg text-ink2',
   ATRIBUIDO: 'bg-pri-bg text-pri-d',
   EM_ATENDIMENTO: 'bg-[#fff1d6] text-[#754500]',
   RESOLVIDO: 'bg-grn-bg text-grn-t',
+  ENCERRADO: 'bg-bg text-ink2',
+  CANCELADO: 'bg-bg text-ink2',
 };
 
 const priorityClasses: Record<TechnicianPriority, string> = {
-  Crítica: 'bg-danger-bg text-danger',
   Alta: 'bg-[#fff1d6] text-[#754500]',
   Normal: 'bg-bg text-ink2',
-  Baixa: 'bg-grn-bg text-grn-t',
 };
 
-const statusLabels: Record<TechnicianStatus, string> = {
+export const statusLabels: Record<TechnicianStatus, string> = {
+  ABERTO: 'Aberto',
   ATRIBUIDO: 'Atribuído',
   EM_ATENDIMENTO: 'Em atendimento',
-  RESOLVIDO: 'Resolvido no exemplo',
+  RESOLVIDO: 'Aguardando validação',
+  ENCERRADO: 'Encerrado',
+  CANCELADO: 'Cancelado',
 };
 
 @Component({

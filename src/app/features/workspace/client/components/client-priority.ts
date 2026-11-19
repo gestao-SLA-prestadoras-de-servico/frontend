@@ -11,9 +11,7 @@ import { ClientPriority } from '../data/client-data';
 export class ClientPriorityBadge {
   readonly priority = input.required<ClientPriority>();
   protected readonly tones: Record<ClientPriority, ClientBadgeTone> = {
-    Baixa: 'low',
     Normal: 'normal',
     Alta: 'high',
-    Crítica: 'critical',
   };
 }

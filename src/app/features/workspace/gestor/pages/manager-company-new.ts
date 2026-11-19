@@ -5,7 +5,6 @@ import {
   ManagerLabel,
   ManagerTextAction,
 } from '../components/manager-surface.directive';
-import { Textarea } from '@app/shared/ui/input/textarea.directive';
 import { DOCUMENT } from '@angular/common';
 import {
   afterNextRender,
@@ -22,13 +21,17 @@ import { RouterLink } from '@angular/router';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { ButtonPrimary, ButtonSecondary } from '@app/shared/ui/button';
 import { Input } from '@app/shared/ui/input/input.directive';
-import { CompanyDemoStore, DemoCompany } from '../data/company-demo-store';
+import { CadastroApi } from '@app/core/api/cadastro.api';
+import { mensagemErro } from '@app/core/api/erros';
+import { Company, CompanyStore, toCompany } from '../data/company-store';
 import {
   COMPANY_FIELD_ERRORS,
-  CompanyField,
+  companyFormValue,
   createCompanyForm,
   firstInvalidCompanyField,
+  toDadosCliente,
 } from '../data/company-form';
+import { ManagerAddressFields } from '../components/manager-address-fields';
 import { WORKSPACE_ICONS } from '../../data/workspace-icons';
 
 @Component({
@@ -40,7 +43,7 @@ import { WORKSPACE_ICONS } from '../../data/workspace-icons';
     ButtonSecondary,
     Input,
     LucideDynamicIcon,
-    Textarea,
+    ManagerAddressFields,
     ManagerPanel,
     ManagerSectionHeading,
     ManagerLabel,
@@ -54,39 +57,34 @@ import { WORKSPACE_ICONS } from '../../data/workspace-icons';
 export class ManagerCompanyNew {
   private readonly document = inject(DOCUMENT);
   private readonly injector = inject(Injector);
-  private readonly store = inject(CompanyDemoStore);
+  private readonly store = inject(CompanyStore);
+  private readonly api = inject(CadastroApi);
   private readonly successMessage = viewChild<ElementRef<HTMLElement>>('successMessage');
   private readonly errorMessage = viewChild<ElementRef<HTMLElement>>('errorMessage');
   protected readonly icons = WORKSPACE_ICONS;
   protected readonly form = createCompanyForm();
   protected readonly ready = signal(false);
   protected readonly submitted = signal(false);
-  protected readonly simulatedError = signal(false);
-  protected readonly created = signal<DemoCompany | null>(null);
+  protected readonly busy = signal(false);
+  protected readonly saveError = signal<string | null>(null);
+  protected readonly created = signal<Company | null>(null);
   protected readonly fieldErrors = COMPANY_FIELD_ERRORS;
 
   constructor() {
     afterNextRender(() => this.ready.set(true));
   }
 
-  protected invalid(field: CompanyField): boolean {
+  protected invalid(field: 'legalName' | 'contactEmail'): boolean {
     const control = this.form.controls[field];
     return control.invalid && (control.touched || this.submitted());
   }
 
-  protected clearSimulatedError(): void {
-    if (this.simulatedError()) this.simulatedError.set(false);
-  }
-
-  protected simulateError(): void {
-    this.simulatedError.set(true);
-    afterNextRender(() => this.errorMessage()?.nativeElement.focus(), {
-      injector: this.injector,
-    });
+  protected clearSaveError(): void {
+    if (this.saveError()) this.saveError.set(null);
   }
 
   protected submit(): void {
-    if (!this.ready() || this.created()) return;
+    if (!this.ready() || this.created() || this.busy()) return;
     this.submitted.set(true);
     this.form.markAllAsTouched();
     if (this.form.invalid) {
@@ -95,23 +93,36 @@ export class ManagerCompanyNew {
       return;
     }
 
-    const company = this.store.add(this.form.getRawValue());
-    this.store.setNotice({
-      tone: 'success',
-      title: 'Cadastro demonstrativo concluído',
-      detail: 'A empresa entrou na lista desta sessão. Nenhuma informação foi enviada ou salva.',
-    });
-    this.created.set(company);
-    this.simulatedError.set(false);
-    afterNextRender(() => this.successMessage()?.nativeElement.focus(), {
-      injector: this.injector,
+    this.busy.set(true);
+    this.saveError.set(null);
+    this.api.criarCliente(toDadosCliente(this.form)).subscribe({
+      next: (cliente) => {
+        const company = toCompany(cliente);
+        this.busy.set(false);
+        this.store.setNotice({
+          tone: 'success',
+          title: 'Empresa cadastrada',
+          detail: `${company.legalName} já pode receber contratos e usuários.`,
+        });
+        this.created.set(company);
+        afterNextRender(() => this.successMessage()?.nativeElement.focus(), {
+          injector: this.injector,
+        });
+      },
+      error: (erro: unknown) => {
+        this.busy.set(false);
+        this.saveError.set(mensagemErro(erro));
+        afterNextRender(() => this.errorMessage()?.nativeElement.focus(), {
+          injector: this.injector,
+        });
+      },
     });
   }
 
   protected startAnother(): void {
-    this.form.reset({ legalName: '', contactEmail: '', address: '' });
+    this.form.reset(companyFormValue(null));
     this.submitted.set(false);
-    this.simulatedError.set(false);
+    this.saveError.set(null);
     this.created.set(null);
     afterNextRender(() => this.document.getElementById('new-company-legalName')?.focus(), {
       injector: this.injector,

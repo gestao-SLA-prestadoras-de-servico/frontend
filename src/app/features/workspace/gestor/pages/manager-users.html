@@ -1,7 +1,6 @@
 <app-manager-page-header
   title="Usuários"
   description="Consulte perfis e situação da equipe que participa dos atendimentos."
-  demo="Dados fictícios. Cadastros e inativações desta tela não acessam o Keycloak e não são persistidos."
   ><a
     appButtonPrimary
     managerHeaderActions
@@ -118,11 +117,25 @@
       {{ filteredUsers().length }} {{ filteredUsers().length === 1 ? 'resultado' : 'resultados' }}
     </p>
   </div>
-  @if (filteredUsers().length) {
+  @if (loadError(); as message) {
+    <div class="mt-3 rounded-deadline bg-danger-bg p-5 text-danger" role="alert">
+      <p class="font-semibold">Não foi possível carregar os usuários</p>
+      <p class="mt-1 text-sm">{{ message }}</p>
+      <button
+        type="button"
+        class="mt-3 min-h-11 text-sm font-semibold underline underline-offset-4"
+        (click)="data.reload()"
+      >
+        Tentar novamente
+      </button>
+    </div>
+  } @else if (data.isLoading() && !users().length) {
+    <app-workspace-loading-state class="mt-3" label="Carregando usuários…" />
+  } @else if (filteredUsers().length) {
     <div appManagerCollection class="mt-3 hidden overflow-x-auto md:block">
       <table appManagerTable class="min-w-[760px]">
         <caption class="sr-only">
-          Usuários fictícios, seus perfis e situações
+          Usuários, seus perfis e situações
         </caption>
         <thead appManagerTableHead>
           <tr>
@@ -151,7 +164,7 @@
                 />
               </td>
               <td class="px-4 py-3 align-top">
-                @if (user.role === 'Técnico' && user.situation === 'Ativo') {
+                @if (user.situation === 'Ativo') {
                   <button
                     appManagerTextAction="danger"
                     #desktopTrigger
@@ -194,7 +207,7 @@
               <dd class="m-0 mt-0.5">{{ user.company ?? '—' }}</dd>
             </div>
           </dl>
-          @if (user.role === 'Técnico' && user.situation === 'Ativo') {
+          @if (user.situation === 'Ativo') {
             <div class="mt-4 border-t border-line pt-3">
               <button
                 #mobileTrigger
@@ -205,7 +218,7 @@
                 [attr.aria-label]="'Inativar ' + user.name"
                 (click)="openDeactivate(user, mobileTrigger)"
               >
-                Inativar técnico
+                Inativar usuário
               </button>
             </div>
           }
@@ -242,7 +255,7 @@
             Inativar {{ user.name }}
           </h2>
           <p class="mt-2 text-sm leading-[1.6] text-ink2">
-            Os chamados abertos precisam de um técnico substituto neste exemplo.
+            O acesso será bloqueado no Keycloak. {{ user.role }} · {{ user.email }}
           </p>
         </div>
         <button
@@ -254,81 +267,60 @@
           <svg class="size-5" [lucideIcon]="icons.close" aria-hidden="true"></svg>
         </button>
       </div>
-      <section appManagerPanel class="mt-5" aria-label="Chamados relacionados ao técnico">
-        <h3 class="text-sm font-semibold">Chamados no cenário</h3>
-        <dl class="mt-3 grid grid-cols-3 gap-2 text-center">
-          <div class="rounded-control bg-sf p-3">
-            <dt class="text-xs text-ink2">Atribuídos</dt>
-            <dd class="m-0 mt-1 text-xl font-semibold tabular-nums">{{ user.assigned }}</dd>
-          </div>
-          <div class="rounded-control bg-sf p-3">
-            <dt class="text-xs text-ink2">Em atendimento</dt>
-            <dd class="m-0 mt-1 text-xl font-semibold tabular-nums">{{ user.inProgress }}</dd>
-          </div>
-          <div class="rounded-control bg-sf p-3">
-            <dt class="text-xs text-ink2">Resolvidos</dt>
-            <dd class="m-0 mt-1 text-xl font-semibold tabular-nums">{{ user.resolved }}</dd>
-          </div>
-        </dl>
-        <p class="mt-3 text-sm text-ink2">
-          {{ transferableCount() }}
-          {{
-            transferableCount() === 1
-              ? 'chamado aberto seria indicado'
-              : 'chamados abertos seriam indicados'
-          }}
-          para o substituto.
-        </p>
-      </section>
-      <div class="mt-5">
-        <label appManagerLabel for="user-substitute">Técnico substituto</label
-        ><select
-          appSelect
-          id="user-substitute"
-          class="mt-2"
-          [value]="selectedSubstituteId()"
-          (change)="updateSubstitute($event)"
-        >
-          <option value="">Selecione um técnico ativo</option>
-          @for (candidate of substitutes(); track candidate.id) {
-            <option [value]="candidate.id">
-              {{ candidate.name }} · {{ candidate.assigned + candidate.inProgress }}/{{
-                candidate.workloadLimit
-              }}
-              chamados ativos
-            </option>
-          }
-        </select>
-        <p class="mt-2 text-xs text-ink3">
-          Disponibilidade e carga são fictícias e servem apenas para demonstrar a escolha.
-        </p>
-      </div>
-      @if (chosenSubstitute(); as substitute) {
-        @if (hasSubstituteConflict()) {
-          <div class="mt-4 rounded-deadline bg-danger-bg p-4 text-danger" role="alert">
-            <p class="text-sm font-semibold">Substituição indisponível neste exemplo</p>
-            <p class="mt-1 text-sm">
-              {{ substitute.name }} já está no limite de {{ substitute.workloadLimit }} chamados
-              ativos. Escolha outro técnico para continuar.
+      @if (transfer.isLoading()) {
+        <p class="mt-5 text-sm text-ink2" role="status">Verificando chamados em aberto…</p>
+      } @else if (transfer.value(); as counts) {
+        @if (needsSubstitute()) {
+          <section appManagerPanel class="mt-5" aria-label="Chamados a transferir">
+            <h3 class="text-sm font-semibold">Chamados a transferir</h3>
+            <dl class="mt-3 grid grid-cols-3 gap-2 text-center">
+              <div class="rounded-control bg-sf p-3">
+                <dt class="text-xs text-ink2">Atribuídos</dt>
+                <dd class="m-0 mt-1 text-xl font-semibold tabular-nums">{{ counts.ATRIBUIDO }}</dd>
+              </div>
+              <div class="rounded-control bg-sf p-3">
+                <dt class="text-xs text-ink2">Em atendimento</dt>
+                <dd class="m-0 mt-1 text-xl font-semibold tabular-nums">
+                  {{ counts.EM_ATENDIMENTO }}
+                </dd>
+              </div>
+              <div class="rounded-control bg-sf p-3">
+                <dt class="text-xs text-ink2">Resolvidos</dt>
+                <dd class="m-0 mt-1 text-xl font-semibold tabular-nums">{{ counts.RESOLVIDO }}</dd>
+              </div>
+            </dl>
+            <p class="mt-3 text-sm text-ink2">
+              {{ transferableCount() }}
+              {{ transferableCount() === 1 ? 'chamado passa' : 'chamados passam' }} para o
+              substituto, com prazos e notificações mantidos.
             </p>
+          </section>
+          <div class="mt-5">
+            <label appManagerLabel for="user-substitute">Técnico substituto</label
+            ><select
+              appSelect
+              id="user-substitute"
+              class="mt-2"
+              [value]="selectedSubstituteId()"
+              (change)="updateSubstitute($event)"
+            >
+              <option value="">Selecione um técnico ativo</option>
+              @for (candidate of substitutes(); track candidate.id) {
+                <option [value]="candidate.id">
+                  {{ candidate.name }} · {{ candidate.openTickets ?? 0 }} em aberto
+                </option>
+              }
+            </select>
           </div>
         } @else {
-          <div class="mt-4 rounded-deadline bg-pri-bg p-4 text-pri-d">
-            <p class="text-sm font-semibold">Carga compatível para a demonstração</p>
-            <p class="mt-1 text-sm">
-              {{ substitute.name }} poderá receber os {{ transferableCount() }} chamados abertos
-              listados acima.
-            </p>
-          </div>
+          <p class="mt-5 text-sm text-ink2">Não há chamados em aberto para transferir.</p>
         }
       }
-      <div class="mt-5 rounded-deadline border border-line p-4 text-sm text-ink2">
-        <p class="font-semibold text-ink">O que esta simulação demonstra</p>
-        <p class="mt-1">
-          Prazos e notificações de atendimento podem continuar no fluxo ao trocar o responsável.
-          Nenhum chamado ou conta real será alterado.
+      @if (dialogError(); as message) {
+        <p class="mt-4 rounded-deadline bg-danger-bg p-4 text-sm text-danger" role="alert">
+          {{ message }}
         </p>
-      </div>
+      }
       <div class="mt-6 flex flex-col-reverse justify-end gap-2 sm:flex-row">
         <button
           #cancelButton
@@ -341,10 +333,12 @@
         ><button
           type="button"
           class="min-h-11 rounded-control bg-danger px-4 py-2 text-sm font-semibold text-white hover:opacity-90 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-danger disabled:cursor-not-allowed disabled:opacity-50"
-          [disabled]="!selectedSubstituteId() || hasSubstituteConflict()"
+          [disabled]="
+            busy() || transfer.isLoading() || (needsSubstitute() && !selectedSubstituteId())
+          "
           (click)="confirmDeactivation()"
         >
-          Inativar e indicar substituto
+          {{ busy() ? 'Inativando…' : needsSubstitute() ? 'Inativar e transferir' : 'Inativar' }}
         </button>
       </div>
     </div>

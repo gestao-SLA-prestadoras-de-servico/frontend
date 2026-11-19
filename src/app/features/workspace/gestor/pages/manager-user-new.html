@@ -1,7 +1,6 @@
 <app-manager-page-header
   title="Novo usuário"
-  description="Revise os dados e o perfil para visualizar um cadastro de exemplo."
-  demo="O envio adiciona o exemplo somente à lista desta sessão. Não há integração com Keycloak ou persistência."
+  description="A pessoa recebe por e-mail um link para definir a senha de acesso."
   ><a
     managerHeaderActions
     routerLink="/app/gestor/usuarios"
@@ -51,7 +50,7 @@
         <p id="new-user-email-error" class="mt-2 text-sm text-danger">
           {{
             form.controls.email.hasError('duplicate')
-              ? 'Este e-mail já aparece na lista demonstrativa.'
+              ? 'Já existe um usuário com este e-mail.'
               : errors.email
           }}
         </p>
@@ -64,9 +63,7 @@
         <option>Técnico</option>
         <option>Gestor</option>
       </select>
-      <p class="mt-2 text-xs text-ink3">
-        Perfil serve para ilustrar as áreas disponíveis; este formulário não concede permissões.
-      </p>
+      <p class="mt-2 text-xs text-ink3">Define a área do sistema que a pessoa acessa.</p>
     </div>
     @if (isClient()) {
       <div>
@@ -79,11 +76,12 @@
           [attr.aria-invalid]="invalid('company')"
           [attr.aria-describedby]="invalid('company') ? 'new-user-company-error' : null"
         >
-          <option value="">Selecione uma empresa</option>
-          <option>Edifício Aurora</option>
-          <option>Clínica Horizonte</option>
-          <option>Mercado Estação</option>
-          <option>Residencial Alameda</option>
+          <option value="">
+            {{ companies.isLoading() ? 'Carregando empresas…' : 'Selecione uma empresa' }}
+          </option>
+          @for (company of companies.value() ?? []; track company.id) {
+            <option [value]="company.id">{{ company.name }}</option>
+          }
         </select>
         @if (invalid('company')) {
           <p id="new-user-company-error" class="mt-2 text-sm text-danger">{{ errors.company }}</p>
@@ -91,6 +89,11 @@
       </div>
     }
   </fieldset>
+  @if (saveError(); as message) {
+    <p class="mt-5 rounded-deadline bg-danger-bg p-4 text-sm text-danger" role="alert">
+      {{ message }}
+    </p>
+  }
   <div
     class="mt-6 flex flex-col-reverse gap-2 border-t border-line pt-5 sm:flex-row sm:justify-end"
   >
@@ -99,12 +102,14 @@
       appButtonSecondary
       class="min-h-11 px-4 py-2 text-center no-underline"
       >Cancelar</a
-    ><button type="submit" appButtonPrimary class="min-h-11 px-4 py-2">Simular cadastro</button>
+    ><button type="submit" appButtonPrimary class="min-h-11 px-4 py-2" [disabled]="busy()">
+      {{ busy() ? 'Cadastrando…' : 'Cadastrar usuário' }}
+    </button>
   </div>
 </form>
 
 <aside appManagerPanel class="mt-6 max-w-[760px] text-sm text-ink2">
-  <h2 appManagerSectionHeading class="text-ink">Perfis demonstrados</h2>
+  <h2 appManagerSectionHeading class="text-ink">Perfis de acesso</h2>
   <ul class="mt-2 grid gap-2 sm:grid-cols-3">
     <li><strong class="text-ink">Cliente:</strong> acompanha chamados da empresa.</li>
     <li><strong class="text-ink">Técnico:</strong> recebe atendimentos e registra evidências.</li>

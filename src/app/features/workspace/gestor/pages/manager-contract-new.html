@@ -4,7 +4,6 @@
 <app-manager-page-header
   title="Novo contrato"
   description="Defina a empresa, o período de vigência e a política que orienta o atendimento."
-  demo="Demonstração com dados fictícios. A revisão não envia nem salva informações."
 ></app-manager-page-header>
 
 @if (created(); as contract) {
@@ -16,10 +15,10 @@
     class="mt-7 max-w-[760px] rounded-deadline bg-grn-bg p-5 text-grn-t sm:p-7"
   >
     <h2 id="contract-created-title" class="text-lg font-semibold leading-[1.4] tracking-[-.02em]">
-      Cadastro demonstrativo concluído
+      Contrato cadastrado
     </h2>
     <p class="mt-2 text-sm">
-      {{ contract.id }} foi incluído na lista desta sessão. Nenhuma informação foi enviada ou salva.
+      {{ contract.code }} já aceita chamados da empresa durante a vigência.
     </p>
     <dl class="mt-5 grid gap-4 text-sm sm:grid-cols-2">
       <div>
@@ -28,9 +27,7 @@
       </div>
       <div>
         <dt class="text-xs text-grn-t">Política vinculada</dt>
-        <dd class="m-0 mt-1 font-semibold">
-          {{ selectedPolicy()?.code }} · {{ selectedPolicy()?.name }}
-        </dd>
+        <dd class="m-0 mt-1 font-semibold">{{ selectedPolicy()?.name }}</dd>
       </div>
       <div>
         <dt class="text-xs text-grn-t">Início</dt>
@@ -53,7 +50,31 @@
   <section appManagerPanel class="mt-7 max-w-[760px]" aria-labelledby="contract-form-title">
     <h2 appManagerSectionHeading id="contract-form-title">Dados do contrato</h2>
     <p class="mt-2 text-xs text-ink3">Todos os campos são obrigatórios.</p>
+    @if (pending(); as contrato) {
+      <p class="mt-4 rounded-deadline bg-danger-bg p-4 text-sm text-danger" role="alert">
+        O contrato {{ contrato.codigo }} já foi criado, mas ainda está sem política. Escolha a
+        política e revise de novo para concluir o vínculo.
+      </p>
+    }
     <form class="mt-6 space-y-5" [formGroup]="form" (ngSubmit)="openReview()" novalidate>
+      <div>
+        <label appManagerLabel for="contract-code">Código do contrato</label>
+        <input
+          appInput
+          id="contract-code"
+          class="mt-2"
+          formControlName="code"
+          maxlength="50"
+          placeholder="Ex.: CT-2026-021"
+          [attr.aria-invalid]="invalid('code')"
+          aria-describedby="contract-code-help contract-code-error"
+        />
+        <p id="contract-code-help" class="mt-2 text-xs text-ink3">Único no sistema.</p>
+        <p id="contract-code-error" class="mt-2 text-sm text-danger" [hidden]="!invalid('code')">
+          {{ fieldErrors.code }}
+        </p>
+      </div>
+
       <div>
         <label appManagerLabel for="contract-companyId">Empresa</label>
         <select
@@ -147,12 +168,12 @@
           aria-describedby="contract-policy-help contract-policy-error"
         >
           <option value="">Selecione uma política</option>
-          @for (policy of policies; track policy.id) {
-            <option [value]="policy.id">{{ policy.code }} · {{ policy.name }}</option>
+          @for (policy of policies(); track policy.id) {
+            <option [value]="policy.id">{{ policy.name }}</option>
           }
         </select>
         <p id="contract-policy-help" class="mt-2 text-xs text-ink3">
-          A política aparece como referência vinculada neste cenário fictício.
+          Os chamados do contrato seguem os prazos da versão vigente da política.
         </p>
         <p
           id="contract-policy-error"
@@ -195,10 +216,12 @@
     <h2 id="contract-review-title" class="text-xl font-semibold leading-snug tracking-[-.02em]">
       Revisar cadastro
     </h2>
-    <p class="mt-2 text-sm text-ink2">
-      Confira os dados do contrato antes de concluir a demonstração.
-    </p>
+    <p class="mt-2 text-sm text-ink2">Confira os dados do contrato antes de salvar.</p>
     <dl class="mt-5 divide-y divide-line border-y border-line text-sm">
+      <div class="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
+        <dt class="text-ink2">Código</dt>
+        <dd class="m-0 font-semibold">{{ form.controls.code.value }}</dd>
+      </div>
       <div class="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
         <dt class="text-ink2">Empresa</dt>
         <dd class="m-0 font-semibold">{{ selectedCompany()?.legalName }}</dd>
@@ -217,15 +240,12 @@
       </div>
       <div class="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
         <dt class="text-ink2">Política</dt>
-        <dd class="m-0 font-semibold">
-          {{ selectedPolicy()?.code }} · {{ selectedPolicy()?.name }}
-        </dd>
+        <dd class="m-0 font-semibold">{{ selectedPolicy()?.name }}</dd>
       </div>
     </dl>
-    <p class="mt-4 text-xs text-ink3">
-      Ao confirmar, o contrato entra apenas na lista desta sessão. Nenhum dado será enviado ou
-      salvo.
-    </p>
+    @if (saveError(); as message) {
+      <p class="mt-4 rounded-lg bg-danger-bg p-3 text-sm text-danger" role="alert">{{ message }}</p>
+    }
     <div class="mt-6 flex flex-wrap justify-end gap-3 border-t border-line pt-5">
       <button
         #cancelReviewButton
@@ -236,8 +256,14 @@
       >
         Voltar ao formulário
       </button>
-      <button type="button" appButtonPrimary class="min-h-11 px-4 py-2.5" (click)="confirmDraft()">
-        Confirmar cadastro demonstrativo
+      <button
+        type="button"
+        appButtonPrimary
+        class="min-h-11 px-4 py-2.5"
+        [disabled]="busy()"
+        (click)="confirmDraft()"
+      >
+        {{ busy() ? 'Salvando…' : 'Confirmar cadastro' }}
       </button>
     </div>
   </div>

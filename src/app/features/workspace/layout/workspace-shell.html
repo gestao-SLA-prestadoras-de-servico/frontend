@@ -12,13 +12,7 @@
     <div class="px-3"><app-brand /></div>
     <app-workspace-navigation class="mt-8" [profile]="profile()" />
     <div class="mt-auto px-3 pt-8">
-      <a
-        routerLink="/sessao-demo"
-        class="inline-flex min-h-11 items-center gap-2 rounded-sm text-sm text-ink2 no-underline hover:text-pri-d"
-        ><svg class="size-4" [lucideIcon]="icons.back" aria-hidden="true"></svg>Sobre a
-        demonstração</a
-      >
-      <p class="mt-3 text-xs leading-[1.6] text-ink3">NIVELO · Projeto Integrador 2026.2</p>
+      <p class="text-xs leading-[1.6] text-ink3">NIVELO · Projeto Integrador 2026.2</p>
     </div>
   </aside>
 
@@ -59,31 +53,12 @@
         <app-workspace-notifications [profile]="profile().key" />
       }
       <app-user-menu
-        [displayName]="profile().name"
-        [email]="profile().email"
-        [roleLabel]="profile().role"
-        [initials]="profile().initials"
+        [displayName]="usuario().nome"
+        [email]="usuario().email"
+        [roleLabel]="profile().label"
+        [initials]="usuario().iniciais"
         (signOut)="signOut()"
-        (expireSession)="expireSession()"
       />
-      <div class="flex w-full items-center gap-3 sm:w-auto">
-        <label for="workspace-profile" class="text-xs font-medium text-ink2 sm:sr-only"
-          >Visualizar como</label
-        >
-        <select
-          id="workspace-profile"
-          aria-label="Perfil de demonstração"
-          class="min-h-11 min-w-0 grow rounded-lg border border-line2 bg-sf px-3 py-2 text-sm text-ink sm:w-[136px]"
-          [value]="profile().key"
-          (change)="switchProfile($event)"
-        >
-          @for (option of profiles; track option.key) {
-            <option [value]="option.key" [selected]="option.key === profile().key">
-              {{ option.label }}
-            </option>
-          }
-        </select>
-      </div>
     </header>
 
     <main
@@ -129,15 +104,9 @@
       (navigate)="closeNavigation(false)"
     />
     <div class="mt-auto pt-8">
-      <p class="text-sm font-semibold">{{ profile().name }}</p>
-      <p class="mt-1 text-xs text-ink2">{{ profile().role }}</p>
-      <a
-        routerLink="/sessao-demo"
-        class="mt-4 inline-flex min-h-11 items-center rounded-sm text-sm text-pri-d underline"
-        (click)="closeNavigation(false)"
-        >Sobre a demonstração</a
-      >
-      <p class="mt-3 text-xs text-ink3">Projeto Integrador 2026.2 · Dados fictícios</p>
+      <p class="text-sm font-semibold">{{ usuario().nome }}</p>
+      <p class="mt-1 text-xs text-ink2">{{ profile().label }}</p>
+      <p class="mt-3 text-xs text-ink3">Projeto Integrador 2026.2</p>
     </div>
   </dialog>
 </div>

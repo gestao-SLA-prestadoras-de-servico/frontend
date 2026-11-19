@@ -1,30 +1,12 @@
-import { PrerenderFallback, RenderMode, ServerRoute } from '@angular/ssr';
-import { WORKSPACE_PROFILES } from './features/workspace/data/workspace-data';
-import { CLIENT_TICKETS } from './features/workspace/client/data/client-data';
-import { PURGED_EVIDENCE_SAMPLE } from './features/workspace/gestor/data/purged-evidence-demo-data';
+import { RenderMode, ServerRoute } from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
-  ...['', 'login', 'sessao-demo', 'sessao-expirada', 'app'].map((path): ServerRoute => ({
+  ...['', 'login', 'sessao-expirada'].map((path): ServerRoute => ({
     path,
     renderMode: RenderMode.Prerender,
   })),
-  ...WORKSPACE_PROFILES.flatMap((profile) =>
-    profile.pages.map((page): ServerRoute => ({
-      path: page.path.slice(1),
-      renderMode: RenderMode.Prerender,
-    })),
-  ),
-  {
-    path: 'app/gestor/auditoria/evidencias/:id',
-    renderMode: RenderMode.Prerender,
-    getPrerenderParams: async () => [{ id: PURGED_EVIDENCE_SAMPLE.id }],
-    fallback: PrerenderFallback.Server,
-  },
-  {
-    path: 'app/cliente/chamados/:id',
-    renderMode: RenderMode.Prerender,
-    getPrerenderParams: async () => CLIENT_TICKETS.map((ticket) => ({ id: String(ticket.id) })),
-    fallback: PrerenderFallback.Server,
-  },
+  // A área logada depende do token, que só existe no navegador.
+  { path: 'app', renderMode: RenderMode.Client },
+  { path: 'app/**', renderMode: RenderMode.Client },
   { path: '**', renderMode: RenderMode.Server, status: 404 },
 ];

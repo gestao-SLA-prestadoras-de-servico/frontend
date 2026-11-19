@@ -7,10 +7,13 @@ import {
   inject,
   Injector,
   input,
+  output,
   signal,
   viewChild,
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ChamadosApi } from '@app/core/api/chamados.api';
+import { mensagemErro, problema } from '@app/core/api/erros';
 import { ButtonPrimary, ButtonSecondary } from '@app/shared/ui/button';
 import { preventDefaultUnlessReplayed } from '../../../../shared/utils/event-replay';
 import { ClientTicket } from '../data/client-data';
@@ -25,6 +28,9 @@ type ReviewAction = 'confirm' | 'reopen';
 })
 export class ClientReview {
   readonly ticket = input.required<ClientTicket>();
+  /** Emitido após validar, reabrir ou um conflito de versão: o pai recarrega o chamado. */
+  readonly changed = output<void>();
+  private readonly api = inject(ChamadosApi);
   private readonly injector = inject(Injector);
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('reviewDialog');
   private readonly cancel = viewChild<ElementRef<HTMLButtonElement>>('cancel');
@@ -36,6 +42,8 @@ export class ClientReview {
   protected readonly action = signal<ReviewAction>('confirm');
   protected readonly result = signal<ReviewAction | null>(null);
   protected readonly attempted = signal(false);
+  protected readonly busy = signal(false);
+  protected readonly error = signal<string | null>(null);
   protected readonly reason = new FormControl('', {
     nonNullable: true,
     validators: [
@@ -59,6 +67,7 @@ export class ClientReview {
     this.completing = false;
     this.action.set(action);
     this.attempted.set(false);
+    this.error.set(null);
     this.reason.reset();
     afterNextRender(
       () => {
@@ -107,16 +116,37 @@ export class ClientReview {
     }
   }
   protected submit(): void {
-    if (this.ticket().status !== 'RESOLVIDO') return;
+    if (this.ticket().status !== 'RESOLVIDO' || this.busy()) return;
     this.attempted.set(true);
     this.reason.markAsTouched();
     if (this.action() === 'reopen' && this.reason.invalid) {
       this.reasonField()?.nativeElement.focus();
       return;
     }
-    this.result.set(this.action());
-    this.completing = true;
-    this.close();
-    afterNextRender(() => this.feedback()?.nativeElement.focus(), { injector: this.injector });
+    const { id, version } = this.ticket();
+    const action = this.action();
+    const request =
+      action === 'confirm'
+        ? this.api.validar(id, version)
+        : this.api.reabrir(id, this.reason.value.trim(), version);
+    this.busy.set(true);
+    this.error.set(null);
+    request.subscribe({
+      next: () => {
+        this.busy.set(false);
+        this.result.set(action);
+        this.completing = true;
+        this.close();
+        afterNextRender(() => this.feedback()?.nativeElement.focus(), {
+          injector: this.injector,
+        });
+        this.changed.emit();
+      },
+      error: (erro: unknown) => {
+        this.busy.set(false);
+        this.error.set(mensagemErro(erro));
+        if (problema(erro)?.codigo === 'CONFLITO_VERSAO') this.changed.emit();
+      },
+    });
   }
 }

@@ -32,20 +32,25 @@ import { LucideDynamicIcon } from '@lucide/angular';
 import { ButtonPrimary } from '@app/shared/ui/button';
 import { Input } from '@app/shared/ui/input/input.directive';
 import { preventDefaultUnlessReplayed } from '../../../../shared/utils/event-replay';
-import { CompanyDemoStore } from '../data/company-demo-store';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { forkJoin, map } from 'rxjs';
+import { CadastroApi } from '@app/core/api/cadastro.api';
+import { mensagemErro } from '@app/core/api/erros';
+import { WorkspaceLoadingState } from '../../components/workspace-loading-state';
 import {
-  ContractDemoStore,
+  Contract,
+  ContractStore,
   ContractTerm,
-  DemoContract,
-  policyById,
   contractTerm,
-} from '../data/contract-demo-store';
+  toContract,
+  todayIso,
+} from '../data/contract-store';
 import { WORKSPACE_ICONS } from '../../data/workspace-icons';
 
 type TermFilter = 'all' | ContractTerm;
 
 interface ContractRow {
-  contract: DemoContract;
+  contract: Contract;
   companyName: string;
   policyCode: string;
   policyName: string;
@@ -81,6 +86,7 @@ function normalize(value: string): string {
     ManagerTable,
     ManagerTableHead,
     ManagerTableBody,
+    WorkspaceLoadingState,
   ],
   templateUrl: './manager-contracts.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -88,8 +94,8 @@ function normalize(value: string): string {
 })
 export class ManagerContracts {
   private readonly injector = inject(Injector);
-  private readonly companiesStore = inject(CompanyDemoStore);
-  private readonly store = inject(ContractDemoStore);
+  private readonly store = inject(ContractStore);
+  private readonly api = inject(CadastroApi);
   private readonly detailsDialog =
     viewChild.required<ElementRef<HTMLDialogElement>>('detailsDialog');
   private readonly closeDetailsButton =
@@ -97,22 +103,42 @@ export class ManagerContracts {
   private readonly noticeTarget = viewChild<ElementRef<HTMLElement>>('noticeTarget');
   private detailsTrigger?: HTMLButtonElement;
   protected readonly icons = WORKSPACE_ICONS;
+  protected readonly today = todayIso();
   protected readonly ready = signal(false);
   protected readonly query = signal('');
   protected readonly filter = signal<TermFilter>('all');
-  protected readonly selectedContract = signal<DemoContract | null>(null);
-  protected readonly companies = this.companiesStore.companies;
-  protected readonly contracts = this.store.contracts;
+  protected readonly selectedContract = signal<Contract | null>(null);
+  protected readonly data = rxResource({
+    stream: () =>
+      forkJoin({
+        contratos: this.api.contratos({ sort: 'codigo,asc' }),
+        clientes: this.api.clientes(),
+        politicas: this.api.politicas(),
+      }).pipe(
+        map(({ contratos, clientes, politicas }) => ({
+          contracts: contratos.map(toContract),
+          companies: new Map(clientes.map((c) => [c.id, c.razaoSocial])),
+          policies: politicas,
+        })),
+      ),
+  });
+  protected readonly loadError = computed(() =>
+    this.data.error() ? mensagemErro(this.data.error()) : null,
+  );
+  protected readonly policies = computed(() => this.data.value()?.policies ?? []);
+  protected readonly contracts = computed(() => this.data.value()?.contracts ?? []);
   protected readonly notice = this.store.notice;
+  protected readonly linkPolicyId = signal('');
+  protected readonly linking = signal(false);
+  protected readonly linkError = signal<string | null>(null);
   protected readonly rows = computed<readonly ContractRow[]>(() =>
     this.contracts().map((contract) => {
-      const company = this.companies().find((candidate) => candidate.id === contract.companyId);
-      const policy = policyById(contract.policyId);
+      const policy = this.policies().find((p) => p.id === contract.policyId);
       return {
         contract,
-        companyName: company?.legalName ?? 'Empresa indisponível',
-        policyCode: policy?.code ?? 'Política indisponível',
-        policyName: policy?.name ?? 'Política indisponível',
+        companyName: this.companyName(contract.companyId),
+        policyCode: policy ? `v${policy.versaoAtual.numero}` : 'Sem política',
+        policyName: policy?.nome ?? 'Chamados bloqueados até vincular',
         term: contractTerm(contract),
       };
     }),
@@ -122,7 +148,7 @@ export class ManagerContracts {
     const selectedTerm = this.filter();
     return this.rows().filter((row) => {
       const haystack = normalize(
-        [row.contract.id, row.companyName, row.policyCode, row.policyName].join(' '),
+        [row.contract.code, row.companyName, row.policyCode, row.policyName].join(' '),
       );
       return (
         (!term || haystack.includes(term)) && (selectedTerm === 'all' || row.term === selectedTerm)
@@ -163,10 +189,12 @@ export class ManagerContracts {
     this.store.setNotice(null);
   }
 
-  protected openDetails(contract: DemoContract, trigger: HTMLButtonElement): void {
+  protected openDetails(contract: Contract, trigger: HTMLButtonElement): void {
     if (!this.ready()) return;
     this.detailsTrigger = trigger;
     this.selectedContract.set(contract);
+    this.linkPolicyId.set(contract.policyId ?? this.policies()[0]?.id ?? '');
+    this.linkError.set(null);
     afterNextRender(
       () => {
         if (!this.selectedContract() || this.detailsDialog().nativeElement.open) return;
@@ -217,15 +245,37 @@ export class ManagerContracts {
     }
   }
 
-  protected companyName(id: number): string {
-    return (
-      this.companies().find((company) => company.id === id)?.legalName ?? 'Empresa indisponível'
-    );
+  protected companyName(id: string): string {
+    return this.data.value()?.companies.get(id) ?? 'Empresa indisponível';
   }
 
-  protected policyName(id: string): string {
-    const policy = policyById(id);
-    return policy ? policy.code + ' · ' + policy.name : 'Política indisponível';
+  protected policyName(id: string | null): string {
+    const policy = this.policies().find((p) => p.id === id);
+    return policy ? `${policy.nome} · v${policy.versaoAtual.numero}` : 'Sem política vinculada';
+  }
+
+  protected onLinkPolicyChange(event: Event): void {
+    this.linkPolicyId.set((event.target as HTMLSelectElement).value);
+  }
+
+  /** Vincula ou troca a política; chamados novos passam a usar a versão vigente dela. */
+  protected linkPolicy(): void {
+    const contract = this.selectedContract();
+    const policyId = this.linkPolicyId();
+    if (!contract || !policyId || this.linking()) return;
+    this.linking.set(true);
+    this.linkError.set(null);
+    this.api.vincularPolitica(contract.id, policyId).subscribe({
+      next: (contrato) => {
+        this.linking.set(false);
+        this.selectedContract.set(toContract(contrato));
+        this.data.reload();
+      },
+      error: (erro: unknown) => {
+        this.linking.set(false);
+        this.linkError.set(mensagemErro(erro));
+      },
+    });
   }
 
   protected termLabel(term: ContractTerm): string {
@@ -234,7 +284,7 @@ export class ManagerContracts {
     return 'Vencido';
   }
 
-  protected contractTermLabel(contract: DemoContract): string {
+  protected contractTermLabel(contract: Contract): string {
     return this.termLabel(contractTerm(contract));
   }
 }

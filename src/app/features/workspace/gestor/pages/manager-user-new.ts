@@ -18,7 +18,12 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { ButtonPrimary, ButtonSecondary } from '@app/shared/ui/button';
 import { Input } from '@app/shared/ui/input/input.directive';
-import { ManagerUserRole, UserDemoStore } from '../data/user-demo-store';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
+import { CadastroApi } from '@app/core/api/cadastro.api';
+import { mensagemErro, problema } from '@app/core/api/erros';
+import { UsuariosApi } from '@app/core/api/usuarios.api';
+import { ManagerUserRole, ROLE_PAPEL, UserStore } from '../data/user-store';
 
 type UserForm = FormGroup<{
   name: FormControl<string>;
@@ -48,18 +53,29 @@ type UserForm = FormGroup<{
 })
 export class ManagerUserNew {
   private readonly router = inject(Router);
-  private readonly store = inject(UserDemoStore);
+  private readonly store = inject(UserStore);
+  private readonly api = inject(UsuariosApi);
+  private readonly cadastro = inject(CadastroApi);
+  /** Só empresas ativas aceitam usuários novos (CLIENTE_INATIVO). */
+  protected readonly companies = rxResource({
+    stream: () =>
+      this.cadastro
+        .clientes({ ativo: true, sort: 'razaoSocial,asc' })
+        .pipe(map((clientes) => clientes.map((c) => ({ id: c.id, name: c.razaoSocial })))),
+  });
+  protected readonly busy = signal(false);
+  protected readonly saveError = signal<string | null>(null);
   private readonly document = inject(DOCUMENT);
   private readonly injector = inject(Injector);
   protected readonly submitted = signal(false);
   protected readonly form: UserForm = new FormGroup({
     name: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.minLength(3), Validators.maxLength(100)],
+      validators: [Validators.required, Validators.minLength(3), Validators.maxLength(150)],
     }),
     email: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.email, Validators.maxLength(160)],
+      validators: [Validators.required, Validators.email, Validators.maxLength(254)],
     }),
     role: new FormControl<ManagerUserRole>('Cliente', {
       nonNullable: true,
@@ -69,8 +85,8 @@ export class ManagerUserNew {
   });
   protected readonly isClient = signal(true);
   protected readonly errors = {
-    name: 'Informe um nome entre 3 e 100 caracteres.',
-    email: 'Informe um e-mail válido com até 160 caracteres.',
+    name: 'Informe um nome entre 3 e 150 caracteres.',
+    email: 'Informe um e-mail válido.',
     company: 'Selecione a empresa vinculada ao perfil Cliente.',
   };
 
@@ -101,25 +117,40 @@ export class ManagerUserNew {
       });
       return;
     }
+    if (this.busy()) return;
     const values = this.form.getRawValue();
-    const created = this.store.add({
-      name: values.name.trim(),
-      email: values.email.trim(),
-      role: values.role,
-      company: values.role === 'Cliente' ? values.company : undefined,
-    });
-    if (!created) {
-      this.form.controls.email.setErrors({ duplicate: true });
-      afterNextRender(() => this.document.getElementById('new-user-email')?.focus(), {
-        injector: this.injector,
+    this.busy.set(true);
+    this.saveError.set(null);
+    this.api
+      .criar({
+        nome: values.name.trim(),
+        email: values.email.trim(),
+        perfil: ROLE_PAPEL[values.role],
+        ...(values.role === 'Cliente' ? { clienteId: values.company } : {}),
+      })
+      .subscribe({
+        next: (created) => {
+          this.busy.set(false);
+          this.store.setNotice({
+            tone: created.emailDefinicaoSenhaEnviado ? 'success' : 'error',
+            title: `${created.nome} foi cadastrado(a)`,
+            detail: created.emailDefinicaoSenhaEnviado
+              ? `Enviamos para ${created.email} o link para definir a senha.`
+              : `A conta foi criada, mas o e-mail para definir a senha não foi enviado. Peça ao suporte para reenviar.`,
+          });
+          void this.router.navigateByUrl('/app/gestor/usuarios');
+        },
+        error: (erro: unknown) => {
+          this.busy.set(false);
+          if (problema(erro)?.codigo === 'USUARIO_JA_EXISTE') {
+            this.form.controls.email.setErrors({ duplicate: true });
+            afterNextRender(() => this.document.getElementById('new-user-email')?.focus(), {
+              injector: this.injector,
+            });
+          } else {
+            this.saveError.set(mensagemErro(erro));
+          }
+        },
       });
-      return;
-    }
-    this.store.setNotice({
-      tone: 'success',
-      title: 'Cadastro demonstrativo concluído',
-      detail: `${created.name} foi adicionado(a) apenas à lista desta sessão. Nenhuma conta foi criada no Keycloak.`,
-    });
-    void this.router.navigateByUrl('/app/gestor/usuarios');
   }
 }

@@ -35,7 +35,7 @@ import { ClientDeadline } from '../data/client-data';
               }}</time>
             </p>
           } @else {
-            <p class="mt-2 text-xs text-ink3">Sem conclusão registrada no exemplo.</p>
+            <p class="mt-2 text-xs text-ink3">Ainda sem conclusão.</p>
           }
         </dd>
       </div>

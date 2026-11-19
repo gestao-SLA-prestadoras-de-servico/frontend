@@ -1,16 +1,15 @@
 <div class="flex flex-wrap items-start justify-between gap-4">
   <div>
     <h1 appPageHeading class="client-title">Meus chamados</h1>
-    <p class="mt-2 text-sm text-ink2">Acompanhe os atendimentos do Edifício Aurora.</p>
+    <p class="mt-2 text-sm text-ink2">Acompanhe os atendimentos da sua empresa.</p>
   </div>
   <a routerLink="/app/cliente/novo-chamado" appButtonPrimary class="min-h-11 px-4 py-2.5"
     ><svg class="size-4" [lucideIcon]="icons.add" aria-hidden="true"></svg>Abrir chamado</a
   >
 </div>
-<app-client-notice class="mt-4" />
 <!-- Three peers share the full canvas: (available width - 2 × 16px) / 3. On phones each becomes a compact row. -->
 <dl class="mt-5 grid grid-cols-3 gap-2 sm:mt-7 sm:gap-4" aria-label="Resumo de todos os chamados">
-  @for (item of summary; track item.label) {
+  @for (item of summary(); track item.label) {
     <div
       class="flex flex-col justify-between gap-3 rounded-deadline border border-line px-3 py-3 sm:px-5 sm:py-4"
     >
@@ -21,7 +20,7 @@
     </div>
   }
 </dl>
-@if (awaiting; as ticket) {
+@if (awaiting(); as ticket) {
   <section
     class="mt-5 flex flex-wrap items-center justify-between gap-x-5 gap-y-1 rounded-deadline bg-pri-bg px-5 py-4"
     aria-labelledby="validation-notice"
@@ -34,8 +33,9 @@
         Um atendimento aguarda sua revisão
       </h2>
       <p class="mt-1 text-sm text-pri-d">
-        #{{ ticket.id }} · Valide até
-        {{ ticket.validationDueAt | date: 'dd/MM/yyyy, HH:mm' : '-0300' }}.
+        #{{ ticket.number }} · Resolvido em
+        {{ ticket.resolvedAt | date: 'dd/MM/yyyy, HH:mm' : '-0300' }}. Confirme ou peça a
+        reabertura.
       </p>
     </div>
     <a [routerLink]="['/app/cliente/chamados', ticket.id]" class="client-link"
@@ -43,18 +43,14 @@
     ></a>
   </section>
 }
-<section
-  class="mt-8"
-  aria-labelledby="client-list-heading"
-  [attr.aria-busy]="scene() === 'loading'"
->
+<section class="mt-8" aria-labelledby="client-list-heading" [attr.aria-busy]="data.isLoading()">
   <div class="flex flex-wrap items-baseline justify-between gap-2">
     <h2 id="client-list-heading" class="client-heading">Seus atendimentos</h2>
     <p class="text-xs text-ink3" role="status">
-      @if (scene() === 'loading') {
-        Carregando demonstração…
+      @if (data.isLoading()) {
+        Carregando chamados…
       } @else {
-        {{ filtered().length }} de {{ tickets.length }} chamados
+        {{ filtered().length }} de {{ tickets().length }} chamados
       }
     </p>
   </div>
@@ -99,7 +95,15 @@
       </select>
     </div>
   </div>
-  @if (scene() === 'loading') {
+  @if (erro(); as mensagem) {
+    <div class="mt-6 rounded-deadline bg-danger-bg p-7 text-danger" role="alert">
+      <h3 class="text-base font-semibold tracking-normal">Não foi possível carregar os chamados</h3>
+      <p class="mt-2 text-sm">{{ mensagem }}</p>
+      <button class="client-link mt-3" type="button" (click)="data.reload()">
+        Tentar novamente
+      </button>
+    </div>
+  } @else if (data.isLoading()) {
     <div class="mt-6 space-y-5" aria-hidden="true">
       @for (row of [1, 2, 3, 4]; track row) {
         <div class="grid grid-cols-3 gap-5 border-t border-line py-5">
@@ -112,24 +116,26 @@
   } @else if (filtered().length === 0) {
     <div class="mt-6 rounded-deadline bg-bg p-7">
       <h3 class="text-base font-semibold tracking-normal">
-        {{ scene() === 'empty' ? 'Nenhum chamado neste exemplo' : 'Nenhum chamado encontrado' }}
+        {{ tickets().length ? 'Nenhum chamado encontrado' : 'Nenhum chamado ainda' }}
       </h3>
       <p class="mt-2 text-sm text-ink2">
         {{
-          scene() === 'empty'
-            ? 'Quando houver uma solicitação, você poderá acompanhar o atendimento aqui.'
-            : 'Tente outro número, título ou local, ou limpe os filtros.'
+          tickets().length
+            ? 'Tente outro número, título ou local, ou limpe os filtros.'
+            : 'Quando houver uma solicitação, você poderá acompanhar o atendimento aqui.'
         }}
       </p>
-      <button class="client-link mt-3" type="button" (click)="reset()">
-        {{ scene() === 'empty' ? 'Voltar aos dados de exemplo' : 'Limpar busca e filtros' }}
-      </button>
+      @if (tickets().length) {
+        <button class="client-link mt-3" type="button" (click)="reset()">
+          Limpar busca e filtros
+        </button>
+      }
     </div>
   } @else {
     <div class="mt-6 hidden md:block">
       <table class="ticket-table">
         <caption class="sr-only">
-          Chamados do Edifício Aurora. Datas e prazos fictícios em horário de Brasília.
+          Chamados da sua empresa. Datas e prazos em horário de Brasília.
         </caption>
         <thead>
           <tr>
@@ -145,7 +151,7 @@
             <tr>
               <td>
                 <a class="ticket-name" [routerLink]="['/app/cliente/chamados', ticket.id]"
-                  >#{{ ticket.id }} · {{ ticket.title }}</a
+                  >#{{ ticket.number }} · {{ ticket.title }}</a
                 >
                 <p class="mt-1 text-xs text-ink3">{{ ticket.location }}</p>
               </td>
@@ -160,19 +166,16 @@
                 >
               </td>
               <td>
-                @if (ticket.validationDueAt) {
+                @if (ticket.status === 'RESOLVIDO') {
                   <p class="font-medium text-pri-d">Validação</p>
-                  <time class="tabular-nums" [attr.datetime]="ticket.validationDueAt"
-                    >Até {{ ticket.validationDueAt | date: 'dd/MM, HH:mm' : '-0300' }}</time
-                  >
-                } @else if (nextDeadline(ticket); as deadline) {
-                  <p class="font-medium">{{ deadline.label }}</p>
-                  <time class="tabular-nums text-ink2" [attr.datetime]="deadline.target"
-                    >Até {{ deadline.target | date: 'dd/MM, HH:mm' : '-0300' }}</time
+                  <p class="text-xs text-ink3">Aguardando sua revisão</p>
+                } @else if (ticket.nextDueAt) {
+                  <p class="font-medium">Próximo prazo</p>
+                  <time class="tabular-nums text-ink2" [attr.datetime]="ticket.nextDueAt"
+                    >Até {{ ticket.nextDueAt | date: 'dd/MM, HH:mm' : '-0300' }}</time
                   >
                 } @else {
-                  <p class="text-grn-t">Prazos cumpridos</p>
-                  <p class="text-xs text-ink3">Atendimento encerrado</p>
+                  <p class="text-ink2">Sem prazos em aberto</p>
                 }
               </td>
             </tr>
@@ -186,7 +189,7 @@
           <a
             [routerLink]="['/app/cliente/chamados', ticket.id]"
             class="client-link min-h-11 text-ink"
-            >#{{ ticket.id }} · {{ ticket.title }}</a
+            >#{{ ticket.number }} · {{ ticket.title }}</a
           >
           <p class="mt-1 text-sm text-ink2">{{ ticket.location }}</p>
           <div class="mt-3"><app-client-status [status]="ticket.status" /></div>
@@ -204,12 +207,12 @@
             <div class="col-span-2">
               <dt class="text-xs text-ink3">Prazos</dt>
               <dd class="m-0 mt-1">
-                @if (ticket.validationDueAt) {
-                  Validação até {{ ticket.validationDueAt | date: 'dd/MM, HH:mm' : '-0300' }}
-                } @else if (nextDeadline(ticket); as deadline) {
-                  {{ deadline.label }} até {{ deadline.target | date: 'dd/MM, HH:mm' : '-0300' }}
+                @if (ticket.status === 'RESOLVIDO') {
+                  Aguardando sua validação
+                } @else if (ticket.nextDueAt) {
+                  Próximo prazo até {{ ticket.nextDueAt | date: 'dd/MM, HH:mm' : '-0300' }}
                 } @else {
-                  Prazos cumpridos · Atendimento encerrado
+                  Sem prazos em aberto
                 }
               </dd>
             </div>
@@ -219,21 +222,3 @@
     </ul>
   }
 </section>
-<details class="mt-6 text-xs text-ink3">
-  <summary class="inline-flex min-h-11 cursor-pointer items-center rounded-sm underline">
-    Estados de demonstração
-  </summary>
-  <div class="mt-2 max-w-xs">
-    <label for="client-scene" class="client-label">Cenário da listagem</label
-    ><select
-      id="client-scene"
-      class="client-control"
-      [value]="scene()"
-      (change)="scene.set(value($event))"
-    >
-      <option value="normal">Dados de exemplo</option>
-      <option value="loading">Carregamento</option>
-      <option value="empty">Lista vazia</option>
-    </select>
-  </div>
-</details>

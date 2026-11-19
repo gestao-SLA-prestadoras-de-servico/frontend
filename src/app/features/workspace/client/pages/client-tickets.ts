@@ -1,19 +1,18 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { forkJoin, map } from 'rxjs';
 import { LucideDynamicIcon } from '@lucide/angular';
+import { ChamadosApi } from '@app/core/api/chamados.api';
+import { mensagemErro } from '@app/core/api/erros';
+import { ChamadoCliente } from '@app/core/api/modelos';
 import { ButtonPrimary } from '@app/shared/ui/button';
 import { PageHeading } from '@app/shared/ui/page-heading/page-heading.directive';
 import { WORKSPACE_ICONS } from '../../data/workspace-icons';
-import { ClientNotice } from '../components/client-notice';
 import { ClientStatusBadge } from '../components/client-status';
 import { ClientPriorityBadge } from '../components/client-priority';
-import {
-  CLIENT_PRIORITIES,
-  CLIENT_STATUS_LABELS,
-  CLIENT_TICKETS,
-  ClientTicket,
-} from '../data/client-data';
+import { CLIENT_PRIORITIES, CLIENT_STATUS_LABELS, toClientTicket } from '../data/client-data';
 
 @Component({
   selector: 'app-client-tickets',
@@ -23,7 +22,6 @@ import {
     ButtonPrimary,
     PageHeading,
     LucideDynamicIcon,
-    ClientNotice,
     ClientStatusBadge,
     ClientPriorityBadge,
   ],
@@ -32,47 +30,57 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClientTickets {
+  private readonly api = inject(ChamadosApi);
   protected readonly icons = WORKSPACE_ICONS;
-  protected readonly tickets = CLIENT_TICKETS;
   protected readonly statuses = Object.entries(CLIENT_STATUS_LABELS);
   protected readonly priorities = CLIENT_PRIORITIES;
   protected readonly query = signal('');
   protected readonly status = signal('');
   protected readonly priority = signal('');
-  protected readonly scene = signal('normal');
-  protected readonly summary = [
-    {
-      label: 'Em andamento',
-      count: this.tickets.filter((t) => !['RESOLVIDO', 'ENCERRADO'].includes(t.status)).length,
-    },
-    {
-      label: 'Aguardando validação',
-      count: this.tickets.filter((t) => t.status === 'RESOLVIDO').length,
-    },
-    { label: 'Encerrados', count: this.tickets.filter((t) => t.status === 'ENCERRADO').length },
-  ];
-  protected readonly awaiting = this.tickets.find((t) => t.status === 'RESOLVIDO');
+
+  protected readonly data = rxResource({
+    stream: () =>
+      forkJoin({
+        chamados: this.api.listarTodos<ChamadoCliente>({ sort: 'numero,desc' }),
+        contagem: this.api.contagem(),
+      }).pipe(
+        map(({ chamados, contagem }) => ({ tickets: chamados.map(toClientTicket), contagem })),
+      ),
+  });
+  protected readonly erro = computed(() =>
+    this.data.error() ? mensagemErro(this.data.error()) : null,
+  );
+  protected readonly tickets = computed(() => this.data.value()?.tickets ?? []);
+  protected readonly summary = computed(() => {
+    const c = this.data.value()?.contagem;
+    return [
+      {
+        label: 'Em andamento',
+        count: c ? c.ABERTO + c.ATRIBUIDO + c.EM_ATENDIMENTO : 0,
+      },
+      { label: 'Aguardando validação', count: c?.RESOLVIDO ?? 0 },
+      { label: 'Encerrados', count: c ? c.ENCERRADO + c.CANCELADO : 0 },
+    ];
+  });
+  protected readonly awaiting = computed(() =>
+    this.tickets().find((t) => t.status === 'RESOLVIDO'),
+  );
   protected readonly filtered = computed(() => {
-    if (this.scene() === 'empty') return [];
     const query = this.normalize(this.query());
-    return this.tickets.filter(
+    return this.tickets().filter(
       (ticket) =>
         (!this.status() || ticket.status === this.status()) &&
         (!this.priority() || ticket.priority === this.priority()) &&
-        this.normalize(`#${ticket.id} ${ticket.title} ${ticket.location}`).includes(query),
+        this.normalize(`#${ticket.number} ${ticket.title} ${ticket.location}`).includes(query),
     );
   });
   protected value(event: Event): string {
     return (event.target as HTMLInputElement).value;
   }
-  protected nextDeadline(ticket: ClientTicket) {
-    return ticket.deadlines.find((deadline) => deadline.state !== 'fulfilled');
-  }
   protected reset(): void {
     this.query.set('');
     this.status.set('');
     this.priority.set('');
-    this.scene.set('normal');
   }
   private normalize(value: string): string {
     return value

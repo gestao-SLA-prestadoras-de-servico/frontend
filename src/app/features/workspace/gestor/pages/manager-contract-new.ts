@@ -26,13 +26,13 @@ import { RouterLink } from '@angular/router';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { ButtonPrimary, ButtonSecondary } from '@app/shared/ui/button';
 import { preventDefaultUnlessReplayed } from '../../../../shared/utils/event-replay';
-import { CompanyDemoStore, DemoCompany } from '../data/company-demo-store';
-import {
-  CONTRACT_POLICIES,
-  ContractDemoStore,
-  ContractDraft,
-  DemoContract,
-} from '../data/contract-demo-store';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
+import { Contrato } from '@app/core/api/modelos';
+import { CadastroApi } from '@app/core/api/cadastro.api';
+import { mensagemErro } from '@app/core/api/erros';
+import { Company, toCompany } from '../data/company-store';
+import { Contract, ContractStore, toContract } from '../data/contract-store';
 import {
   CONTRACT_FIELD_ERRORS,
   ContractField,
@@ -66,8 +66,8 @@ import { WORKSPACE_ICONS } from '../../data/workspace-icons';
 export class ManagerContractNew {
   private readonly document = inject(DOCUMENT);
   private readonly injector = inject(Injector);
-  private readonly companiesStore = inject(CompanyDemoStore);
-  private readonly store = inject(ContractDemoStore);
+  private readonly store = inject(ContractStore);
+  private readonly api = inject(CadastroApi);
   private readonly reviewDialog = viewChild.required<ElementRef<HTMLDialogElement>>('reviewDialog');
   private readonly cancelReviewButton =
     viewChild<ElementRef<HTMLButtonElement>>('cancelReviewButton');
@@ -76,15 +76,34 @@ export class ManagerContractNew {
   private trigger?: HTMLButtonElement;
   private completing = false;
   protected readonly icons = WORKSPACE_ICONS;
-  protected readonly policies = CONTRACT_POLICIES;
-  protected readonly allCompanies = this.companiesStore.companies;
-  protected readonly activeCompanies = computed(() =>
-    this.allCompanies().filter((company) => company.situation === 'active'),
-  );
+  protected readonly options = rxResource({
+    stream: () =>
+      forkJoin({
+        clientes: this.api.clientes({ ativo: true, sort: 'razaoSocial,asc' }),
+        politicas: this.api.politicas(),
+      }).pipe(
+        map(({ clientes, politicas }) => ({
+          companies: clientes.map(toCompany),
+          policies: politicas.map((p) => ({
+            id: p.id,
+            name: `${p.nome} · v${p.versaoAtual.numero}`,
+          })),
+        })),
+      ),
+  });
+  protected readonly policies = computed(() => this.options.value()?.policies ?? []);
+  protected readonly activeCompanies = computed(() => this.options.value()?.companies ?? []);
+  protected readonly busy = signal(false);
+  /**
+   * Contrato já criado cujo vínculo com a política falhou. Uma nova confirmação só tenta o
+   * vínculo de novo: recriar daria CODIGO_CONTRATO_JA_EXISTE.
+   */
+  protected readonly pending = signal<Contrato | null>(null);
+  protected readonly saveError = signal<string | null>(null);
   protected readonly form = createContractForm();
   protected readonly ready = signal(false);
   protected readonly submitted = signal(false);
-  protected readonly created = signal<DemoContract | null>(null);
+  protected readonly created = signal<Contract | null>(null);
   protected readonly fieldErrors = CONTRACT_FIELD_ERRORS;
   private readonly companyId = toSignal(this.form.controls.companyId.valueChanges, {
     initialValue: this.form.controls.companyId.value,
@@ -92,11 +111,11 @@ export class ManagerContractNew {
   private readonly policyId = toSignal(this.form.controls.policyId.valueChanges, {
     initialValue: this.form.controls.policyId.value,
   });
-  protected readonly selectedCompany = computed<DemoCompany | undefined>(() =>
+  protected readonly selectedCompany = computed<Company | undefined>(() =>
     this.activeCompanies().find((company) => String(company.id) === this.companyId()),
   );
   protected readonly selectedPolicy = computed(() =>
-    this.policies.find((policy) => policy.id === this.policyId()),
+    this.policies().find((policy) => policy.id === this.policyId()),
   );
 
   constructor() {
@@ -176,26 +195,58 @@ export class ManagerContractNew {
     }
   }
 
+  /** O backend cria o contrato sem política; o vínculo é uma segunda chamada. */
   protected confirmDraft(): void {
-    if (this.form.invalid || !this.selectedCompany() || !this.selectedPolicy()) return;
+    if (this.form.invalid || !this.selectedCompany() || !this.selectedPolicy() || this.busy())
+      return;
     const raw = this.form.getRawValue();
-    const draft: ContractDraft = {
-      companyId: Number(raw.companyId),
-      startDate: raw.startDate,
-      endDate: raw.endDate,
-      policyId: raw.policyId,
-    };
-    const contract = this.store.add(draft);
-    this.store.setNotice({
-      title: 'Cadastro demonstrativo concluído',
-      detail:
-        'O contrato foi incluído somente nesta sessão. Nenhuma informação foi enviada ou salva.',
-    });
-    this.created.set(contract);
-    this.completing = true;
-    this.closeReview();
-    afterNextRender(() => this.successMessage()?.nativeElement.focus(), {
-      injector: this.injector,
-    });
+    this.busy.set(true);
+    this.saveError.set(null);
+    const pending = this.pending();
+    const contrato$: Observable<Contrato> = pending
+      ? of(pending)
+      : this.api
+          .criarContrato({
+            clienteId: raw.companyId,
+            codigo: raw.code.trim(),
+            inicioVigencia: raw.startDate,
+            fimVigencia: raw.endDate,
+          })
+          .pipe(tap((contrato) => this.holdPending(contrato)));
+    contrato$
+      .pipe(switchMap((contrato) => this.api.vincularPolitica(contrato.id, raw.policyId)))
+      .subscribe({
+        next: (contrato) => {
+          const contract = toContract(contrato);
+          this.busy.set(false);
+          this.pending.set(null);
+          this.store.setNotice({
+            title: 'Contrato cadastrado',
+            detail: `${contract.code} já aceita chamados durante a vigência.`,
+          });
+          this.created.set(contract);
+          this.completing = true;
+          this.closeReview();
+          afterNextRender(() => this.successMessage()?.nativeElement.focus(), {
+            injector: this.injector,
+          });
+        },
+        error: (erro: unknown) => {
+          this.busy.set(false);
+          const criado = this.pending();
+          this.saveError.set(
+            criado
+              ? `O contrato ${criado.codigo} foi criado, mas a política não foi vinculada: ${mensagemErro(erro)} Confirme de novo para tentar só o vínculo.`
+              : mensagemErro(erro),
+          );
+        },
+      });
+  }
+
+  /** Depois de criado, só a política pode mudar: os demais campos já estão no backend. */
+  private holdPending(contrato: Contrato): void {
+    this.pending.set(contrato);
+    for (const field of ['code', 'companyId', 'startDate', 'endDate'] as const)
+      this.form.controls[field].disable();
   }
 }

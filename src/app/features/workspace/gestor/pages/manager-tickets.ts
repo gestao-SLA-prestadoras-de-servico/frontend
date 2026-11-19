@@ -12,15 +12,22 @@ import {
   ManagerTextAction,
 } from '../components/manager-surface.directive';
 import { Select } from '@app/shared/ui/input/select.directive';
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { WORKSPACE_ICONS } from '../../data/workspace-icons';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { CadastroApi } from '@app/core/api/cadastro.api';
+import { ChamadosApi } from '@app/core/api/chamados.api';
+import { mensagemErro } from '@app/core/api/erros';
+import { UsuariosApi } from '@app/core/api/usuarios.api';
+import { WorkspaceLoadingState } from '../../components/workspace-loading-state';
 import {
-  ManagerTicketDemoStore,
+  loadManagerTickets,
   ManagerTicketPriority,
   ManagerTicketStatus,
-} from '../data/manager-ticket-demo-store';
+} from '../data/manager-ticket';
 import { ManagerTicketBadge } from '../components/manager-ticket-badge';
 import { ManagerTicketClocks } from '../components/manager-ticket-clocks';
 import { ManagerMetricCard } from '../components/manager-metric-card';
@@ -31,6 +38,7 @@ type PriorityFilter = 'Todas' | ManagerTicketPriority;
 @Component({
   selector: 'app-manager-tickets',
   imports: [
+    DatePipe,
     RouterLink,
     LucideDynamicIcon,
     ManagerTicketBadge,
@@ -46,15 +54,24 @@ type PriorityFilter = 'Todas' | ManagerTicketPriority;
     ManagerTable,
     ManagerTableHead,
     ManagerTableBody,
+    WorkspaceLoadingState,
   ],
   templateUrl: './manager-tickets.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
 })
 export class ManagerTickets {
-  private readonly store = inject(ManagerTicketDemoStore);
+  private readonly chamados = inject(ChamadosApi);
+  private readonly usuarios = inject(UsuariosApi);
+  private readonly cadastro = inject(CadastroApi);
   protected readonly icons = WORKSPACE_ICONS;
-  protected readonly allTickets = this.store.tickets;
+  protected readonly data = rxResource({
+    stream: () => loadManagerTickets(this.chamados, this.usuarios, this.cadastro),
+  });
+  protected readonly loadError = computed(() =>
+    this.data.error() ? mensagemErro(this.data.error()) : null,
+  );
+  protected readonly allTickets = computed(() => this.data.value() ?? []);
   protected readonly clientFilter = signal('Todas');
   protected readonly technicianFilter = signal('Todos');
   protected readonly statusFilter = signal<TicketFilter>('Todas');

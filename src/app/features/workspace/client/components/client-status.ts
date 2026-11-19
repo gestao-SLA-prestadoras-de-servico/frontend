@@ -17,5 +17,6 @@ export class ClientStatusBadge {
     EM_ATENDIMENTO: 'progress',
     RESOLVIDO: 'validation',
     ENCERRADO: 'closed',
+    CANCELADO: 'closed',
   };
 }

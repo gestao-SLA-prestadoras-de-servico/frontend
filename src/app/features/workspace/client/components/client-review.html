@@ -10,8 +10,8 @@
           que o chamado precisa ser reaberto.
         </p>
         <p class="mt-3 text-sm font-semibold text-pri-d">
-          Prazo de validação: {{ ticket().validationDueAt | date: 'dd/MM/yyyy, HH:mm' : '-0300' }} ·
-          Brasília.
+          Resolvido em {{ ticket().resolvedAt | date: 'dd/MM/yyyy, HH:mm' : '-0300' }}. Sem resposta
+          em 3 dias úteis, o chamado é encerrado automaticamente.
         </p>
       </div>
       <div class="flex flex-wrap gap-3">
@@ -45,8 +45,10 @@
     <p class="mt-2 text-sm text-ink2">
       {{
         ticket().status === 'ENCERRADO'
-          ? 'Este atendimento já foi encerrado no cenário fictício. A validação e a solicitação de reabertura não estão disponíveis.'
-          : 'A validação e a solicitação de reabertura ficam disponíveis após o técnico marcar o atendimento como resolvido.'
+          ? 'Este atendimento já foi encerrado. A validação e a solicitação de reabertura não estão mais disponíveis.'
+          : ticket().status === 'CANCELADO'
+            ? 'Este chamado foi cancelado pela prestadora.'
+            : 'A validação e a solicitação de reabertura ficam disponíveis após o técnico marcar o atendimento como resolvido.'
       }}
     </p>
   </section>
@@ -59,18 +61,14 @@
     aria-labelledby="client-review-result"
   >
     <h2 id="client-review-result" class="client-heading text-grn-t">
-      {{
-        outcome === 'confirm' ? 'Confirmação demonstrada' : 'Solicitação de reabertura demonstrada'
-      }}
+      {{ outcome === 'confirm' ? 'Resolução confirmada' : 'Chamado reaberto' }}
     </h2>
     <p class="mt-2 text-sm text-grn-t">
       {{
         outcome === 'confirm'
-          ? 'Em uma operação real, a confirmação encerraria o chamado.'
-          : 'Em uma operação real, a justificativa seria enviada para avaliação da prestadora.'
+          ? 'Obrigado pela confirmação. O chamado foi encerrado.'
+          : 'Sua justificativa foi registrada e o técnico responsável retomará o atendimento.'
       }}
-      Nesta demonstração, nenhuma informação foi enviada ou salva e o estado do chamado permanece
-      igual.
     </p>
   </section>
 }
@@ -90,12 +88,9 @@
   <p id="client-review-dialog-description" class="mt-3 text-sm text-ink2">
     {{
       action() === 'confirm'
-        ? 'Ao confirmar em uma operação real, você reconheceria que o problema foi resolvido e o chamado seria encerrado.'
-        : 'Explique o que ainda precisa ser corrigido. Em uma operação real, a prestadora receberia sua justificativa para avaliar a reabertura.'
+        ? 'Ao confirmar, você reconhece que o problema foi resolvido e o chamado é encerrado.'
+        : 'Explique o que ainda precisa ser corrigido. O chamado volta para o técnico responsável e os prazos recomeçam.'
     }}
-  </p>
-  <p class="mt-3 text-xs text-ink3">
-    Demonstração: nenhuma mudança de estado ou envio de dados será realizado.
   </p>
   <form class="mt-5" [formGroup]="form" (ngSubmit)="submit()" novalidate>
     @if (action() === 'reopen') {
@@ -120,11 +115,25 @@
         Explique o motivo usando de 20 a 1.000 caracteres.
       </p>
     }
+    @if (error(); as message) {
+      <p class="mt-4 rounded-lg bg-danger-bg p-3 text-sm text-danger" role="alert">{{ message }}</p>
+    }
     <div class="mt-6 flex flex-wrap justify-end gap-3">
       <button #cancel type="button" appButtonSecondary class="min-h-12 px-5 py-3" (click)="close()">
         Cancelar</button
-      ><button type="submit" appButtonPrimary class="min-h-12 px-5 py-3">
-        {{ action() === 'confirm' ? 'Confirmar resolução' : 'Enviar justificativa' }}
+      ><button
+        type="submit"
+        appButtonPrimary
+        class="min-h-12 px-5 py-3 disabled:cursor-wait disabled:opacity-60"
+        [disabled]="busy()"
+      >
+        {{
+          busy()
+            ? 'Enviando…'
+            : action() === 'confirm'
+              ? 'Confirmar resolução'
+              : 'Enviar justificativa'
+        }}
       </button>
     </div>
   </form>

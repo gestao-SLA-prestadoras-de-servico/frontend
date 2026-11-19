@@ -12,7 +12,7 @@ import {
   viewChild,
   viewChildren,
 } from '@angular/core';
-import { LucideChevronDown, LucideClock3, LucideDynamicIcon, LucideLogOut } from '@lucide/angular';
+import { LucideChevronDown, LucideDynamicIcon, LucideLogOut } from '@lucide/angular';
 import { preventDefaultUnlessReplayed } from '../../utils/event-replay';
 
 @Component({
@@ -28,11 +28,9 @@ export class UserMenu {
   readonly roleLabel = input.required<string>();
   readonly initials = input.required<string>();
   readonly signOut = output<void>();
-  readonly expireSession = output<void>();
   protected readonly open = signal(false);
   protected readonly icons = {
     chevron: LucideChevronDown,
-    clock: LucideClock3,
     logout: LucideLogOut,
   };
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -48,7 +46,7 @@ export class UserMenu {
   protected onTriggerKeydown(event: KeyboardEvent): void {
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       preventDefaultUnlessReplayed(event);
-      this.openAt(event.key === 'ArrowDown' ? 0 : 1);
+      this.openAt(0);
     } else if (event.key === 'Escape') this.close(true);
   }
 
@@ -87,10 +85,9 @@ export class UserMenu {
     elements[next]?.focus();
   }
 
-  protected select(action: 'expire' | 'exit'): void {
+  protected select(): void {
     this.close(true);
-    if (action === 'exit') this.signOut.emit();
-    else this.expireSession.emit();
+    this.signOut.emit();
   }
 
   protected onFocusOut(event: FocusEvent): void {

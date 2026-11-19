@@ -1,6 +1,6 @@
 <article class="flex h-full flex-col rounded-deadline border border-line bg-sf p-5 sm:p-6">
   <div class="flex flex-wrap items-center justify-between gap-2">
-    <p class="text-sm font-semibold tabular-nums text-ink2">#{{ ticket().id }}</p>
+    <p class="text-sm font-semibold tabular-nums text-ink2">#{{ ticket().number }}</p>
     <div class="flex flex-wrap gap-2">
       <app-technician-ticket-badges [status]="ticket().status" [priority]="ticket().priority" />
     </div>
@@ -11,7 +11,7 @@
   </h2>
   <p class="mt-2 flex items-start gap-1.5 text-sm leading-[1.55] text-ink2">
     <svg class="mt-0.5 size-4 shrink-0" lucideMapPin aria-hidden="true"></svg>
-    <span>{{ ticket().company }} · {{ ticket().location }}</span>
+    <span>{{ ticket().location }}</span>
   </p>
 
   @if (ticket().alertLabel) {
@@ -22,21 +22,25 @@
     </p>
   }
 
-  <div class="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-    <svg class="size-4 shrink-0 text-ink3" lucideClock3 aria-hidden="true"></svg>
-    <span class="font-medium">{{ ticket().deadline.label }}</span>
-    @if (ticket().deadline.state === 'overdue') {
-      <span class="font-semibold text-danger">{{ ticket().deadline.value }}</span>
-    } @else if (ticket().deadline.state === 'urgent') {
-      <span class="font-semibold text-[#754500]">{{ ticket().deadline.value }}</span>
-    } @else {
-      <span class="font-semibold text-ink2">{{ ticket().deadline.value }}</span>
-    }
-  </div>
-  <div class="mt-2 text-xs text-ink3">
-    {{ ticket().evidences.length }}
-    {{ ticket().evidences.length === 1 ? 'evidência de exemplo' : 'evidências de exemplo' }}
-  </div>
+  @if (ticket().deadline; as deadline) {
+    <div class="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+      <svg class="size-4 shrink-0 text-ink3" lucideClock3 aria-hidden="true"></svg>
+      <span class="font-medium">{{ deadline.label }}</span>
+      <time
+        class="font-semibold tabular-nums"
+        [class]="
+          deadline.state === 'overdue'
+            ? 'text-danger'
+            : deadline.state === 'urgent'
+              ? 'text-[#754500]'
+              : 'text-ink2'
+        "
+        [attr.datetime]="deadline.dueAt"
+        >{{ deadline.state === 'overdue' ? 'Venceu' : 'Até' }}
+        {{ deadline.dueAt | date: 'dd/MM, HH:mm' : '-0300' }}</time
+      >
+    </div>
+  }
 
   <div class="mt-auto pt-6">
     <a
@@ -52,7 +56,7 @@
           Continuar atendimento
         }
         @default {
-          Ver atendimento concluído
+          Ver atendimento
         }
       }
       <svg class="size-4" lucideArrowRight aria-hidden="true"></svg>

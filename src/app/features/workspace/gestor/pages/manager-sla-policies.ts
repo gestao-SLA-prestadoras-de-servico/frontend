@@ -14,26 +14,27 @@ import {
 import { Select } from '@app/shared/ui/input/select.directive';
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { CadastroApi } from '@app/core/api/cadastro.api';
+import { mensagemErro } from '@app/core/api/erros';
 import { ButtonPrimary } from '@app/shared/ui/button';
+import { WorkspaceLoadingState } from '../../components/workspace-loading-state';
 import {
   currentPolicyVersion,
-  DemoSlaPolicy,
-  firstSlaPolicy,
-  inconsistentPriorities,
-  policyById,
+  loadSlaPolicies,
   previousPolicyVersion,
   SLA_CLOCKS,
-  SLA_POLICY_DEMOS,
   SLA_PRIORITIES,
   SlaClock,
+  SlaPolicy,
   SlaPolicyVersion,
   SlaPriority,
   windowExample,
-} from '../data/sla-policy-demo-data';
+} from '../data/sla-policy-data';
 
 interface PolicyVersionReference {
-  policy: DemoSlaPolicy;
+  policy: SlaPolicy;
   version: SlaPolicyVersion;
 }
 
@@ -45,32 +46,6 @@ interface ComparisonRow {
   comparisonMinutes: number;
   changed: boolean;
 }
-
-function versionReferences(): readonly PolicyVersionReference[] {
-  return SLA_POLICY_DEMOS.flatMap((policy) =>
-    policy.versions.map((version) => ({ policy, version })),
-  );
-}
-
-const ALL_VERSIONS = versionReferences();
-const DEFAULT_POLICY_ID = 'policy-building';
-const FALLBACK_POLICY = firstSlaPolicy();
-const DEFAULT_POLICY = policyById(DEFAULT_POLICY_ID) ?? FALLBACK_POLICY;
-function defaultComparison(policy: DemoSlaPolicy): PolicyVersionReference {
-  const previous = previousPolicyVersion(policy, currentPolicyVersion(policy).id);
-  if (previous) return { policy, version: previous };
-  return (
-    ALL_VERSIONS.find(({ policy: candidate }) => candidate.id !== policy.id) ?? {
-      policy,
-      version: currentPolicyVersion(policy),
-    }
-  );
-}
-
-const DEFAULT_COMPARISON = defaultComparison(DEFAULT_POLICY);
-const INCONSISTENCY_EXAMPLE = ALL_VERSIONS.find(
-  ({ version }) => inconsistentPriorities(version.matrix).length > 0,
-);
 
 @Component({
   selector: 'app-manager-sla-policies',
@@ -88,6 +63,7 @@ const INCONSISTENCY_EXAMPLE = ALL_VERSIONS.find(
     ManagerTable,
     ManagerTableHead,
     ManagerTableBody,
+    WorkspaceLoadingState,
   ],
   templateUrl: './manager-sla-policies.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -95,28 +71,44 @@ const INCONSISTENCY_EXAMPLE = ALL_VERSIONS.find(
 })
 export class ManagerSlaPolicies {
   private readonly route = inject(ActivatedRoute);
-  private readonly initialPolicyId =
-    policyById(this.route.snapshot.queryParamMap.get('policy') ?? '')?.id ?? DEFAULT_POLICY_ID;
-  protected readonly policies = SLA_POLICY_DEMOS;
+  private readonly api = inject(CadastroApi);
+  protected readonly data = rxResource({ stream: () => loadSlaPolicies(this.api) });
+  protected readonly loadError = computed(() =>
+    this.data.error() ? mensagemErro(this.data.error()) : null,
+  );
+  protected readonly policies = computed(() => this.data.value() ?? []);
+  private readonly allVersions = computed<readonly PolicyVersionReference[]>(() =>
+    this.policies().flatMap((policy) => policy.versions.map((version) => ({ policy, version }))),
+  );
   protected readonly clocks = SLA_CLOCKS;
   protected readonly priorities = SLA_PRIORITIES;
-  protected readonly selectedPolicyId = signal(this.initialPolicyId);
-  protected readonly selectedComparisonId = signal(DEFAULT_COMPARISON.version.id);
-  protected readonly selectedPolicy = computed(
-    () => policyById(this.selectedPolicyId()) ?? FALLBACK_POLICY,
-  );
-  protected readonly currentVersion = computed(() => currentPolicyVersion(this.selectedPolicy()));
-  protected readonly comparisonOptions = computed(() =>
-    ALL_VERSIONS.filter(({ version }) => version.id !== this.currentVersion().id),
-  );
-  protected readonly comparisonTarget = computed(
+  protected readonly selectedPolicyId = signal(this.route.snapshot.queryParamMap.get('policy'));
+  protected readonly selectedComparisonId = signal<string | null>(null);
+  /** Indefinida só enquanto carrega ou se não houver nenhuma política. */
+  protected readonly selectedPolicy = computed<SlaPolicy | undefined>(
     () =>
-      ALL_VERSIONS.find(({ version }) => version.id === this.selectedComparisonId()) ??
-      defaultComparison(this.selectedPolicy()),
+      this.policies().find((policy) => policy.id === this.selectedPolicyId()) ?? this.policies()[0],
   );
+  protected readonly currentVersion = computed(() => {
+    const policy = this.selectedPolicy();
+    return policy ? currentPolicyVersion(policy) : undefined;
+  });
+  protected readonly comparisonOptions = computed(() =>
+    this.allVersions().filter(({ version }) => version.id !== this.currentVersion()?.id),
+  );
+  protected readonly comparisonTarget = computed<PolicyVersionReference | undefined>(() => {
+    const options = this.comparisonOptions();
+    const policy = this.selectedPolicy();
+    const previous = policy && previousPolicyVersion(policy, this.currentVersion()?.id ?? '');
+    return (
+      options.find(({ version }) => version.id === this.selectedComparisonId()) ??
+      (previous && policy ? { policy, version: previous } : options[0])
+    );
+  });
   protected readonly comparisonRows = computed<readonly ComparisonRow[]>(() => {
-    const current = this.currentVersion().matrix;
-    const comparison = this.comparisonTarget().version.matrix;
+    const current = this.currentVersion()?.matrix;
+    const comparison = this.comparisonTarget()?.version.matrix;
+    if (!current || !comparison) return [];
     return this.priorities.flatMap((priority) =>
       this.clocks.map((clock) => {
         const currentMinutes = current[priority.key][clock.key];
@@ -132,22 +124,10 @@ export class ManagerSlaPolicies {
       }),
     );
   });
-  protected readonly inconsistentVersions = computed(() =>
-    this.selectedPolicy()
-      .versions.map((version) => ({
-        version,
-        priorities: inconsistentPriorities(version.matrix),
-      }))
-      .filter(({ priorities }) => priorities.length > 0),
-  );
-  protected readonly inconsistencyExample = INCONSISTENCY_EXAMPLE;
 
   protected onPolicyChange(event: Event): void {
-    const policyId = (event.target as HTMLSelectElement).value;
-    const policy = policyById(policyId);
-    if (!policy) return;
-    this.selectedPolicyId.set(policy.id);
-    this.selectedComparisonId.set(defaultComparison(policy).version.id);
+    this.selectedPolicyId.set((event.target as HTMLSelectElement).value);
+    this.selectedComparisonId.set(null);
   }
 
   protected onComparisonChange(event: Event): void {
@@ -155,25 +135,8 @@ export class ManagerSlaPolicies {
   }
 
   protected compareVersion(version: SlaPolicyVersion): void {
-    if (version.id === this.currentVersion().id) return;
+    if (version.id === this.currentVersion()?.id) return;
     this.selectedComparisonId.set(version.id);
-  }
-
-  protected openInconsistencyExample(): void {
-    if (!this.inconsistencyExample) return;
-    this.selectedPolicyId.set(this.inconsistencyExample.policy.id);
-    this.selectedComparisonId.set(this.inconsistencyExample.version.id);
-  }
-
-  protected isVersionInconsistent(version: SlaPolicyVersion): boolean {
-    return inconsistentPriorities(version.matrix).length > 0;
-  }
-
-  protected versionWarning(version: SlaPolicyVersion): string {
-    const priorities = inconsistentPriorities(version.matrix).map((priority) =>
-      this.priorityLabel(priority),
-    );
-    return priorities.length ? `Ordem inconsistente · ${priorities.join(' e ')}` : '';
   }
 
   protected formatMinutes(minutes: number): string {

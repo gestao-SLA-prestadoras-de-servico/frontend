@@ -10,11 +10,17 @@ import {
   ManagerTextAction,
 } from '../components/manager-surface.directive';
 import { ButtonPrimary } from '@app/shared/ui/button';
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { WORKSPACE_ICONS } from '../../data/workspace-icons';
-import { ManagerTicketDemoStore, ManagerTicketStatus } from '../data/manager-ticket-demo-store';
+import { CadastroApi } from '@app/core/api/cadastro.api';
+import { ChamadosApi } from '@app/core/api/chamados.api';
+import { mensagemErro } from '@app/core/api/erros';
+import { UsuariosApi } from '@app/core/api/usuarios.api';
+import { loadManagerTickets, ManagerTicketStatus } from '../data/manager-ticket';
 import { ManagerActivityChart } from '../components/manager-activity-chart';
 import { ManagerMetricCard } from '../components/manager-metric-card';
 import { ManagerSlaHealth } from '../components/manager-sla-health';
@@ -34,6 +40,7 @@ const NON_FINAL_STATUSES: readonly ManagerTicketStatus[] = [
 @Component({
   selector: 'app-manager-dashboard',
   imports: [
+    DatePipe,
     RouterLink,
     LucideDynamicIcon,
     ManagerActivityChart,
@@ -57,9 +64,17 @@ const NON_FINAL_STATUSES: readonly ManagerTicketStatus[] = [
   host: { class: 'block' },
 })
 export class ManagerDashboard {
-  private readonly ticketStore = inject(ManagerTicketDemoStore);
+  private readonly chamados = inject(ChamadosApi);
+  private readonly usuarios = inject(UsuariosApi);
+  private readonly cadastro = inject(CadastroApi);
   protected readonly icons = WORKSPACE_ICONS;
-  protected readonly tickets = this.ticketStore.tickets;
+  protected readonly data = rxResource({
+    stream: () => loadManagerTickets(this.chamados, this.usuarios, this.cadastro),
+  });
+  protected readonly loadError = computed(() =>
+    this.data.error() ? mensagemErro(this.data.error()) : null,
+  );
+  protected readonly tickets = computed(() => this.data.value() ?? []);
 
   protected readonly indicators = computed(() => {
     const tickets = this.tickets();
@@ -99,7 +114,12 @@ export class ManagerDashboard {
   protected readonly attentionTickets = computed(() =>
     this.tickets()
       .filter((ticket) => NON_FINAL_STATUSES.includes(ticket.status))
-      .sort((left, right) => Number(right.overdue) - Number(left.overdue)),
+      // Violados primeiro; depois o que vence antes.
+      .sort(
+        (left, right) =>
+          Number(right.overdue) - Number(left.overdue) ||
+          (left.nextDeadline ?? '9').localeCompare(right.nextDeadline ?? '9'),
+      ),
   );
 
   protected readonly statusBreakdown = computed(() => {
